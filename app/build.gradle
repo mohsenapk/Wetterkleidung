@@ -80,5 +80,7 @@ dependencies {
     //tools
     //Jacke Wharton Timber Simple Logger
     implementation "com.jakewharton.timber:timber:4.7.1"
+    //Jacke Wharton TreeTenabp date library
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.2.4'
 
 }

@@ -1,6 +1,7 @@
 package com.mohsen.apk.wetterkleidung.base
 
 import android.app.Application
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.mohsen.apk.wetterkleidung.BuildConfig
 import com.mohsen.apk.wetterkleidung.base.di.ApplicationComponent
 import com.mohsen.apk.wetterkleidung.base.di.DaggerApplicationComponent
@@ -19,6 +20,7 @@ class BaseApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        AndroidThreeTen.init(this)
         initTimber()
         initDagger()
     }

@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import org.threeten.bp.LocalDateTime
 
 @Entity(tableName = "current_weather")
 data class CurrentWeather(
@@ -27,7 +28,8 @@ data class CurrentWeather(
     val currentWeatherWind: CurrentWeatherWind? = null,
     @Embedded(prefix = "clouds_")
     @SerializedName("clouds")
-    val currentWeatherClouds: CurrentWeatherClouds? = null
+    val currentWeatherClouds: CurrentWeatherClouds? = null,
+    val createdDate: String? = LocalDateTime.now().toString() ?: ""
 ) {
     @PrimaryKey(autoGenerate = false)
     var pkid = 0

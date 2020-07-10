@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import org.threeten.bp.LocalDateTime
 
 @Entity(tableName = "forecast_weather")
 data class ForecastWeather(
@@ -15,7 +16,8 @@ data class ForecastWeather(
     @SerializedName("cnt")
     val forecastCount: Int = 0,
     @SerializedName("list")
-    val weatherList: List<ForecastWeatherDetail>? = null
+    val weatherList: List<ForecastWeatherDetail>? = null,
+    val createdDate: String? = LocalDateTime.now().toString() ?: ""
 ){
     @PrimaryKey(autoGenerate = false)
     var pkid:Int = 0
