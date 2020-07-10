@@ -29,6 +29,7 @@ data class ForecastWeatherCity(
     @SerializedName("coord")
     val location: CityLocation? = null,
     val country: String = "",
+    @SerializedName("timezone")
     val timeZone: Long = 0
 )
 

@@ -22,13 +22,13 @@ class DBTypeConverter {
 
     @TypeConverter
     fun fromForecastWeatherDetailList(list: List<ForecastWeatherDetail>): String {
-        val type = object : TypeToken<List<WeatherTitle>>() {}.type
+        val type = object : TypeToken<List<ForecastWeatherDetail>>() {}.type
         return Gson().toJson(list, type)
     }
 
     @TypeConverter
     fun toForecastWeatherDetailList(jsonStr: String): List<ForecastWeatherDetail> {
-        val type = object : TypeToken<List<WeatherTitle>>() {}.type
+        val type = object : TypeToken<List<ForecastWeatherDetail>>() {}.type
         return Gson().fromJson(jsonStr, type)
     }
 
