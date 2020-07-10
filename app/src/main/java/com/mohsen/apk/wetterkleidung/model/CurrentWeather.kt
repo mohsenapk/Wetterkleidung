@@ -18,7 +18,7 @@ data class CurrentWeather(
     @SerializedName("coord")
     val location: CityLocation? = null,
     @SerializedName("weather")
-    val currentWeatherTitle: List<CurrentWeatherTitle>? = null,
+    val weatherTitle: List<WeatherTitle>? = null,
     @Embedded(prefix = "temp_")
     @SerializedName("main")
     val currentWeatherTemp: CurrentWeatherTemp? = null,
@@ -56,15 +56,3 @@ data class CurrentWeatherTemp(
     val humidity: Double = 0.0
 )
 
-data class CurrentWeatherTitle(
-    val id: Int = 0,
-    @SerializedName("main")
-    val title: String = "",
-    val description: String = "",
-    val icon: String = ""
-)
-
-data class CityLocation(
-    val lon: Double = 0.0,
-    val lat: Double = 0.0
-)
