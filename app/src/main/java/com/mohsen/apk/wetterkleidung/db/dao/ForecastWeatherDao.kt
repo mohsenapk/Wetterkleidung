@@ -10,7 +10,7 @@ import com.mohsen.apk.wetterkleidung.model.ForecastWeather
 interface ForecastWeatherDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun setForecastWeather(forecastWeather: ForecastWeather): Long
+    fun setForecastWeather(forecastWeather: ForecastWeather)
 
     @Query("SELECT * FROM forecast_weather")
     fun getForecastWeather(): ForecastWeather

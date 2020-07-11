@@ -10,7 +10,7 @@ import com.mohsen.apk.wetterkleidung.model.CurrentWeather
 interface CurrentWeatherDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun set(currentWeather: CurrentWeather): Long
+    fun set(currentWeather: CurrentWeather)
 
     @Query("SELECT * FROM current_weather")
     fun get(): CurrentWeather

@@ -29,7 +29,7 @@ data class CurrentWeather(
     @Embedded(prefix = "clouds_")
     @SerializedName("clouds")
     val currentWeatherClouds: CurrentWeatherClouds? = null,
-    val createdDate: String? = LocalDateTime.now().toString() ?: ""
+    var createdDate: String = ""
 ) {
     @PrimaryKey(autoGenerate = false)
     var pkid = 0
