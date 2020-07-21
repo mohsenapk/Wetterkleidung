@@ -5,13 +5,16 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.mohsen.apk.wetterkleidung.db.converter.DBTypeConverter
 import com.mohsen.apk.wetterkleidung.db.dao.CurrentWeatherDao
+import com.mohsen.apk.wetterkleidung.db.dao.ForecastWeatherDao
 import com.mohsen.apk.wetterkleidung.model.CurrentWeather
+import com.mohsen.apk.wetterkleidung.model.ForecastWeather
 
 @Database(
-    entities = [CurrentWeather::class],
+    entities = [CurrentWeather::class, ForecastWeather::class],
     version = 1
 )
 @TypeConverters(DBTypeConverter::class)
 abstract class WeatherDB : RoomDatabase() {
     abstract fun currentWeatherDao(): CurrentWeatherDao
+    abstract fun forecastWeatherDao(): ForecastWeatherDao
 }

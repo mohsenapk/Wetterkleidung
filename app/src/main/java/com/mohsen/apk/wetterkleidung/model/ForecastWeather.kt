@@ -2,7 +2,6 @@ package com.mohsen.apk.wetterkleidung.model
 
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
@@ -15,10 +14,11 @@ data class ForecastWeather(
     @SerializedName("cnt")
     val forecastCount: Int = 0,
     @SerializedName("list")
-    val weatherList: List<ForecastWeatherDetail>? = null
-){
+    val weatherList: List<ForecastWeatherDetail>? = null,
+    var createdDate: String = ""
+) {
     @PrimaryKey(autoGenerate = false)
-    var pkid:Int = 0
+    var pkid: Int = 0
 }
 
 data class ForecastWeatherCity(
@@ -29,6 +29,7 @@ data class ForecastWeatherCity(
     @SerializedName("coord")
     val location: CityLocation? = null,
     val country: String = "",
+    @SerializedName("timezone")
     val timeZone: Long = 0
 )
 
@@ -48,7 +49,7 @@ data class ForecastWeatherDetail(
     val deg: Int = 0,
     val clouds: Int = 0,
     val rain: Double = 0.0,
-    val weatherTitleList : List<WeatherTitle>
+    val weatherTitleList: List<WeatherTitle>
 )
 
 data class ForecastWeatherTemp(

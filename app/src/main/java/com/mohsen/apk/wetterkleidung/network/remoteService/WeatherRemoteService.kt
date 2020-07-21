@@ -1,6 +1,7 @@
 package com.mohsen.apk.wetterkleidung.network.remoteService
 
 import com.mohsen.apk.wetterkleidung.model.CurrentWeather
+import com.mohsen.apk.wetterkleidung.model.ForecastWeather
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.network.apiService.WeatherApi
 import retrofit2.Retrofit
@@ -10,12 +11,23 @@ interface WeatherRemoteService {
         city: String,
         weatherUnit: WeatherUnit
     ): CurrentWeather
+
+    suspend fun getForecastWeather(
+        city: String,
+        weatherUnit: WeatherUnit
+    ): ForecastWeather
 }
 
 class WeatherRemoteServiceImpl(private val retrofit: Retrofit) : WeatherRemoteService {
     override suspend fun getCurrentWeather(
         city: String,
         weatherUnit: WeatherUnit
-    ): CurrentWeather =
-        retrofit.create(WeatherApi::class.java).getCurrentWeatherApi(city, weatherUnit.name)
+    ): CurrentWeather = retrofit.create(WeatherApi::class.java)
+        .getCurrentWeather(city, weatherUnit.name)
+
+    override suspend fun getForecastWeather(
+        city: String,
+        weatherUnit: WeatherUnit
+    ): ForecastWeather = retrofit.create(WeatherApi::class.java)
+        .getForecastWeather(city, weatherUnit.name)
 }

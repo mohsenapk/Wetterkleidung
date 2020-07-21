@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         injectDagger()
         initViewModel()
         initUI()
-        viewModel.getCurrentWeatherTest()
+        viewModel.getWeathers()
     }
 
     private fun injectDagger() {
@@ -33,7 +33,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUI() {
         viewModel.currentWeather.observe(this, Observer {
-            tv.text = it.toString()
+            tv.append("\n")
+            tv.append("----- current -----")
+            tv.append("\n")
+            tv.append(it.toString())
+        })
+        viewModel.forecastWeather.observe(this , Observer {
+            tv.append("\n")
+            tv.append("----- forecast -----")
+            tv.append("\n")
+            tv.append(it.toString())
         })
     }
 }
