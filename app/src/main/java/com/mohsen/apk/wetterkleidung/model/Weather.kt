@@ -14,3 +14,14 @@ data class CityLocation(
     val lon: Double = 0.0,
     val lat: Double = 0.0
 )
+
+data class Clouds(
+    @SerializedName("all")
+    val cloudCount: Int = 0
+)
+
+data class Wind(
+    val speed: Double = 0.0,
+    @SerializedName("deg")
+    val degree: Int = 0
+)

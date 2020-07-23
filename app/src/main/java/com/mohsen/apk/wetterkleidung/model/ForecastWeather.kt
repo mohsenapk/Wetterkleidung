@@ -15,7 +15,7 @@ data class ForecastWeather(
     val forecastCount: Int = 0,
     @SerializedName("list")
     val weatherList: List<ForecastWeatherDetail>? = null,
-    var createdDate: String = ""
+    var createdDate: String? = null
 ) {
     @PrimaryKey(autoGenerate = false)
     var pkid: Int = 0
