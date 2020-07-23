@@ -3,6 +3,7 @@ package com.mohsen.apk.wetterkleidung.db.localService
 import com.mohsen.apk.wetterkleidung.db.WeatherDB
 import com.mohsen.apk.wetterkleidung.model.CurrentWeather
 import com.mohsen.apk.wetterkleidung.model.ForecastWeather
+import com.mohsen.apk.wetterkleidung.model.Forecast5DaysWeather
 import org.threeten.bp.LocalDateTime
 
 interface WeatherLocalService {
@@ -10,6 +11,8 @@ interface WeatherLocalService {
     suspend fun getCurrentWeather(): CurrentWeather
     suspend fun setForecastWeather(forecastWeather: ForecastWeather)
     suspend fun getForecastWeather(): ForecastWeather
+    suspend fun setForecast5DaysWeather(forecast5DaysWeather: Forecast5DaysWeather)
+    suspend fun getForecast5DaysWeather(): Forecast5DaysWeather
 }
 
 class WeatherLocalServiceImpl(private val db: WeatherDB) : WeatherLocalService {
@@ -28,5 +31,15 @@ class WeatherLocalServiceImpl(private val db: WeatherDB) : WeatherLocalService {
 
     override suspend fun getForecastWeather(): ForecastWeather =
         db.forecastWeatherDao().getForecastWeather()
+
+    override suspend fun getForecast5DaysWeather(): Forecast5DaysWeather =
+        db.forecast5DaysWeatherDao().getForecast5DaysWeather()
+
+    override suspend fun setForecast5DaysWeather(
+        forecast5DaysWeather: Forecast5DaysWeather
+    ) {
+        forecast5DaysWeather.createdDate = LocalDateTime.now().toString()
+        db.forecast5DaysWeatherDao().setForecast5DaysWeather(forecast5DaysWeather)
+    }
 
 }

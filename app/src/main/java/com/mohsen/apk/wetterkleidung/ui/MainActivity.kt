@@ -45,6 +45,12 @@ class MainActivity : AppCompatActivity() {
             tv.append("\n")
             tv.append(it.toString())
         })
+        viewModel.forecast5DaysWeather.observe(this , Observer {
+            tv.append("\n")
+            tv.append("----- forecast 5Days -----")
+            tv.append("\n")
+            tv.append(it.toString())
+        })
         viewModel.snackBarErrorShow.observe(this , Observer {
             Toast.makeText(this , it , Toast.LENGTH_SHORT).show()
         })
