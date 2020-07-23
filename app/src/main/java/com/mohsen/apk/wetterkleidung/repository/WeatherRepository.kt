@@ -3,23 +3,25 @@ package com.mohsen.apk.wetterkleidung.repository
 import com.mohsen.apk.wetterkleidung.db.localService.WeatherLocalService
 import com.mohsen.apk.wetterkleidung.model.CurrentWeather
 import com.mohsen.apk.wetterkleidung.model.ForecastWeather
+import com.mohsen.apk.wetterkleidung.model.RepositoryResponse
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.network.remoteService.WeatherRemoteService
 import com.mohsen.apk.wetterkleidung.utility.date.DateHelper
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import okio.IOException
 import org.threeten.bp.LocalDateTime
+import java.lang.Exception
 
 interface WeatherRepository {
     suspend fun getCurrentWeather(
         city: String,
         weatherUnit: WeatherUnit
-    ): CurrentWeather
+    ): RepositoryResponse<CurrentWeather>
 
     suspend fun getForecastWeather(
         city: String,
         weatherUnit: WeatherUnit
-    ): ForecastWeather
+    ): RepositoryResponse<ForecastWeather>
 }
 
 class WeatherRepositoryImpl(
@@ -27,55 +29,68 @@ class WeatherRepositoryImpl(
     private val local: WeatherLocalService,
     private val dateHelper: DateHelper
 ) : WeatherRepository {
+
     override suspend fun getCurrentWeather(
         city: String,
         weatherUnit: WeatherUnit
-    ): CurrentWeather = withContext(Dispatchers.IO) {
+    ): RepositoryResponse<CurrentWeather> = coroutineScope {
         val data = getCurrentWeatherLocal()
         data ?: getCurrentWeatherRemote(city, weatherUnit)
+    }
+
+    private suspend fun getCurrentWeatherLocal(): RepositoryResponse<CurrentWeather>? =
+        coroutineScope {
+            val localData: CurrentWeather? =
+                async(Dispatchers.IO) { local.getCurrentWeather() }.await()
+            val createdDate = localData?.createdDate
+            if (createdDate != null && !dateHelper.isDateExpired(LocalDateTime.parse(createdDate)))
+                RepositoryResponse.Success(localData)
+            else
+                null
+        }
+
+    private suspend fun getCurrentWeatherRemote(
+        city: String,
+        weatherUnit: WeatherUnit
+    ): RepositoryResponse<CurrentWeather> = coroutineScope {
+        try {
+            val remoteData = remote.getCurrentWeather(city, weatherUnit)
+            launch(Dispatchers.IO) { local.setCurrentWeather(remoteData) }.join()
+            RepositoryResponse.Success(remoteData)
+        } catch (e: IOException) {
+            RepositoryResponse.Filure(e)
+        }
     }
 
     override suspend fun getForecastWeather(
         city: String,
         weatherUnit: WeatherUnit
-    ): ForecastWeather = withContext(Dispatchers.IO) {
+    ): RepositoryResponse<ForecastWeather> = coroutineScope {
         val data = getForecastWeatherLocal()
         data ?: getForecastWeatherRemote(city, weatherUnit)
     }
 
-    private suspend fun getCurrentWeatherLocal(): CurrentWeather? = withContext(Dispatchers.IO) {
-        val localData: CurrentWeather? = local.getCurrentWeather()
-        val createdDate = localData?.createdDate
-        if (createdDate != null && !dateHelper.is30MinExpired(LocalDateTime.parse(createdDate)))
-            localData
-        else
-            null
-    }
-
-    private suspend fun getCurrentWeatherRemote(
-        city: String,
-        weatherUnit: WeatherUnit
-    ): CurrentWeather = withContext(Dispatchers.IO) {
-        val remoteData = remote.getCurrentWeather(city, weatherUnit)
-        local.setCurrentWeather(remoteData)
-        remoteData
-    }
-
-    private suspend fun getForecastWeatherLocal(): ForecastWeather? = withContext(Dispatchers.IO) {
-        val localData: ForecastWeather? = local.getForecastWeather()
-        val createdDate = localData?.createdDate
-        if (createdDate != null && !dateHelper.is30MinExpired(LocalDateTime.parse(createdDate)))
-            localData
-        else
-            null
-    }
+    private suspend fun getForecastWeatherLocal(): RepositoryResponse<ForecastWeather>? =
+        coroutineScope {
+            val localData: ForecastWeather? =
+                async(Dispatchers.IO) { local.getForecastWeather() }.await()
+            val createdDate = localData?.createdDate
+            if (createdDate != null && !dateHelper.isDateExpired(LocalDateTime.parse(createdDate)))
+                RepositoryResponse.Success(localData)
+            else
+                null
+        }
 
     private suspend fun getForecastWeatherRemote(
         city: String,
         weatherUnit: WeatherUnit
-    ): ForecastWeather = withContext(Dispatchers.IO) {
-        val remoteData = remote.getForecastWeather(city, weatherUnit)
-        local.setForecastWeather(remoteData)
-        remoteData
+    ): RepositoryResponse<ForecastWeather> = coroutineScope {
+        try {
+            val remoteData = remote.getForecastWeather(city, weatherUnit)
+            launch(Dispatchers.IO) { local.setForecastWeather(remoteData) }.join()
+            RepositoryResponse.Success(remoteData)
+        } catch (e: Exception) {
+            RepositoryResponse.Filure(e)
+        }
     }
 }

@@ -9,7 +9,7 @@ import okhttp3.Response
 class NoInternetInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         if (!isOnline())
-            throw NoInternetConnectionException(context)
+            throw NoInternetConnectionException()
         return chain.proceed(chain.request())
     }
 
