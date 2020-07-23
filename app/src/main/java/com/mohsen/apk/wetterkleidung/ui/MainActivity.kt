@@ -1,6 +1,7 @@
 package com.mohsen.apk.wetterkleidung.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -43,6 +44,9 @@ class MainActivity : AppCompatActivity() {
             tv.append("----- forecast -----")
             tv.append("\n")
             tv.append(it.toString())
+        })
+        viewModel.snackBarErrorShow.observe(this , Observer {
+            Toast.makeText(this , it , Toast.LENGTH_SHORT).show()
         })
     }
 }

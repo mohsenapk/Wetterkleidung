@@ -20,12 +20,11 @@ android {
         debug {
             buildConfigField("String", "BASE_URL", '"http://api.openweathermap.org/data/2.5/"')
             buildConfigField("String", "APP_API", '"373f042baa281bb2b15c933f08f3e5b4"')
-            buildConfigField 'long', 'REMOTE_CACH_MINUTES_TIME', '30'
+            buildConfigField 'long', 'REMOTE_CACH_MINUTES_TIME', '1'
         }
         release {
             buildConfigField("String", "BASE_URL", '"http://api.openweathermap.org/data/2.5/"')
             buildConfigField("String", "APP_API", '"373f042baa281bb2b15c933f08f3e5b4"')
-            buildConfigField("String", "REMOTE_CACH_MINUTES_TIME", "30")
             buildConfigField 'long', 'REMOTE_CACH_MINUTES_TIME', '30'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
