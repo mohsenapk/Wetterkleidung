@@ -42,6 +42,7 @@ data class Forecast5DaysWeatherDetail(
     @Embedded(prefix = "detail_")
     @SerializedName("main")
     val temp: Forecast5DaysWeatherTemp? = null,
+    @SerializedName("weather")
     val weatherTitleList: List<WeatherTitle>,
     @Embedded(prefix = "clouds_")
     val clouds: Clouds? = null,

@@ -24,4 +24,5 @@ interface WeatherApi {
         @Query("q") city: String,
         @Query("units") weatherUnitStr: String
     ): Forecast5DaysWeather
+
 }

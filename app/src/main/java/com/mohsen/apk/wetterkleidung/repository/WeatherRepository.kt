@@ -1,9 +1,11 @@
 package com.mohsen.apk.wetterkleidung.repository
 
+import android.widget.ImageView
 import com.mohsen.apk.wetterkleidung.db.localService.WeatherLocalService
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.network.remoteService.WeatherRemoteService
-import com.mohsen.apk.wetterkleidung.utility.date.DateHelper
+import com.mohsen.apk.wetterkleidung.utility.DateHelper
+import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.coroutines.*
 import okio.IOException
 import org.threeten.bp.LocalDateTime
@@ -24,12 +26,15 @@ interface WeatherRepository {
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<Forecast5DaysWeather>
+
+    fun loadImageIcon(imageView: ImageView, iconId: String)
 }
 
 class WeatherRepositoryImpl(
     private val remote: WeatherRemoteService,
     private val local: WeatherLocalService,
-    private val dateHelper: DateHelper
+    private val dateHelper: DateHelper,
+    private val imageHelper: ImageHelper
 ) : WeatherRepository {
 
     override suspend fun getCurrentWeather(
@@ -126,5 +131,9 @@ class WeatherRepositoryImpl(
         } catch (e: IOException) {
             RepositoryResponse.Filure(e)
         }
+    }
+
+    override fun loadImageIcon(imageView: ImageView, iconId: String) {
+        imageHelper.loadWeatherIcon(imageView, iconId)
     }
 }
