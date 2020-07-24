@@ -4,6 +4,8 @@ import com.mohsen.apk.wetterkleidung.db.di.DBModule
 import com.mohsen.apk.wetterkleidung.network.di.NetworkModule
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepositoryImpl
 import com.mohsen.apk.wetterkleidung.repository.di.RepositoryModule
+import com.mohsen.apk.wetterkleidung.utility.ImageHelper
+import com.mohsen.apk.wetterkleidung.utility.ImageHelperImpl
 import com.mohsen.apk.wetterkleidung.utility.di.UtilityModule
 import dagger.Component
 import javax.inject.Singleton

@@ -17,11 +17,9 @@ class ImageHelperImpl : ImageHelper {
         imageView: ImageView,
         iconId: String
     ) {
-        if (iconId == null)
-            return
-        Glide.with(imageView.context)
-            .load("$API_URL_ICON$iconId@2x.png")
-            .centerCrop()
+        Glide.with(imageView)
+            .load("$API_URL_ICON$iconId@4x.png")
+
             .into(imageView)
     }
 }

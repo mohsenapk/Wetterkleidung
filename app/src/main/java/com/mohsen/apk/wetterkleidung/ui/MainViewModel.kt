@@ -1,16 +1,65 @@
 package com.mohsen.apk.wetterkleidung.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.widget.ImageView
+import androidx.lifecycle.*
+import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
+import com.mohsen.apk.wetterkleidung.utility.ImageHelper
+import com.mohsen.apk.wetterkleidung.utility.ImageHelperImpl
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.math.roundToInt
 
 class MainViewModel(
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
 
+    private val _snackBarError = MutableLiveData<String>()
+    private val _cityName = MutableLiveData<String>()
+    private val _date = MutableLiveData<String>()
+    private val _dayName = MutableLiveData<String>()
+    private val _temp = MutableLiveData<Int>()
+    private val _tempDesc = MutableLiveData<String>()
+
+    val snackBarError: LiveData<String> = _snackBarError
+    val cityName: LiveData<String> = _cityName
+    val date: LiveData<String> = _date
+    val dayName: LiveData<String> = _dayName
+    val temp: LiveData<Int> = _temp
+    val tempDesc: LiveData<String> = _tempDesc
+
+    fun refreshWeather(
+        time: Int = 0,
+        imageView: ImageView? = null
+    ) = viewModelScope.launch {
+        val weather = weatherRepository
+            .getForecast5DaysWeather("bremen", WeatherUnit.METRIC)
+
+        when (weather) {
+            is RepositoryResponse.Success -> {
+                if (imageView != null)
+                    loadWeatherIconImage(
+                        imageView,
+                        weather.data.weatherList?.get(0)?.weatherTitleList?.get(0)?.icon
+                    )
+                setWeatherToLiveData(weather.data)
+            }
+            is RepositoryResponse.Filure ->
+                _snackBarError.value = weather.exception.message
+        }
+    }
+
+    private fun setWeatherToLiveData(weather: Forecast5DaysWeather) {
+        _cityName.value = weather.city.cityName
+        _date.value = weather.weatherList?.get(0)?.dateTimeText
+        _dayName.value = "Today"
+        _temp.value = weather.weatherList?.get(0)?.temp?.temp?.roundToInt()
+        _tempDesc.value = weather.weatherList?.get(0)?.weatherTitleList?.get(0)?.description
+    }
+
+    private fun loadWeatherIconImage(imageView: ImageView, iconId: String?) {
+        iconId?.let { ImageHelperImpl().loadWeatherIcon(imageView, iconId) }
+    }
 
 }
