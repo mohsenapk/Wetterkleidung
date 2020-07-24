@@ -1,4 +1,4 @@
-package com.mohsen.apk.wetterkleidung.utility.date
+package com.mohsen.apk.wetterkleidung.utility
 
 import com.mohsen.apk.wetterkleidung.BuildConfig
 import org.threeten.bp.LocalDateTime

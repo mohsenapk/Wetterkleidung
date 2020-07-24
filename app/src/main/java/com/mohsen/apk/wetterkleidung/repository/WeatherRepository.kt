@@ -3,7 +3,8 @@ package com.mohsen.apk.wetterkleidung.repository
 import com.mohsen.apk.wetterkleidung.db.localService.WeatherLocalService
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.network.remoteService.WeatherRemoteService
-import com.mohsen.apk.wetterkleidung.utility.date.DateHelper
+import com.mohsen.apk.wetterkleidung.utility.DateHelper
+import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.coroutines.*
 import okio.IOException
 import org.threeten.bp.LocalDateTime
