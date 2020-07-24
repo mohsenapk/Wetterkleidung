@@ -56,7 +56,7 @@ class MainViewModel(
     private fun setWeatherToLiveData(weather: Forecast5DaysWeather) {
         _progress.value = false
         _cityName.value = weather.city.cityName
-        _date.value = weather.weatherList?.get(0)?.dateTimeText
+        _date.value = weather.weatherList?.get(0)?.dateTimeText.toString().substringBefore(" ")
         _dayName.value = "Today"
         _temp.value = weather.weatherList?.get(0)?.temp?.temp?.roundToInt()
         _tempDesc.value = weather.weatherList?.get(0)?.weatherTitleList?.get(0)?.description
