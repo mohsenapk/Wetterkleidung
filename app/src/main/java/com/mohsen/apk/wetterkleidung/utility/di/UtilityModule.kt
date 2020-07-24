@@ -15,4 +15,8 @@ class UtilityModule {
     @Singleton
     fun provideDateHelper(): DateHelper = DateHelperImpl()
 
+    @Provides
+    @Singleton
+    fun provideImageHelper(): ImageHelper = ImageHelperImpl()
+
 }

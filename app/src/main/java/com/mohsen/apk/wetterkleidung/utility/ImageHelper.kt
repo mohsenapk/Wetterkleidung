@@ -19,7 +19,7 @@ class ImageHelperImpl : ImageHelper {
     ) {
         Glide.with(imageView)
             .load("$API_URL_ICON$iconId@4x.png")
-
+            .centerCrop()
             .into(imageView)
     }
 }

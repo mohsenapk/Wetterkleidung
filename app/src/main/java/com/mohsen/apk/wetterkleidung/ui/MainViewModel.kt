@@ -21,6 +21,7 @@ class MainViewModel(
     private val _dayName = MutableLiveData<String>()
     private val _temp = MutableLiveData<Int>()
     private val _tempDesc = MutableLiveData<String>()
+    private val _progress = MutableLiveData<Boolean>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -28,11 +29,13 @@ class MainViewModel(
     val dayName: LiveData<String> = _dayName
     val temp: LiveData<Int> = _temp
     val tempDesc: LiveData<String> = _tempDesc
+    val progress: LiveData<Boolean> = _progress
 
     fun refreshWeather(
         time: Int = 0,
         imageView: ImageView? = null
     ) = viewModelScope.launch {
+        _progress.value = true
         val weather = weatherRepository
             .getForecast5DaysWeather("bremen", WeatherUnit.METRIC)
 
@@ -51,6 +54,7 @@ class MainViewModel(
     }
 
     private fun setWeatherToLiveData(weather: Forecast5DaysWeather) {
+        _progress.value = false
         _cityName.value = weather.city.cityName
         _date.value = weather.weatherList?.get(0)?.dateTimeText
         _dayName.value = "Today"
@@ -59,7 +63,7 @@ class MainViewModel(
     }
 
     private fun loadWeatherIconImage(imageView: ImageView, iconId: String?) {
-        iconId?.let { ImageHelperImpl().loadWeatherIcon(imageView, iconId) }
+        iconId?.let { weatherRepository.loadImageIcon(imageView, iconId) }
     }
 
 }

@@ -1,6 +1,7 @@
 package com.mohsen.apk.wetterkleidung.ui
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -35,8 +36,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.cityName.observe(this, Observer { tvCity.text = it })
         viewModel.date.observe(this, Observer { tvDate.text = it })
         viewModel.dayName.observe(this, Observer { tvDayName.text = it })
-        viewModel.temp.observe(this, Observer {tvTemp.text = it.toString()})
+        viewModel.temp.observe(this, Observer {
+            tvTemp.text = it.toString()
+            tvTempDegreeIcon.visibility = View.VISIBLE
+        })
         viewModel.tempDesc.observe(this, Observer { tvTempDesc.text = it })
+        viewModel.progress.observe(this, Observer {
+            progress.visibility = if (it) View.VISIBLE else View.INVISIBLE
+        })
     }
 
     private fun injectDagger() {
