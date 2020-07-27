@@ -36,23 +36,13 @@
                 tools:text="Today" />
 
             <TextView
-                android:id="@+id/tvDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textSize="18sp"
-                app:layout_constraintLeft_toLeftOf="@id/clTitle"
-                app:layout_constraintRight_toRightOf="@id/clTitle"
-                app:layout_constraintTop_toBottomOf="@id/tvDayName"
-                tools:text="23/4/55" />
-
-            <TextView
                 android:id="@+id/tvCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="23sp"
                 android:textStyle="bold"
                 app:layout_constraintLeft_toLeftOf="@id/clTitle"
+                app:layout_constraintRight_toRightOf="@id/clTitle"
                 app:layout_constraintTop_toBottomOf="@id/tvDayName"
                 tools:text="Bremen" />
 
@@ -116,7 +106,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/clTop"
         android:layout_marginTop="16dp"
-        android:textSize="23sp"
+        android:textSize="18sp"
         android:textColor="#FFFFFF"
         tools:text="14:00-15:00"/>
 

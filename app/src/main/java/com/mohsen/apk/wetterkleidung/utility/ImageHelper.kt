@@ -2,6 +2,7 @@ package com.mohsen.apk.wetterkleidung.utility
 
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
 interface ImageHelper {
     fun loadWeatherIcon(
@@ -19,6 +20,7 @@ class ImageHelperImpl : ImageHelper {
     ) {
         Glide.with(imageView)
             .load("$API_URL_ICON$iconId@4x.png")
+            .transition(DrawableTransitionOptions.withCrossFade())
             .centerCrop()
             .into(imageView)
     }

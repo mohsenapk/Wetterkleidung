@@ -114,7 +114,7 @@ class WeatherRepositoryImpl(
             val localData =
                 async(Dispatchers.IO) { local.getForecast5DaysWeather() }.await()
             val createDate = localData?.createdDate
-            if (createDate != null && dateHelper.isDateExpired(LocalDateTime.parse(createDate)))
+            if (createDate != null && !dateHelper.isDateExpired(LocalDateTime.parse(createDate)))
                 RepositoryResponse.Success(localData)
             else
                 null
