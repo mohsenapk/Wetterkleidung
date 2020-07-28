@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -51,6 +52,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.weatherImageIconId.observe(this, Observer {
             it?.let { viewModel.weatherImageIconWithId(ivIcon, it) }
         })
+        viewModel.weatherLowInfoList.observe(this, Observer {
+            it.forEach { daily ->
+                val strTest = "\n ${daily.date}-${daily.temp}-${daily.iconId}"
+                Timber.d("daily - $strTest")
+            }
+        })
     }
 
     private fun injectDagger() {
@@ -66,6 +73,7 @@ class MainActivity : AppCompatActivity() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 viewModel.seekBarProgressChange(progress)
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })

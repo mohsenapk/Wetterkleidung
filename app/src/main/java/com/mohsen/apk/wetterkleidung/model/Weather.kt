@@ -25,3 +25,9 @@ data class Wind(
     @SerializedName("deg")
     val degree: Int = 0
 )
+
+data class WeatherLowInformation(
+    val date: String = "",
+    val temp: Double = 0.0,
+    val iconId: String = ""
+)

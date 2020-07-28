@@ -49,6 +49,7 @@ data class ForecastWeatherDetail(
     val deg: Int = 0,
     val clouds: Int = 0,
     val rain: Double = 0.0,
+    @SerializedName("weather")
     val weatherTitleList: List<WeatherTitle>
 )
 
