@@ -82,13 +82,10 @@ class MainViewModel(
             return
         for (i in 1..5) {
             val daily = list[i]
-            weatherLowInfoList.add(
-                WeatherLowInformation(
-                    date = daily.date.toString(),
-                    temp = daily.temp?.day ?: 0.0,
-                    iconId = daily.weatherTitleList?.get(0).icon
-                )
-            )
+            val temp = daily.temp?.day?.roundToInt().toString()
+            val date = daily.date.toString()
+
+            weatherLowInfoList.add(WeatherLowInformation(date, temp, ""))
         }
         if (weatherLowInfoList.isNotEmpty())
             _weatherLowInfoList.value = weatherLowInfoList
@@ -106,10 +103,6 @@ class MainViewModel(
             weather.weatherList?.get(timePeriodIndex)?.weatherTitleList?.get(0)?.description
         _weatherImageIconId.value =
             weather.weatherList?.get(timePeriodIndex)?.weatherTitleList?.get(0)?.icon
-    }
-
-    private fun loadWeatherIconImage(imageView: ImageView, iconId: String?) {
-        iconId?.let { weatherRepository.loadImageIcon(imageView, iconId) }
     }
 
     fun seekBarProgressChange(progress: Int) {

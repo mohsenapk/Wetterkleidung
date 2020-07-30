@@ -7,8 +7,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
+import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -16,8 +18,9 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
-
     lateinit var viewModel: MainViewModel
+    val linearLayoutManager = LinearLayoutManager(this)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +56,11 @@ class MainActivity : AppCompatActivity() {
             it?.let { viewModel.weatherImageIconWithId(ivIcon, it) }
         })
         viewModel.weatherLowInfoList.observe(this, Observer {
-            it.forEach { daily ->
-                val strTest = "\n ${daily.date}-${daily.temp}-${daily.iconId}"
-                Timber.d("daily - $strTest")
+            rvOtherWeather.apply {
+                layoutManager = linearLayoutManager
+                it?.let {
+                    adapter = WeatherLowInfoAdapter(it)
+                }
             }
         })
     }

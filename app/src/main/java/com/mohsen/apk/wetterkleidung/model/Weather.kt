@@ -28,6 +28,6 @@ data class Wind(
 
 data class WeatherLowInformation(
     val date: String = "",
-    val temp: Double = 0.0,
+    val tempStr: String = "",
     val iconId: String = ""
 )
