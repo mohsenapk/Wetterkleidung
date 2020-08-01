@@ -12,7 +12,11 @@ import kotlin.math.roundToInt
 class MainViewModel(
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
+    private var selectedDate = ""
+    private lateinit var forecast5DaysWeather: Forecast5DaysWeather
+    private lateinit var forecastWeatherDetailList: List<Forecast5DaysWeatherDetail>
 
+    private val _seekBarMaxSize = MutableLiveData<Int>()
     private val _snackBarError = MutableLiveData<String>()
     private val _cityName = MutableLiveData<String>()
     private val _date = MutableLiveData<String>()
@@ -36,28 +40,44 @@ class MainViewModel(
     val seekBarChangeProgress: LiveData<Int> = _seekBarChangeProgress
     val weatherImageIconId: LiveData<String> = _weatherImageIconId
     val weatherLowInfoList: LiveData<List<WeatherLowInformation>> = _weatherLowInfoList
+    val seekBarMaxSize: LiveData<Int> = _seekBarMaxSize
 
-    private fun refreshWeather(
-        timePeriodIndex: Int = 0
-    ) = viewModelScope.launch {
-        forecast5Days("bremen", WeatherUnit.METRIC, timePeriodIndex)
+    fun changeDate(date: String) {
+        selectedDate = date
+    }
+
+    fun start() = viewModelScope.launch {
+        selectedDate = LocalDateTime.now().toString().substringBefore("T")
+        forecast5Days("bremen", WeatherUnit.METRIC)
         forecast7DaysForList("bremen", WeatherUnit.METRIC)
     }
 
     private suspend fun forecast5Days(
         city: String,
-        weatherUnit: WeatherUnit,
-        timePeriodIndex: Int
+        weatherUnit: WeatherUnit
     ) {
         _progress.value = true
         val weather = weatherRepository
             .getForecast5DaysWeather(city, weatherUnit)
         when (weather) {
             is RepositoryResponse.Success -> {
-                getCorrectWeatherWithIndex(weather.data, timePeriodIndex)
+                forecast5DaysWeather = weather.data
+                setForecastWeatherDetails()
+                weatherPresentation()
             }
             is RepositoryResponse.Filure ->
                 _snackBarError.value = weather.exception.message
+        }
+    }
+
+    private fun setForecastWeatherDetails() {
+        forecast5DaysWeather?.let {
+            it.weatherList?.let { weatherList ->
+                forecastWeatherDetailList = weatherList.filter { weather ->
+                    weather.dateTimeText.substringBefore(" ") == selectedDate
+                }
+                _seekBarMaxSize.value = forecastWeatherDetailList.size
+            }
         }
     }
 
@@ -91,18 +111,20 @@ class MainViewModel(
             _weatherLowInfoList.value = weatherLowInfoList
     }
 
-    private fun getCorrectWeatherWithIndex(weather: Forecast5DaysWeather, timePeriodIndex: Int) {
+    private fun weatherPresentation(index: Int = 0) {
+//        if(forecastWeatherDetaileList.size < index)
+//            return
         _progress.value = false
-        _cityName.value = weather.city.cityName
+        _cityName.value = forecast5DaysWeather.city.cityName
         _date.value =
-            weather.weatherList?.get(timePeriodIndex)?.dateTimeText.toString().substringBefore(" ")
+            forecastWeatherDetailList[index].dateTimeText.substringBefore(" ")
         _dayName.value = "Today"
         _temp.value =
-            weather.weatherList?.get(timePeriodIndex)?.temp?.temp?.roundToInt()
+            forecastWeatherDetailList[index].temp?.temp?.roundToInt()
         _tempDesc.value =
-            weather.weatherList?.get(timePeriodIndex)?.weatherTitleList?.get(0)?.description
+            forecastWeatherDetailList[index].weatherTitleList[0].description
         _weatherImageIconId.value =
-            weather.weatherList?.get(timePeriodIndex)?.weatherTitleList?.get(0)?.icon
+            forecastWeatherDetailList[index].weatherTitleList[0].icon
     }
 
     fun seekBarProgressChange(progress: Int) {
@@ -119,26 +141,11 @@ class MainViewModel(
             7 -> lastSeekBarValue = SeekBarValue.SEVEN
         }
         _seekBarTimeShow.value = lastSeekBarValue.hours
-        refreshWeather(progress)
-    }
-
-    private fun seekBarSetupFirstTime() {
-        var progress = 0
-        when (LocalDateTime.now().hour) {
-            6, 7, 8 -> progress = 0
-            9, 10, 11 -> progress = 1
-            12, 13, 14 -> progress = 2
-            15, 16, 17 -> progress = 3
-            18, 19, 20 -> progress = 4
-            21, 22, 23 -> progress = 5
-            0, 1, 2 -> progress = 6
-            3, 4, 5 -> progress = 7
-        }
-        _seekBarChangeProgress.value = progress
+        weatherPresentation(progress)
     }
 
     fun onResume() {
-        seekBarSetupFirstTime()
+
     }
 
     fun weatherImageIconWithId(ivIcon: ImageView?, imgId: String) {

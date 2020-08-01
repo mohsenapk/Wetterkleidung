@@ -12,6 +12,7 @@ import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import org.threeten.bp.LocalDateTime
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
     lateinit var viewModel: MainViewModel
-    val linearLayoutManager = LinearLayoutManager(this)
+    private val linearLayoutManager = LinearLayoutManager(this)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,18 +28,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         injectDagger()
         initViewModel()
+        viewModel.start()
         initUI()
-    }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume()
     }
 
     private fun initUI() {
         seekBarSetup()
         viewModel.snackBarError.observe(this, Observer {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        })
+        viewModel.seekBarMaxSize.observe(this, Observer {
+            seekBar.max = it - 1
         })
         viewModel.cityName.observe(this, Observer { tvCity.text = it })
         viewModel.dayName.observe(this, Observer { tvDayName.text = it })
