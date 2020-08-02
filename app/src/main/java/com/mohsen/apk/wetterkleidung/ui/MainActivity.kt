@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         })
         viewModel.seekBarMaxSize.observe(this, Observer {
-            seekBar.max = it - 1
+            seekBar.max = it
         })
         viewModel.cityName.observe(this, Observer { tvCity.text = it })
         viewModel.dayName.observe(this, Observer { tvDayName.text = it })

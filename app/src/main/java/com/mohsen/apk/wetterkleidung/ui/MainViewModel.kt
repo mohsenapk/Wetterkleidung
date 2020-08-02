@@ -6,15 +6,16 @@ import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
-import timber.log.Timber
 import kotlin.math.roundToInt
 
 class MainViewModel(
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
     private var selectedDate = ""
+    private var seekBarSize = 0
+    private lateinit var selectedDaySeekBarValues: List<SeekBarValue>
     private lateinit var forecast5DaysWeather: Forecast5DaysWeather
-    private lateinit var forecastWeatherDetailList: List<Forecast5DaysWeatherDetail>
+    private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
 
     private val _seekBarMaxSize = MutableLiveData<Int>()
     private val _snackBarError = MutableLiveData<String>()
@@ -62,7 +63,7 @@ class MainViewModel(
         when (weather) {
             is RepositoryResponse.Success -> {
                 forecast5DaysWeather = weather.data
-                setForecastWeatherDetails()
+                setSelectedDayWeatherList()
                 weatherPresentation()
             }
             is RepositoryResponse.Filure ->
@@ -70,15 +71,35 @@ class MainViewModel(
         }
     }
 
-    private fun setForecastWeatherDetails() {
+    private fun setSelectedDayWeatherList() {
         forecast5DaysWeather?.let {
             it.weatherList?.let { weatherList ->
-                forecastWeatherDetailList = weatherList.filter { weather ->
+                selectedDayWeatherList = weatherList.filter { weather ->
                     weather.dateTimeText.substringBefore(" ") == selectedDate
                 }
-                _seekBarMaxSize.value = forecastWeatherDetailList.size
+                seekBarSize = selectedDayWeatherList.size - 1
+                _seekBarMaxSize.value = seekBarSize
+                setSelectedDaySeekBarValues()
             }
         }
+    }
+
+    private fun setSelectedDaySeekBarValues() {
+        selectedDaySeekBarValues = getLastItemsOfSeekBarValues(seekBarSize)
+        setSeekTime(0)
+    }
+
+    private fun getLastItemsOfSeekBarValues(count: Int): List<SeekBarValue> {
+        val allSeekBarValues = listOf<SeekBarValue>(
+            SeekBarValue.SEVEN,
+            SeekBarValue.SIX,
+            SeekBarValue.FIVE,
+            SeekBarValue.FOUR,
+            SeekBarValue.THREE,
+            SeekBarValue.TWO,
+            SeekBarValue.ONE
+        )
+        return allSeekBarValues.subList(0, count + 1).reversed()
     }
 
     private suspend fun forecast7DaysForList(
@@ -112,40 +133,38 @@ class MainViewModel(
     }
 
     private fun weatherPresentation(index: Int = 0) {
-//        if(forecastWeatherDetaileList.size < index)
-//            return
         _progress.value = false
         _cityName.value = forecast5DaysWeather.city.cityName
         _date.value =
-            forecastWeatherDetailList[index].dateTimeText.substringBefore(" ")
+            selectedDayWeatherList[index].dateTimeText.substringBefore(" ")
         _dayName.value = "Today"
         _temp.value =
-            forecastWeatherDetailList[index].temp?.temp?.roundToInt()
+            selectedDayWeatherList[index].temp?.temp?.roundToInt()
         _tempDesc.value =
-            forecastWeatherDetailList[index].weatherTitleList[0].description
+            selectedDayWeatherList[index].weatherTitleList[0].description
         _weatherImageIconId.value =
-            forecastWeatherDetailList[index].weatherTitleList[0].icon
+            selectedDayWeatherList[index].weatherTitleList[0].icon
     }
 
     fun seekBarProgressChange(progress: Int) {
-        var lastSeekBarValue: SeekBarValue = SeekBarValue.ONE
-        Timber.d("seek - onProgressChange - > $progress")
-        when (progress) {
-            0 -> lastSeekBarValue = SeekBarValue.ZERO
-            1 -> lastSeekBarValue = SeekBarValue.ONE
-            2 -> lastSeekBarValue = SeekBarValue.TWO
-            3 -> lastSeekBarValue = SeekBarValue.THREE
-            4 -> lastSeekBarValue = SeekBarValue.FOUR
-            5 -> lastSeekBarValue = SeekBarValue.FIVE
-            6 -> lastSeekBarValue = SeekBarValue.SIX
-            7 -> lastSeekBarValue = SeekBarValue.SEVEN
-        }
-        _seekBarTimeShow.value = lastSeekBarValue.hours
         weatherPresentation(progress)
+        setSeekTime(progress)
     }
 
-    fun onResume() {
-
+    private fun setSeekTime(progress: Int) {
+        if (!this::selectedDaySeekBarValues.isInitialized)
+            return
+        var strSeekTimeShow = ""
+        when (progress) {
+            0 -> strSeekTimeShow = selectedDaySeekBarValues[0].hours
+            1 -> strSeekTimeShow = selectedDaySeekBarValues[1].hours
+            2 -> strSeekTimeShow = selectedDaySeekBarValues[2].hours
+            3 -> strSeekTimeShow = selectedDaySeekBarValues[3].hours
+            4 -> strSeekTimeShow = selectedDaySeekBarValues[4].hours
+            5 -> strSeekTimeShow = selectedDaySeekBarValues[5].hours
+            6 -> strSeekTimeShow = selectedDaySeekBarValues[6].hours
+        }
+        _seekBarTimeShow.value = strSeekTimeShow
     }
 
     fun weatherImageIconWithId(ivIcon: ImageView?, imgId: String) {
