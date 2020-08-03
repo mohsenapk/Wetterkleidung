@@ -13,11 +13,10 @@ class MainViewModel(
 ) : ViewModel() {
     private var selectedDate = ""
     private var seekBarSize = 0
-    private lateinit var selectedDaySeekBarValues: List<SeekBarValue>
+    private lateinit var selectedDaySeekBarValues: List<Int>
     private lateinit var forecast5DaysWeather: Forecast5DaysWeather
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
 
-    private val _seekBarMaxSize = MutableLiveData<Int>()
     private val _snackBarError = MutableLiveData<String>()
     private val _cityName = MutableLiveData<String>()
     private val _date = MutableLiveData<String>()
@@ -25,10 +24,10 @@ class MainViewModel(
     private val _temp = MutableLiveData<Int>()
     private val _tempDesc = MutableLiveData<String>()
     private val _progress = MutableLiveData<Boolean>()
-    private val _seekBarTimeShow = MutableLiveData<String>()
     private val _seekBarChangeProgress = MutableLiveData<Int>()
     private val _weatherImageIconId = MutableLiveData<String>()
     private val _weatherLowInfoList = MutableLiveData<List<WeatherLowInformation>>()
+    private val _seekBarTimes = MutableLiveData<List<Int>>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -37,11 +36,10 @@ class MainViewModel(
     val temp: LiveData<Int> = _temp
     val tempDesc: LiveData<String> = _tempDesc
     val progress: LiveData<Boolean> = _progress
-    val seekBarTimeShow: LiveData<String> = _seekBarTimeShow
     val seekBarChangeProgress: LiveData<Int> = _seekBarChangeProgress
     val weatherImageIconId: LiveData<String> = _weatherImageIconId
     val weatherLowInfoList: LiveData<List<WeatherLowInformation>> = _weatherLowInfoList
-    val seekBarMaxSize: LiveData<Int> = _seekBarMaxSize
+    val seekBarTimes: LiveData<List<Int>> = _seekBarTimes
 
     fun changeDate(date: String) {
         selectedDate = date
@@ -78,27 +76,18 @@ class MainViewModel(
                     weather.dateTimeText.substringBefore(" ") == selectedDate
                 }
                 seekBarSize = selectedDayWeatherList.size - 1
-                _seekBarMaxSize.value = seekBarSize
                 setSelectedDaySeekBarValues()
+                _seekBarTimes.value = selectedDaySeekBarValues
             }
         }
     }
 
     private fun setSelectedDaySeekBarValues() {
         selectedDaySeekBarValues = getLastItemsOfSeekBarValues(seekBarSize)
-        setSeekTime(0)
     }
 
-    private fun getLastItemsOfSeekBarValues(count: Int): List<SeekBarValue> {
-        val allSeekBarValues = listOf<SeekBarValue>(
-            SeekBarValue.SEVEN,
-            SeekBarValue.SIX,
-            SeekBarValue.FIVE,
-            SeekBarValue.FOUR,
-            SeekBarValue.THREE,
-            SeekBarValue.TWO,
-            SeekBarValue.ONE
-        )
+    private fun getLastItemsOfSeekBarValues(count: Int): List<Int> {
+        val allSeekBarValues = listOf<Int>(6, 5, 4, 3, 2, 1, 0)
         return allSeekBarValues.subList(0, count + 1).reversed()
     }
 
@@ -146,25 +135,8 @@ class MainViewModel(
             selectedDayWeatherList[index].weatherTitleList[0].icon
     }
 
-    fun seekBarProgressChange(progress: Int) {
+    fun rvSeekBarChangeIndex(progress: Int) {
         weatherPresentation(progress)
-        setSeekTime(progress)
-    }
-
-    private fun setSeekTime(progress: Int) {
-        if (!this::selectedDaySeekBarValues.isInitialized)
-            return
-        var strSeekTimeShow = ""
-        when (progress) {
-            0 -> strSeekTimeShow = selectedDaySeekBarValues[0].hours
-            1 -> strSeekTimeShow = selectedDaySeekBarValues[1].hours
-            2 -> strSeekTimeShow = selectedDaySeekBarValues[2].hours
-            3 -> strSeekTimeShow = selectedDaySeekBarValues[3].hours
-            4 -> strSeekTimeShow = selectedDaySeekBarValues[4].hours
-            5 -> strSeekTimeShow = selectedDaySeekBarValues[5].hours
-            6 -> strSeekTimeShow = selectedDaySeekBarValues[6].hours
-        }
-        _seekBarTimeShow.value = strSeekTimeShow
     }
 
     fun weatherImageIconWithId(ivIcon: ImageView?, imgId: String) {
