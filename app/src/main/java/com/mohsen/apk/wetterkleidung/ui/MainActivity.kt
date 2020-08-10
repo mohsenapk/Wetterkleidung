@@ -13,6 +13,7 @@ import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.ui.adapter.SeekTimeAdapter
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
+import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.android.synthetic.main.activity_main.*
 import travel.ithaka.android.horizontalpickerlib.PickerLayoutManager
 import javax.inject.Inject
@@ -20,6 +21,8 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
+    @Inject
+    lateinit var imageHelper: ImageHelper
 
     lateinit var viewModel: MainViewModel
     private val linearLayoutManagerVertical = LinearLayoutManager(this)
@@ -72,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             rvOtherWeather.apply {
                 layoutManager = linearLayoutManagerVertical
                 it?.let {
-                    adapter = WeatherLowInfoAdapter(it)
+                    adapter = WeatherLowInfoAdapter(it , imageHelper)
                 }
             }
         })

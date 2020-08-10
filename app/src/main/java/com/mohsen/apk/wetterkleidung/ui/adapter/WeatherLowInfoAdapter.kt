@@ -9,11 +9,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
+import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import org.threeten.bp.LocalDate
 import java.time.DayOfWeek
 
 class WeatherLowInfoAdapter(
-    private val list: List<WeatherLowInformation>
+    private val list: List<WeatherLowInformation>,
+    private val imageHelper: ImageHelper
 ) : RecyclerView.Adapter<WeatherLowInfoAdapter.VHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHolder {
         val view = LayoutInflater.from(parent.context)
@@ -33,6 +35,7 @@ class WeatherLowInfoAdapter(
         fun setData(weather: WeatherLowInformation) {
             tvDate.text = weather.dayOrDate
             tvTemp.text = weather.tempStr
+            imageHelper.loadWeatherIcon(ivIcon, weather.iconId)
         }
     }
 }

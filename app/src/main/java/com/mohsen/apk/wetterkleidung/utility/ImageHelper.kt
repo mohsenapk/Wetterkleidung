@@ -20,7 +20,6 @@ class ImageHelperImpl : ImageHelper {
         Glide.with(imageView)
             .load("${BuildConfig.API_URL_ICON}$iconId@4x.png")
             .transition(DrawableTransitionOptions.withCrossFade())
-            .centerCrop()
             .into(imageView)
     }
 }
