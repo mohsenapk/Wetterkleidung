@@ -1,6 +1,7 @@
 package com.mohsen.apk.wetterkleidung.model
 
 import com.google.gson.annotations.SerializedName
+import org.threeten.bp.DayOfWeek
 
 data class WeatherTitle(
     val id: Int = 0,
@@ -27,7 +28,7 @@ data class Wind(
 )
 
 data class WeatherLowInformation(
-    val date: String = "",
+    val dayOrDate: String = "",
     val tempStr: String = "",
     val iconId: String = ""
 )

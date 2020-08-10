@@ -1,6 +1,5 @@
 package com.mohsen.apk.wetterkleidung.repository
 
-import android.widget.ImageView
 import com.mohsen.apk.wetterkleidung.db.localService.WeatherLocalService
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.network.remoteService.WeatherRemoteService
@@ -26,8 +25,6 @@ interface WeatherRepository {
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<Forecast5DaysWeather>
-
-    fun loadImageIcon(imageView: ImageView, iconId: String)
 }
 
 class WeatherRepositoryImpl(
@@ -133,7 +130,4 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override fun loadImageIcon(imageView: ImageView, iconId: String) {
-        imageHelper.loadWeatherIcon(imageView, iconId)
-    }
 }

@@ -14,13 +14,13 @@ import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.ui.adapter.SeekTimeAdapter
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import kotlinx.android.synthetic.main.activity_main.*
-import timber.log.Timber
 import travel.ithaka.android.horizontalpickerlib.PickerLayoutManager
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
+
     lateinit var viewModel: MainViewModel
     private val linearLayoutManagerVertical = LinearLayoutManager(this)
     private var rvSeekBarLastPosition = 0
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             //rvSeekBarClick
         })
         viewModel.weatherImageIconId.observe(this, Observer {
-            it?.let { viewModel.weatherImageIconWithId(ivIcon, it) }
+            it?.let { viewModel.weatherIconLoader(ivIcon, it) }
         })
         viewModel.seekBarTimes.observe(this, Observer {
             rvSeekTimes.apply {

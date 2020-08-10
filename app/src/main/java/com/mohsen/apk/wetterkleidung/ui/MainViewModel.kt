@@ -4,12 +4,16 @@ import android.widget.ImageView
 import androidx.lifecycle.*
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
+import com.mohsen.apk.wetterkleidung.utility.DateHelper
+import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
 import kotlin.math.roundToInt
 
 class MainViewModel(
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val dateHelper: DateHelper,
+    private val imageHelper: ImageHelper
 ) : ViewModel() {
     private var selectedDate = ""
     private var seekBarSize = 0
@@ -113,9 +117,13 @@ class MainViewModel(
         for (i in 1..5) {
             val daily = list[i]
             val temp = daily.temp?.day?.roundToInt().toString()
-            val date = daily.date.toString()
-
-            weatherLowInfoList.add(WeatherLowInformation(date, temp, ""))
+            val date =
+                if (dateHelper.isMorning(daily.date))
+                    "Morning"
+                else
+                    dateHelper.getDayOfWeekFromTimestamp(daily.date).toString().toLowerCase().capitalize()
+            val iconId = daily.weatherTitleList[0].icon
+            weatherLowInfoList.add(WeatherLowInformation(date, temp, iconId))
         }
         if (weatherLowInfoList.isNotEmpty())
             _weatherLowInfoList.value = weatherLowInfoList
@@ -139,10 +147,9 @@ class MainViewModel(
         weatherPresentation(progress)
     }
 
-    fun weatherImageIconWithId(ivIcon: ImageView?, imgId: String) {
+    fun weatherIconLoader(ivIcon: ImageView?, imgId: String) {
         ivIcon?.let {
-            //todo no no no - view send to repository?????what???
-            weatherRepository.loadImageIcon(ivIcon, imgId)
+            imageHelper.loadWeatherIcon(ivIcon, imgId)
         }
     }
 
