@@ -15,7 +15,8 @@ class MainViewModel(
     private val dateHelper: DateHelper,
     private val imageHelper: ImageHelper
 ) : ViewModel() {
-    private var selectedDate = ""
+
+    private var selectedDateStr = ""
     private var seekBarSize = 0
     private lateinit var selectedDaySeekBarValues: List<Int>
     private lateinit var forecast5DaysWeather: Forecast5DaysWeather
@@ -45,12 +46,13 @@ class MainViewModel(
     val weatherLowInfoList: LiveData<List<WeatherLowInformation>> = _weatherLowInfoList
     val seekBarTimes: LiveData<List<Int>> = _seekBarTimes
 
-    fun changeDate(date: String) {
-        selectedDate = date
+    fun changeDate(date: LocalDateTime) {
+        selectedDateStr = date.toString().substringBefore("T")
+        changeDailyWeather()
     }
 
     fun start() = viewModelScope.launch {
-        selectedDate = LocalDateTime.now().toString().substringBefore("T")
+        selectedDateStr = LocalDateTime.now().toString().substringBefore("T")
         forecast5Days("bremen", WeatherUnit.METRIC)
         forecast7DaysForList("bremen", WeatherUnit.METRIC)
     }
@@ -65,7 +67,7 @@ class MainViewModel(
         when (weather) {
             is RepositoryResponse.Success -> {
                 forecast5DaysWeather = weather.data
-                setSelectedDayWeatherList()
+                changeDailyWeather()
                 weatherPresentation()
             }
             is RepositoryResponse.Filure ->
@@ -73,13 +75,13 @@ class MainViewModel(
         }
     }
 
-    private fun setSelectedDayWeatherList() {
-        forecast5DaysWeather?.let {
+    private fun changeDailyWeather() {
+        forecast5DaysWeather.let {
             it.weatherList?.let { weatherList ->
                 selectedDayWeatherList = weatherList.filter { weather ->
-                    weather.dateTimeText.substringBefore(" ") == selectedDate
+                    weather.dateTimeText.substringBefore(" ") == selectedDateStr
                 }
-                seekBarSize = selectedDayWeatherList.size - 1
+                seekBarSize = selectedDayWeatherList.size
                 setSelectedDaySeekBarValues()
                 _seekBarTimes.value = selectedDaySeekBarValues
             }
@@ -91,8 +93,8 @@ class MainViewModel(
     }
 
     private fun getLastItemsOfSeekBarValues(count: Int): List<Int> {
-        val allSeekBarValues = listOf<Int>(6, 5, 4, 3, 2, 1, 0)
-        return allSeekBarValues.subList(0, count + 1).reversed()
+        val allSeekBarValues = listOf<Int>(7,6, 5, 4, 3, 2, 1, 0)
+        return allSeekBarValues.subList(0, count).reversed()
     }
 
     private suspend fun forecast7DaysForList(
@@ -117,13 +119,14 @@ class MainViewModel(
         for (i in 1..5) {
             val daily = list[i]
             val temp = daily.temp?.day?.roundToInt().toString()
-            val date =
+            val date = dateHelper.getDateFromTimestamp(daily.date)
+            val day =
                 if (dateHelper.isMorning(daily.date))
                     "Morning"
                 else
                     dateHelper.getDayOfWeekFromTimestamp(daily.date).toString().toLowerCase().capitalize()
             val iconId = daily.weatherTitleList[0].icon
-            weatherLowInfoList.add(WeatherLowInformation(date, temp, iconId))
+            weatherLowInfoList.add(WeatherLowInformation(day, temp, iconId,date))
         }
         if (weatherLowInfoList.isNotEmpty())
             _weatherLowInfoList.value = weatherLowInfoList

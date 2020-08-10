@@ -2,6 +2,8 @@ package com.mohsen.apk.wetterkleidung.model
 
 import com.google.gson.annotations.SerializedName
 import org.threeten.bp.DayOfWeek
+import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 data class WeatherTitle(
     val id: Int = 0,
@@ -30,5 +32,6 @@ data class Wind(
 data class WeatherLowInformation(
     val dayOrDate: String = "",
     val tempStr: String = "",
-    val iconId: String = ""
+    val iconId: String = "",
+    val date: LocalDateTime = LocalDateTime.now()
 )

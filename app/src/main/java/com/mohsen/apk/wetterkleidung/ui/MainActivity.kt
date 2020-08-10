@@ -2,6 +2,7 @@ package com.mohsen.apk.wetterkleidung.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -15,6 +16,7 @@ import com.mohsen.apk.wetterkleidung.ui.adapter.SeekTimeAdapter
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
 import travel.ithaka.android.horizontalpickerlib.PickerLayoutManager
 import javax.inject.Inject
 
@@ -75,7 +77,10 @@ class MainActivity : AppCompatActivity() {
             rvOtherWeather.apply {
                 layoutManager = linearLayoutManagerVertical
                 it?.let {
-                    adapter = WeatherLowInfoAdapter(it , imageHelper)
+                    adapter = WeatherLowInfoAdapter(it , imageHelper){
+                        Timber.d("weatherListClicked - $it")
+                        viewModel.changeDate(it)
+                    }
                 }
             }
         })

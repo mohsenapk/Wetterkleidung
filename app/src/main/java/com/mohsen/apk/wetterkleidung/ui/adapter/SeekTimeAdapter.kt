@@ -26,12 +26,13 @@ class SeekTimeAdapter(
         fun setImage(id: Int) {
             when (id) {
                 0 -> image.setImageResource(R.drawable.time0_3)
-                1 -> image.setImageResource(R.drawable.time6_9)
-                2 -> image.setImageResource(R.drawable.time9_12)
-                3 -> image.setImageResource(R.drawable.time12_15)
-                4 -> image.setImageResource(R.drawable.time15_18)
-                5 -> image.setImageResource(R.drawable.time18_21)
-                6 -> image.setImageResource(R.drawable.time21_24)
+                1 -> image.setImageResource(R.drawable.time3_6)
+                2 -> image.setImageResource(R.drawable.time6_9)
+                3 -> image.setImageResource(R.drawable.time9_12)
+                4 -> image.setImageResource(R.drawable.time12_15)
+                5 -> image.setImageResource(R.drawable.time15_18)
+                6 -> image.setImageResource(R.drawable.time18_21)
+                7 -> image.setImageResource(R.drawable.time21_24)
             }
         }
     }
