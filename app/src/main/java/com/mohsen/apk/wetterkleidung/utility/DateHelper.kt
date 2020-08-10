@@ -11,6 +11,7 @@ interface DateHelper {
     fun isDateExpired(oldDate: LocalDateTime): Boolean
     fun getDateFromTimestamp(timeStampNumber: Long): LocalDateTime
     fun getDayOfWeekFromTimestamp(timeStampNumber: Long): DayOfWeek
+    fun isToday(timeStampNumber: Long): Boolean
     fun isMorning(timeStampNumber: Long): Boolean
 }
 
@@ -28,6 +29,9 @@ class DateHelperImpl : DateHelper {
 
     override fun isMorning(timeStampNumber: Long): Boolean =
         (LocalDateTime.now().plusDays(1).dayOfWeek == fromTimestamp(timeStampNumber).dayOfWeek)
+
+    override fun isToday(timeStampNumber: Long): Boolean =
+        (LocalDateTime.now().dayOfWeek == fromTimestamp(timeStampNumber).dayOfWeek)
 
     private fun fromTimestamp(timeStampNumber: Long): LocalDateTime {
         return if (timeStampNumber.toString().length < 13)

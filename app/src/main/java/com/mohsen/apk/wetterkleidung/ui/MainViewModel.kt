@@ -93,7 +93,7 @@ class MainViewModel(
     }
 
     private fun getLastItemsOfSeekBarValues(count: Int): List<Int> {
-        val allSeekBarValues = listOf<Int>(7,6, 5, 4, 3, 2, 1, 0)
+        val allSeekBarValues = listOf<Int>(7, 6, 5, 4, 3, 2, 1, 0)
         return allSeekBarValues.subList(0, count).reversed()
     }
 
@@ -116,20 +116,25 @@ class MainViewModel(
         val weatherLowInfoList = mutableListOf<WeatherLowInformation>()
         if (list.size < 6)
             return
-        for (i in 1..5) {
+        for (i in 0..5) {
             val daily = list[i]
             val temp = daily.temp?.day?.roundToInt().toString()
             val date = dateHelper.getDateFromTimestamp(daily.date)
-            val day =
-                if (dateHelper.isMorning(daily.date))
-                    "Morning"
-                else
-                    dateHelper.getDayOfWeekFromTimestamp(daily.date).toString().toLowerCase().capitalize()
+            val day = getDayNameWithTimestamp(daily.date)
             val iconId = daily.weatherTitleList[0].icon
-            weatherLowInfoList.add(WeatherLowInformation(day, temp, iconId,date))
+            weatherLowInfoList.add(WeatherLowInformation(day, temp, iconId, date))
         }
         if (weatherLowInfoList.isNotEmpty())
             _weatherLowInfoList.value = weatherLowInfoList
+    }
+
+    private fun getDayNameWithTimestamp(timeStampNumber: Long): String {
+        return when {
+            dateHelper.isToday(timeStampNumber) -> "Today"
+            dateHelper.isMorning(timeStampNumber) -> "Morning"
+            else -> dateHelper.getDayOfWeekFromTimestamp(timeStampNumber)
+                .toString().toLowerCase().capitalize()
+        }
     }
 
     private fun weatherPresentation(index: Int = 0) {
