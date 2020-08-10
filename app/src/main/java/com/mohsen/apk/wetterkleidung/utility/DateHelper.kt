@@ -13,6 +13,9 @@ interface DateHelper {
     fun getDayOfWeekFromTimestamp(timeStampNumber: Long): DayOfWeek
     fun isToday(timeStampNumber: Long): Boolean
     fun isMorning(timeStampNumber: Long): Boolean
+    fun getDayOfWeekFromTimestamp(date: LocalDateTime): DayOfWeek
+    fun isToday(date: LocalDateTime): Boolean
+    fun isMorning(date: LocalDateTime): Boolean
 }
 
 class DateHelperImpl : DateHelper {
@@ -27,11 +30,20 @@ class DateHelperImpl : DateHelper {
         return date.dayOfWeek
     }
 
+    override fun getDayOfWeekFromTimestamp(date: LocalDateTime): DayOfWeek =
+        date.dayOfWeek
+
     override fun isMorning(timeStampNumber: Long): Boolean =
         (LocalDateTime.now().plusDays(1).dayOfWeek == fromTimestamp(timeStampNumber).dayOfWeek)
 
+    override fun isMorning(date: LocalDateTime): Boolean =
+        (LocalDateTime.now().plusDays(1).dayOfWeek == date.dayOfWeek)
+
     override fun isToday(timeStampNumber: Long): Boolean =
         (LocalDateTime.now().dayOfWeek == fromTimestamp(timeStampNumber).dayOfWeek)
+
+    override fun isToday(date: LocalDateTime): Boolean =
+        (LocalDateTime.now().dayOfWeek == date.dayOfWeek)
 
     private fun fromTimestamp(timeStampNumber: Long): LocalDateTime {
         return if (timeStampNumber.toString().length < 13)

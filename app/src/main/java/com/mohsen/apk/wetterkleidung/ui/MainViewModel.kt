@@ -8,6 +8,7 @@ import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
+import java.sql.Timestamp
 import kotlin.math.roundToInt
 
 class MainViewModel(
@@ -47,6 +48,7 @@ class MainViewModel(
     val seekBarTimes: LiveData<List<Int>> = _seekBarTimes
 
     fun changeDate(date: LocalDateTime) {
+        _dayName.value = getDayName(date)
         selectedDateStr = date.toString().substringBefore("T")
         changeDailyWeather()
     }
@@ -120,7 +122,7 @@ class MainViewModel(
             val daily = list[i]
             val temp = daily.temp?.day?.roundToInt().toString()
             val date = dateHelper.getDateFromTimestamp(daily.date)
-            val day = getDayNameWithTimestamp(daily.date)
+            val day = getDayName(daily.date)
             val iconId = daily.weatherTitleList[0].icon
             weatherLowInfoList.add(WeatherLowInformation(day, temp, iconId, date))
         }
@@ -128,7 +130,7 @@ class MainViewModel(
             _weatherLowInfoList.value = weatherLowInfoList
     }
 
-    private fun getDayNameWithTimestamp(timeStampNumber: Long): String {
+    private fun getDayName(timeStampNumber: Long): String {
         return when {
             dateHelper.isToday(timeStampNumber) -> "Today"
             dateHelper.isMorning(timeStampNumber) -> "Morning"
@@ -137,12 +139,22 @@ class MainViewModel(
         }
     }
 
+    private fun getDayName(date: LocalDateTime): String {
+        return when {
+            dateHelper.isToday(date) -> "Today"
+            dateHelper.isMorning(date) -> "Morning"
+            else -> dateHelper.getDayOfWeekFromTimestamp(date)
+                .toString().toLowerCase().capitalize()
+        }
+    }
+
     private fun weatherPresentation(index: Int = 0) {
+        if (dateHelper.isToday(selectedDayWeatherList[0].date))
+            _dayName.value = "Today"
         _progress.value = false
         _cityName.value = forecast5DaysWeather.city.cityName
         _date.value =
             selectedDayWeatherList[index].dateTimeText.substringBefore(" ")
-        _dayName.value = "Today"
         _temp.value =
             selectedDayWeatherList[index].temp?.temp?.roundToInt()
         _tempDesc.value =

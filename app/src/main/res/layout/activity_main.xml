@@ -32,8 +32,7 @@
                 android:textSize="23sp"
                 app:layout_constraintLeft_toLeftOf="@id/clTitle"
                 app:layout_constraintRight_toRightOf="@id/clTitle"
-                app:layout_constraintTop_toTopOf="@id/clTitle"
-                tools:text="Today" />
+                app:layout_constraintTop_toTopOf="@id/clTitle" />
 
             <TextView
                 android:id="@+id/tvCity"
@@ -83,10 +82,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:textSize="40sp"
+            android:textSize="50sp"
             app:layout_constraintBottom_toTopOf="@id/tvTempDesc"
             app:layout_constraintLeft_toLeftOf="parent"
-            tools:text="23" />
+            tools:text="23"
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/tvTempDegreeIcon"
@@ -97,11 +97,12 @@
             android:textSize="20sp"
             android:visibility="gone"
             app:layout_constraintLeft_toRightOf="@id/tvTemp"
-            app:layout_constraintTop_toTopOf="@id/tvTemp" />
+            app:layout_constraintTop_toTopOf="@id/tvTemp"
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/tvTempDesc"
-            android:layout_width="wrap_content"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:textSize="18sp"
