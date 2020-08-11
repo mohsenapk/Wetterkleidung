@@ -4,23 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MainActivity"
-    android:background="#6aa316">
+    android:background="@color/backBottom"
+    tools:context=".ui.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clTop"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:padding="8dp"
+        android:layout_height="450dp"
+        android:background="@color/backTop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/back">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -32,19 +32,7 @@
                 android:textSize="23sp"
                 app:layout_constraintLeft_toLeftOf="@id/clTitle"
                 app:layout_constraintRight_toRightOf="@id/clTitle"
-                app:layout_constraintTop_toTopOf="@id/clTitle"
-                tools:text="Today" />
-
-            <TextView
-                android:id="@+id/tvDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textSize="18sp"
-                app:layout_constraintLeft_toLeftOf="@id/clTitle"
-                app:layout_constraintRight_toRightOf="@id/clTitle"
-                app:layout_constraintTop_toBottomOf="@id/tvDayName"
-                tools:text="23/4/55" />
+                app:layout_constraintTop_toTopOf="@id/clTitle" />
 
             <TextView
                 android:id="@+id/tvCity"
@@ -53,6 +41,7 @@
                 android:textSize="23sp"
                 android:textStyle="bold"
                 app:layout_constraintLeft_toLeftOf="@id/clTitle"
+                app:layout_constraintRight_toRightOf="@id/clTitle"
                 app:layout_constraintTop_toBottomOf="@id/tvDayName"
                 tools:text="Bremen" />
 
@@ -62,27 +51,69 @@
             android:id="@+id/ivIcon"
             android:layout_width="150dp"
             android:layout_height="150dp"
+            android:layout_marginTop="40dp"
             android:scaleType="centerCrop"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="40dp"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="400dp"
-            app:layout_constraintTop_toBottomOf="@id/ivIcon"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back1"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivIcon" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="300dp"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp"
+            android:src="@drawable/character"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:src="@drawable/er"
-            />
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivIcon" />
+
+        <TextView
+            android:id="@+id/tvHu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="120dp"
+            android:text="humidity : "
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="4dp"/>
+
+        <TextView
+            android:id="@+id/tvWind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="wind+degree : "
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvHu"
+            android:layout_marginLeft="4dp"/>
+
+        <TextView
+            android:id="@+id/tvCloudes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="humidity : "
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvWind"
+            android:layout_marginLeft="4dp"/>
 
         <TextView
             android:id="@+id/tvTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="60sp"
+            android:layout_marginLeft="8dp"
+            android:textColor="@color/black"
+            android:textSize="50sp"
             app:layout_constraintBottom_toTopOf="@id/tvTempDesc"
             app:layout_constraintLeft_toLeftOf="parent"
             tools:text="23" />
@@ -93,40 +124,45 @@
             android:layout_height="50dp"
             android:gravity="top"
             android:text="o"
-            android:textSize="30sp"
+            android:textColor="@color/black"
+            android:textSize="20sp"
             android:visibility="gone"
             app:layout_constraintLeft_toRightOf="@id/tvTemp"
             app:layout_constraintTop_toTopOf="@id/tvTemp" />
 
         <TextView
             android:id="@+id/tvTempDesc"
-            android:layout_width="wrap_content"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/tvSeekTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSeekTimes"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        android:paddingLeft="183dp"
+        android:paddingRight="183dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/clTop"
-        android:layout_marginTop="16dp"
-        android:textSize="23sp"
-        android:textColor="#FFFFFF"
-        tools:text="14:00-15:00"/>
+        app:layout_constraintTop_toBottomOf="@id/clTop" />
 
-    <androidx.appcompat.widget.AppCompatSeekBar
-        android:id="@+id/seekBar"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvOtherWeather"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tvSeekTime"
-        android:max="7"/>
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rvSeekTimes" />
 
     <ProgressBar
         android:id="@+id/progress"

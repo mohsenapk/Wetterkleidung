@@ -2,6 +2,7 @@ package com.mohsen.apk.wetterkleidung.repository.di
 
 import com.mohsen.apk.wetterkleidung.db.localService.WeatherLocalServiceImpl
 import com.mohsen.apk.wetterkleidung.network.remoteService.WeatherRemoteServiceImpl
+import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepositoryImpl
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
@@ -19,7 +20,7 @@ class RepositoryModule {
         localService: WeatherLocalServiceImpl,
         dateHelper: DateHelper,
         imageHelper: ImageHelper
-    ) = WeatherRepositoryImpl(
+    ): WeatherRepository = WeatherRepositoryImpl(
         remoteService,
         localService,
         dateHelper,

@@ -1,6 +1,5 @@
 package com.mohsen.apk.wetterkleidung.repository
 
-import android.widget.ImageView
 import com.mohsen.apk.wetterkleidung.db.localService.WeatherLocalService
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.network.remoteService.WeatherRemoteService
@@ -17,17 +16,15 @@ interface WeatherRepository {
         weatherUnit: WeatherUnit
     ): RepositoryResponse<CurrentWeather>
 
-    suspend fun getForecastWeather(
+    suspend fun getForecastWeather7DaysAVG(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<ForecastWeather>
 
-    suspend fun getForecast5DaysWeather(
+    suspend fun getForecastWeather5DaysHourly(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<Forecast5DaysWeather>
-
-    fun loadImageIcon(imageView: ImageView, iconId: String)
 }
 
 class WeatherRepositoryImpl(
@@ -69,7 +66,7 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override suspend fun getForecastWeather(
+    override suspend fun getForecastWeather7DaysAVG(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<ForecastWeather> = coroutineScope {
@@ -101,7 +98,7 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override suspend fun getForecast5DaysWeather(
+    override suspend fun getForecastWeather5DaysHourly(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<Forecast5DaysWeather> = coroutineScope {
@@ -114,7 +111,7 @@ class WeatherRepositoryImpl(
             val localData =
                 async(Dispatchers.IO) { local.getForecast5DaysWeather() }.await()
             val createDate = localData?.createdDate
-            if (createDate != null && dateHelper.isDateExpired(LocalDateTime.parse(createDate)))
+            if (createDate != null && !dateHelper.isDateExpired(LocalDateTime.parse(createDate)))
                 RepositoryResponse.Success(localData)
             else
                 null
@@ -133,7 +130,4 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override fun loadImageIcon(imageView: ImageView, iconId: String) {
-        imageHelper.loadWeatherIcon(imageView, iconId)
-    }
 }
