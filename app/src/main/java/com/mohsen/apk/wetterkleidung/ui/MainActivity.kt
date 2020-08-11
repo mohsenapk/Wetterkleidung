@@ -14,6 +14,7 @@ import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
 import com.mohsen.apk.wetterkleidung.ui.adapter.SeekTimeAdapter
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
+import com.mohsen.apk.wetterkleidung.ui.dialog.FragmentDialogManager
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
@@ -22,7 +23,11 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     @Inject
+    lateinit var dialogManager: FragmentDialogManager
+
+    @Inject
     lateinit var viewModelFactory: MainViewModelFactory
+
     @Inject
     lateinit var imageHelper: ImageHelper
 
@@ -32,8 +37,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         injectDagger()
+        setContentView(R.layout.activity_main)
+        dialogManager.openCityManagerDialog()
         initViewModel()
         initUI()
         viewModel.start()

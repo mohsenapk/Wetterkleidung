@@ -1,8 +1,9 @@
 package com.mohsen.apk.wetterkleidung.ui.di
 
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
-import com.mohsen.apk.wetterkleidung.repository.WeatherRepositoryImpl
 import com.mohsen.apk.wetterkleidung.ui.MainViewModelFactory
+import com.mohsen.apk.wetterkleidung.ui.dialog.FragmentDialogManager
+import com.mohsen.apk.wetterkleidung.ui.dialog.FragmentDialogManagerImpl
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import dagger.Module
@@ -22,5 +23,10 @@ class MainModule {
         dateHelper,
         imageHelper
     )
+
+    @Provides
+    @ActivityScope
+    fun provideFragmentDialogManager(): FragmentDialogManager =
+        FragmentDialogManagerImpl()
 
 }
