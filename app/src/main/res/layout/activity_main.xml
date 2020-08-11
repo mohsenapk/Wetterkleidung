@@ -69,24 +69,54 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="300dp"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp"
             android:src="@drawable/character"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivIcon"
-            android:layout_marginBottom="16dp"
-            android:padding="8dp"/>
+            app:layout_constraintTop_toBottomOf="@id/ivIcon" />
+
+        <TextView
+            android:id="@+id/tvHu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="120dp"
+            android:text="humidity : "
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="4dp"/>
+
+        <TextView
+            android:id="@+id/tvWind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="wind+degree : "
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvHu"
+            android:layout_marginLeft="4dp"/>
+
+        <TextView
+            android:id="@+id/tvCloudes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="humidity : "
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvWind"
+            android:layout_marginLeft="4dp"/>
 
         <TextView
             android:id="@+id/tvTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
+            android:textColor="@color/black"
             android:textSize="50sp"
             app:layout_constraintBottom_toTopOf="@id/tvTempDesc"
             app:layout_constraintLeft_toLeftOf="parent"
-            tools:text="23"
-            android:textColor="@color/black"/>
+            tools:text="23" />
 
         <TextView
             android:id="@+id/tvTempDegreeIcon"
@@ -94,11 +124,11 @@
             android:layout_height="50dp"
             android:gravity="top"
             android:text="o"
+            android:textColor="@color/black"
             android:textSize="20sp"
             android:visibility="gone"
             app:layout_constraintLeft_toRightOf="@id/tvTemp"
-            app:layout_constraintTop_toTopOf="@id/tvTemp"
-            android:textColor="@color/black"/>
+            app:layout_constraintTop_toTopOf="@id/tvTemp" />
 
         <TextView
             android:id="@+id/tvTempDesc"
@@ -112,18 +142,18 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="8dp"
         android:id="@+id/rvSeekTimes"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        app:layout_constraintTop_toBottomOf="@id/clTop"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:layout_marginTop="8dp"
         android:clipToPadding="false"
         android:paddingLeft="183dp"
-        android:paddingRight="183dp"/>
+        android:paddingRight="183dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/clTop" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvOtherWeather"

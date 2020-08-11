@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Wetterkleidung</string>
     <string name="error_no_internet_connection">no internet connection!!</string>
-    <string name="morning">morning</string>
+    <string name="tomorrow">morning</string>
 </resources>

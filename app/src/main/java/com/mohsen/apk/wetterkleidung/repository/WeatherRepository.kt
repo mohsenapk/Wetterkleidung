@@ -16,12 +16,12 @@ interface WeatherRepository {
         weatherUnit: WeatherUnit
     ): RepositoryResponse<CurrentWeather>
 
-    suspend fun getForecastWeather(
+    suspend fun getForecastWeather7DaysAVG(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<ForecastWeather>
 
-    suspend fun getForecast5DaysWeather(
+    suspend fun getForecastWeather5DaysHourly(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<Forecast5DaysWeather>
@@ -66,7 +66,7 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override suspend fun getForecastWeather(
+    override suspend fun getForecastWeather7DaysAVG(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<ForecastWeather> = coroutineScope {
@@ -98,7 +98,7 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override suspend fun getForecast5DaysWeather(
+    override suspend fun getForecastWeather5DaysHourly(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<Forecast5DaysWeather> = coroutineScope {

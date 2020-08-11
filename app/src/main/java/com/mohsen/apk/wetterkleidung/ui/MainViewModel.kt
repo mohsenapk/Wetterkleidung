@@ -8,7 +8,6 @@ import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
-import java.sql.Timestamp
 import kotlin.math.roundToInt
 
 class MainViewModel(
@@ -17,20 +16,19 @@ class MainViewModel(
     private val imageHelper: ImageHelper
 ) : ViewModel() {
 
-    private var selectedDateStr = ""
-    private var seekBarSize = 0
-    private lateinit var selectedDaySeekBarValues: List<Int>
-    private lateinit var forecast5DaysWeather: Forecast5DaysWeather
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
+    private lateinit var forecast5DaysWeather: Forecast5DaysWeather
 
     private val _snackBarError = MutableLiveData<String>()
     private val _cityName = MutableLiveData<String>()
     private val _date = MutableLiveData<String>()
+    private val _wind = MutableLiveData<String>()
+    private val _clouds = MutableLiveData<String>()
+    private val _humidity = MutableLiveData<String>()
     private val _dayName = MutableLiveData<String>()
     private val _temp = MutableLiveData<Int>()
     private val _tempDesc = MutableLiveData<String>()
     private val _progress = MutableLiveData<Boolean>()
-    private val _seekBarChangeProgress = MutableLiveData<Int>()
     private val _weatherImageIconId = MutableLiveData<String>()
     private val _weatherLowInfoList = MutableLiveData<List<WeatherLowInformation>>()
     private val _seekBarTimes = MutableLiveData<List<Int>>()
@@ -38,73 +36,65 @@ class MainViewModel(
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
     val date: LiveData<String> = _date
+    val humidity: LiveData<String> = _humidity
+    val clouds: LiveData<String> = _clouds
+    val wind: LiveData<String> = _wind
     val dayName: LiveData<String> = _dayName
     val temp: LiveData<Int> = _temp
     val tempDesc: LiveData<String> = _tempDesc
     val progress: LiveData<Boolean> = _progress
-    val seekBarChangeProgress: LiveData<Int> = _seekBarChangeProgress
     val weatherImageIconId: LiveData<String> = _weatherImageIconId
     val weatherLowInfoList: LiveData<List<WeatherLowInformation>> = _weatherLowInfoList
     val seekBarTimes: LiveData<List<Int>> = _seekBarTimes
 
-    fun changeDate(date: LocalDateTime) {
-        _dayName.value = getDayName(date)
-        selectedDateStr = date.toString().substringBefore("T")
-        changeDailyWeather()
-    }
-
     fun start() = viewModelScope.launch {
-        selectedDateStr = LocalDateTime.now().toString().substringBefore("T")
-        forecast5Days("bremen", WeatherUnit.METRIC)
-        forecast7DaysForList("bremen", WeatherUnit.METRIC)
+        forecastWeather5DaysHourly("bremen", WeatherUnit.METRIC)
+        dateChanged(LocalDateTime.now())
+        forecastWeather5DaysAVG("bremen", WeatherUnit.METRIC)
     }
 
-    private suspend fun forecast5Days(
+    private suspend fun forecastWeather5DaysHourly(
         city: String,
         weatherUnit: WeatherUnit
     ) {
         _progress.value = true
         val weather = weatherRepository
-            .getForecast5DaysWeather(city, weatherUnit)
+            .getForecastWeather5DaysHourly(city, weatherUnit)
         when (weather) {
             is RepositoryResponse.Success -> {
                 forecast5DaysWeather = weather.data
-                changeDailyWeather()
-                weatherPresentation()
             }
             is RepositoryResponse.Filure ->
                 _snackBarError.value = weather.exception.message
         }
     }
 
-    private fun changeDailyWeather() {
-        forecast5DaysWeather.let {
-            it.weatherList?.let { weatherList ->
-                selectedDayWeatherList = weatherList.filter { weather ->
-                    weather.dateTimeText.substringBefore(" ") == selectedDateStr
-                }
-                seekBarSize = selectedDayWeatherList.size
-                setSelectedDaySeekBarValues()
-                _seekBarTimes.value = selectedDaySeekBarValues
+    fun dateChanged(date: LocalDateTime) {
+        _dayName.value = getDayName(date)
+        changeCurrentWeatherList(date)
+    }
+
+    private fun changeCurrentWeatherList(date: LocalDateTime) {
+        forecast5DaysWeather.weatherList?.let { weatherList ->
+            selectedDayWeatherList = weatherList.filter { weather ->
+                weather.dateTimeText.substringBefore(" ") ==
+                        date.toString().substringBefore("T")
             }
+            weatherPresentation(0)
         }
     }
 
-    private fun setSelectedDaySeekBarValues() {
-        selectedDaySeekBarValues = getLastItemsOfSeekBarValues(seekBarSize)
-    }
-
-    private fun getLastItemsOfSeekBarValues(count: Int): List<Int> {
+    private fun seekBarSetup(maxSize: Int) {
         val allSeekBarValues = listOf<Int>(7, 6, 5, 4, 3, 2, 1, 0)
-        return allSeekBarValues.subList(0, count).reversed()
+        _seekBarTimes.value = allSeekBarValues.subList(0, maxSize).reversed()
     }
 
-    private suspend fun forecast7DaysForList(
+    private suspend fun forecastWeather5DaysAVG(
         city: String,
         weatherUnit: WeatherUnit
     ) {
         val forecastWeather =
-            weatherRepository.getForecastWeather(city, weatherUnit)
+            weatherRepository.getForecastWeather7DaysAVG(city, weatherUnit)
         when (forecastWeather) {
             is RepositoryResponse.Success -> {
                 if (forecastWeather.data.weatherList != null)
@@ -149,22 +139,24 @@ class MainViewModel(
     }
 
     private fun weatherPresentation(index: Int = 0) {
-        if (dateHelper.isToday(selectedDayWeatherList[0].date))
-            _dayName.value = "Today"
+        seekBarSetup(selectedDayWeatherList.size)
+        val currentWeather = selectedDayWeatherList[index]
         _progress.value = false
         _cityName.value = forecast5DaysWeather.city.cityName
-        _date.value =
-            selectedDayWeatherList[index].dateTimeText.substringBefore(" ")
-        _temp.value =
-            selectedDayWeatherList[index].temp?.temp?.roundToInt()
-        _tempDesc.value =
-            selectedDayWeatherList[index].weatherTitleList[0].description
-        _weatherImageIconId.value =
-            selectedDayWeatherList[index].weatherTitleList[0].icon
+        _date.value = currentWeather.dateTimeText.substringBefore(" ")
+        _temp.value = currentWeather.temp?.temp?.roundToInt()
+        _tempDesc.value = currentWeather.weatherTitleList[0].description
+        _weatherImageIconId.value = currentWeather.weatherTitleList[0].icon
+        _humidity.value = currentWeather.temp?.humidity.toString()
+        _clouds.value = currentWeather.clouds?.cloudCount.toString()
+        _wind.value = "${currentWeather.wind?.speed} - ${currentWeather.wind?.degree}"
     }
 
     fun rvSeekBarChangeIndex(progress: Int) {
-        weatherPresentation(progress)
+        if (progress < 0)
+            weatherPresentation(0)
+        else
+            weatherPresentation(progress)
     }
 
     fun weatherIconLoader(ivIcon: ImageView?, imgId: String) {

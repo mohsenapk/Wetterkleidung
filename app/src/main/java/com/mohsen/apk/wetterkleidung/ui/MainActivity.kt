@@ -2,7 +2,6 @@ package com.mohsen.apk.wetterkleidung.ui
 
 import android.os.Bundle
 import android.view.View
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -23,6 +22,7 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
+
     @Inject
     lateinit var imageHelper: ImageHelper
 
@@ -58,9 +58,6 @@ class MainActivity : AppCompatActivity() {
         viewModel.progress.observe(this, Observer {
             progress.visibility = if (it) View.VISIBLE else View.INVISIBLE
         })
-        viewModel.seekBarChangeProgress.observe(this, Observer {
-            //rvSeekBarClick
-        })
         viewModel.weatherImageIconId.observe(this, Observer {
             it?.let { viewModel.weatherIconLoader(ivIcon, it) }
         })
@@ -77,12 +74,21 @@ class MainActivity : AppCompatActivity() {
             rvOtherWeather.apply {
                 layoutManager = linearLayoutManagerVertical
                 it?.let {
-                    adapter = WeatherLowInfoAdapter(it , imageHelper){
+                    adapter = WeatherLowInfoAdapter(it, imageHelper) {
                         Timber.d("weatherListClicked - $it")
-                        viewModel.changeDate(it)
+                        viewModel.dateChanged(it)
                     }
                 }
             }
+        })
+        viewModel.humidity.observe(this, Observer {
+            tvHu.text = "humidity: $it"
+        })
+        viewModel.wind.observe(this, Observer {
+            tvWind.text = "wind + degree : $it"
+        })
+        viewModel.clouds.observe(this, Observer {
+            tvCloudes.text = "clouds : $it"
         })
     }
 
@@ -97,9 +103,10 @@ class MainActivity : AppCompatActivity() {
         }
         pickerLayoutManager.setOnScrollStopListener {
             val position = pickerLayoutManager.findLastVisibleItemPosition()
-            if (position >= 0 && position != rvSeekBarLastPosition)
+            if (position >= 0 && position != rvSeekBarLastPosition) {
                 rvSeekBarLastPosition = position
-            viewModel.rvSeekBarChangeIndex(rvSeekBarLastPosition)
+                viewModel.rvSeekBarChangeIndex(position)
+            }
         }
         return pickerLayoutManager
     }
