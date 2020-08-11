@@ -49,8 +49,8 @@ class MainViewModel(
 
     fun start() = viewModelScope.launch {
         forecastWeather5DaysHourly("bremen", WeatherUnit.METRIC)
-        dateChanged(LocalDateTime.now())
         forecastWeather5DaysAVG("bremen", WeatherUnit.METRIC)
+        dateChanged(LocalDateTime.now())
     }
 
     private suspend fun forecastWeather5DaysHourly(
@@ -105,9 +105,15 @@ class MainViewModel(
     }
 
     private fun getForecastWeatherForList(list: List<ForecastWeatherDetail>) {
-        val weatherLowInfoList = mutableListOf<WeatherLowInformation>()
-        if (list.size < 6)
+        if (list.size < 5)
             return
+        val list = getWeatherLowInfoList(list)
+        if (list.isNotEmpty())
+            _weatherLowInfoList.value = list
+    }
+
+    private fun getWeatherLowInfoList(list: List<ForecastWeatherDetail>): List<WeatherLowInformation> {
+        val weatherLowInfoList = mutableListOf<WeatherLowInformation>()
         for (i in 0..5) {
             val daily = list[i]
             val temp = daily.temp?.day?.roundToInt().toString()
@@ -116,8 +122,7 @@ class MainViewModel(
             val iconId = daily.weatherTitleList[0].icon
             weatherLowInfoList.add(WeatherLowInformation(day, temp, iconId, date))
         }
-        if (weatherLowInfoList.isNotEmpty())
-            _weatherLowInfoList.value = weatherLowInfoList
+        return weatherLowInfoList
     }
 
     private fun getDayName(timeStampNumber: Long): String {

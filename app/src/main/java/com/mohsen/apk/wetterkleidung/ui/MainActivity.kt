@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
+import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
 import com.mohsen.apk.wetterkleidung.ui.adapter.SeekTimeAdapter
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
@@ -22,7 +23,6 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
-
     @Inject
     lateinit var imageHelper: ImageHelper
 
@@ -62,24 +62,10 @@ class MainActivity : AppCompatActivity() {
             it?.let { viewModel.weatherIconLoader(ivIcon, it) }
         })
         viewModel.seekBarTimes.observe(this, Observer {
-            rvSeekTimes.apply {
-                layoutManager = getPickerLayoutManager()
-                it?.let {
-                    adapter = SeekTimeAdapter(it)
-                }
-                rvSeekTimes.smoothScrollToPosition(0)
-            }
+            initRvSeekTime(it)
         })
         viewModel.weatherLowInfoList.observe(this, Observer {
-            rvOtherWeather.apply {
-                layoutManager = linearLayoutManagerVertical
-                it?.let {
-                    adapter = WeatherLowInfoAdapter(it, imageHelper) {
-                        Timber.d("weatherListClicked - $it")
-                        viewModel.dateChanged(it)
-                    }
-                }
-            }
+            initRvOtherWeather(it)
         })
         viewModel.humidity.observe(this, Observer {
             tvHu.text = "humidity: $it"
@@ -90,6 +76,27 @@ class MainActivity : AppCompatActivity() {
         viewModel.clouds.observe(this, Observer {
             tvCloudes.text = "clouds : $it"
         })
+    }
+
+    private fun initRvSeekTime(list: List<Int>) {
+        rvSeekTimes.apply {
+            layoutManager = getPickerLayoutManager()
+            list?.let {
+                adapter = SeekTimeAdapter(it)
+            }
+            rvSeekTimes.smoothScrollToPosition(0)
+        }
+    }
+
+    private fun initRvOtherWeather(list: List<WeatherLowInformation>) {
+        rvOtherWeather.apply {
+            layoutManager = linearLayoutManagerVertical
+            list?.let {
+                adapter = WeatherLowInfoAdapter(list, imageHelper) {
+                    viewModel.dateChanged(it)
+                }
+            }
+        }
     }
 
     private fun getPickerLayoutManager(): RecyclerView.LayoutManager {
