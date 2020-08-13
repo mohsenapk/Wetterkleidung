@@ -4,38 +4,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_backtop_backbottom">
+    android:background="@drawable/gradient_backtop_backbottom"
+    android:padding="8dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clAddCity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <EditText
+        android:id="@+id/etCity"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp">
+        android:hint="@string/insert_city"/>
 
-        <TextView
-            android:id="@+id/tvTextAddCity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toLeftOf="@id/clAddCity"
-            app:layout_constraintRight_toRightOf="@id/clAddCity"
-            app:layout_constraintBottom_toBottomOf="@id/clAddCity"
-            android:text="@string/add_city"
-            android:textSize="14sp"
-            android:textColor="@color/white"/>
+    <ImageView
+        android:id="@+id/imgAdd"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@android:drawable/ic_input_add"
+        app:layout_constraintRight_toRightOf="parent"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toLeftOf="@id/clAddCity"
-            app:layout_constraintRight_toRightOf="@id/clAddCity"
-            app:layout_constraintBottom_toTopOf="@id/tvTextAddCity"
-            android:text="+"
-            android:textSize="23sp"
-            android:textColor="@color/white"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/etCity"
+        android:layout_marginTop="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

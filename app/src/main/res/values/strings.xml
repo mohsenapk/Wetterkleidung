@@ -3,4 +3,5 @@
     <string name="error_no_internet_connection">no internet connection!!</string>
     <string name="tomorrow">morning</string>
     <string name="add_city">Add City</string>
+    <string name="insert_city">Insert City Name</string>
 </resources>
