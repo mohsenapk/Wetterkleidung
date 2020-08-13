@@ -1,9 +1,8 @@
-package com.mohsen.apk.wetterkleidung.ui.di
+package com.mohsen.apk.wetterkleidung.ui.main.di
 
 import com.mohsen.apk.wetterkleidung.base.di.ApplicationComponent
-import com.mohsen.apk.wetterkleidung.ui.MainActivity
-import com.mohsen.apk.wetterkleidung.ui.MainViewModel
-import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
+import com.mohsen.apk.wetterkleidung.ui.di.ActivityScope
+import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
 import dagger.Component
 
 @ActivityScope

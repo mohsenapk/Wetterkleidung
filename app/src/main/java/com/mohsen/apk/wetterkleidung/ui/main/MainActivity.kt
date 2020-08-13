@@ -1,5 +1,6 @@
-package com.mohsen.apk.wetterkleidung.ui
+package com.mohsen.apk.wetterkleidung.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -14,17 +15,13 @@ import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
 import com.mohsen.apk.wetterkleidung.ui.adapter.SeekTimeAdapter
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
-import com.mohsen.apk.wetterkleidung.ui.dialog.FragmentDialogManager
+import com.mohsen.apk.wetterkleidung.ui.city.CityActivity
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.android.synthetic.main.activity_main.*
-import timber.log.Timber
 import travel.ithaka.android.horizontalpickerlib.PickerLayoutManager
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
-    @Inject
-    lateinit var dialogManager: FragmentDialogManager
-
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
 
@@ -39,15 +36,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         injectDagger()
         setContentView(R.layout.activity_main)
-        dialogManager.openCityManagerDialog()
         initViewModel()
         initUI()
         viewModel.start()
         listenToViewModel()
+        tvCity.callOnClick()
     }
 
     private fun initUI() {
         LinearSnapHelper().attachToRecyclerView(rvSeekTimes)
+        tvCity.setOnClickListener { gotoCityActivity() }
     }
 
     private fun listenToViewModel() {
@@ -130,6 +128,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
+    }
+
+    private fun gotoCityActivity() {
+        startActivity(Intent(this , CityActivity::class.java))
     }
 
 }

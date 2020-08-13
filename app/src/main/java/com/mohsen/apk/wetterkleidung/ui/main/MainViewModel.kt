@@ -1,4 +1,4 @@
-package com.mohsen.apk.wetterkleidung.ui
+package com.mohsen.apk.wetterkleidung.ui.main
 
 import android.widget.ImageView
 import androidx.lifecycle.*

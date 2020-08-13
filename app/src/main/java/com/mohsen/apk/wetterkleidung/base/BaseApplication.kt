@@ -8,9 +8,13 @@ import com.mohsen.apk.wetterkleidung.base.di.DaggerApplicationComponent
 import com.mohsen.apk.wetterkleidung.db.di.DBModule
 import com.mohsen.apk.wetterkleidung.network.di.NetworkModule
 import com.mohsen.apk.wetterkleidung.repository.di.RepositoryModule
-import com.mohsen.apk.wetterkleidung.ui.di.DaggerMainComponent
-import com.mohsen.apk.wetterkleidung.ui.di.MainComponent
-import com.mohsen.apk.wetterkleidung.ui.di.MainModule
+import com.mohsen.apk.wetterkleidung.ui.city.di.CityComponent
+import com.mohsen.apk.wetterkleidung.ui.city.di.CityModule
+import com.mohsen.apk.wetterkleidung.ui.city.di.DaggerCityComponent
+import com.mohsen.apk.wetterkleidung.ui.dialog.di.DialogShowingModule
+import com.mohsen.apk.wetterkleidung.ui.main.di.DaggerMainComponent
+import com.mohsen.apk.wetterkleidung.ui.main.di.MainComponent
+import com.mohsen.apk.wetterkleidung.ui.main.di.MainModule
 import com.mohsen.apk.wetterkleidung.utility.di.UtilityModule
 import timber.log.Timber
 
@@ -18,6 +22,7 @@ class BaseApplication : Application() {
 
     lateinit var applicationComponent: ApplicationComponent
     lateinit var mainComponent: MainComponent
+    lateinit var cityComponent: CityComponent
 
     override fun onCreate() {
         super.onCreate()
@@ -40,9 +45,17 @@ class BaseApplication : Application() {
             .utilityModule(UtilityModule())
             .build()
 
-        mainComponent = DaggerMainComponent.builder()
-            .mainModule(MainModule())
-            .applicationComponent(applicationComponent)
-            .build()
+        mainComponent =
+            DaggerMainComponent.builder()
+                .mainModule(MainModule())
+                .applicationComponent(applicationComponent)
+                .build()
+
+        cityComponent =
+            DaggerCityComponent.builder()
+                .cityModule(CityModule())
+                .dialogShowingModule(DialogShowingModule())
+                .applicationComponent(applicationComponent)
+                .build()
     }
 }

@@ -1,4 +1,4 @@
-package com.mohsen.apk.wetterkleidung.ui
+package com.mohsen.apk.wetterkleidung.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
