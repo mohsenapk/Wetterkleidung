@@ -8,7 +8,7 @@ import org.threeten.bp.LocalDateTime
 
 interface WeatherLocalService {
     suspend fun setCurrentWeather(currentWeather: CurrentWeather)
-    suspend fun getCurrentWeather(): CurrentWeather
+    suspend fun getCurrentWeather(cityName: String): CurrentWeather
     suspend fun setForecastWeather(forecastWeather: ForecastWeather)
     suspend fun getForecastWeather(): ForecastWeather
     suspend fun setForecast5DaysWeather(forecast5DaysWeather: Forecast5DaysWeather)
@@ -21,8 +21,8 @@ class WeatherLocalServiceImpl(private val db: WeatherDB) : WeatherLocalService {
         db.currentWeatherDao().set(currentWeather)
     }
 
-    override suspend fun getCurrentWeather(): CurrentWeather =
-        db.currentWeatherDao().get()
+    override suspend fun getCurrentWeather(cityName: String): CurrentWeather =
+        db.currentWeatherDao().get(cityName)
 
     override suspend fun setForecastWeather(forecastWeather: ForecastWeather) {
         forecastWeather.createdDate = LocalDateTime.now().toString()

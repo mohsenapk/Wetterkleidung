@@ -25,6 +25,7 @@ interface WeatherRemoteService {
 }
 
 class WeatherRemoteServiceImpl(private val retrofit: Retrofit) : WeatherRemoteService {
+
     override suspend fun getCurrentWeather(
         city: String,
         weatherUnit: WeatherUnit

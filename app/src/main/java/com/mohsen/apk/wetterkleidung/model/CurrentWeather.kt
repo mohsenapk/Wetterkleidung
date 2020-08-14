@@ -30,7 +30,7 @@ data class CurrentWeather(
     val clouds: Clouds? = null,
     var createdDate: String? = null
 ) {
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     var pkid = 0
 }
 

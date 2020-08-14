@@ -8,3 +8,8 @@ class NoInternetConnectionException() : IOException(){
     override val message: String?
         get() = "no internet connection problem !!"
 }
+
+class CityNotFoundException(): IOException(){
+    override val message: String?
+        get() = "city not found"
+}

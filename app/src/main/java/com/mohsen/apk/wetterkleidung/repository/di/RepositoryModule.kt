@@ -18,13 +18,10 @@ class RepositoryModule {
     fun provideWeatherRepository(
         remoteService: WeatherRemoteServiceImpl,
         localService: WeatherLocalServiceImpl,
-        dateHelper: DateHelper,
-        imageHelper: ImageHelper
+        dateHelper: DateHelper
     ): WeatherRepository = WeatherRepositoryImpl(
         remoteService,
         localService,
-        dateHelper,
-        imageHelper
+        dateHelper
     )
-
 }

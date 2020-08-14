@@ -143,6 +143,7 @@ class MainViewModel(
         }
     }
 
+    //bug IndexOutOfBoundsException: Index: 7, Size: 2 todo
     private fun weatherPresentation(index: Int = 0) {
         seekBarSetup(selectedDayWeatherList.size)
         val currentWeather = selectedDayWeatherList[index]

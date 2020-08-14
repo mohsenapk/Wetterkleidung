@@ -30,22 +30,21 @@ interface WeatherRepository {
 class WeatherRepositoryImpl(
     private val remote: WeatherRemoteService,
     private val local: WeatherLocalService,
-    private val dateHelper: DateHelper,
-    private val imageHelper: ImageHelper
+    private val dateHelper: DateHelper
 ) : WeatherRepository {
 
     override suspend fun getCurrentWeather(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<CurrentWeather> = coroutineScope {
-        val data = getCurrentWeatherLocal()
+        val data = getCurrentWeatherLocal(city)
         data ?: getCurrentWeatherRemote(city, weatherUnit)
     }
 
-    private suspend fun getCurrentWeatherLocal(): RepositoryResponse<CurrentWeather>? =
+    private suspend fun getCurrentWeatherLocal(city: String): RepositoryResponse<CurrentWeather>? =
         coroutineScope {
             val localData: CurrentWeather? =
-                async(Dispatchers.IO) { local.getCurrentWeather() }.await()
+                async(Dispatchers.IO) { local.getCurrentWeather(city) }.await()
             val createdDate = localData?.createdDate
             if (createdDate != null && !dateHelper.isDateExpired(LocalDateTime.parse(createdDate)))
                 RepositoryResponse.Success(localData)
