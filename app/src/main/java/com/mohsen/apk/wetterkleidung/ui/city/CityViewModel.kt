@@ -16,43 +16,52 @@ class CityViewModel(
     private val prefs: SharedPreferenceManager,
     private val repository: WeatherRepository
 ) : ViewModel() {
-
+    private val cities = mutableListOf<City>()
     private val _showAllCities = MutableLiveData<List<City>>()
     val showAllCities: LiveData<List<City>> = _showAllCities
 
-    fun start(){
+    fun start() {
         getAllCities()
     }
 
-    fun addCityClicked(cityName: String) {
-        if(cityName.isNullOrEmpty())
-            return
-        prefs.putCity(cityName)
-        getAllCities()
+    fun addCityClicked(cityName: String) = viewModelScope.launch {
+        if (cityName.isNullOrEmpty())
+            return@launch
+        val city = getCity(cityName)
+        if(city != null) {
+            prefs.putCity(cityName)
+            cities.add(city)
+            sendCitiesToView()
+        }
+    }
+
+    private fun sendCitiesToView(){
+        _showAllCities.value = cities
     }
 
     private fun getAllCities() = viewModelScope.launch {
-        val list = mutableListOf<City>()
         val cityNames = prefs.getCities()
         cityNames.forEach { cityName ->
-            var city = City()
-            val weather = getCurrentWeather(cityName, WeatherUnit.METRIC)
-            val cityFromCurrentWeather = weather?.let { createCityWithCurrentWeather(it) }
-            if (cityFromCurrentWeather != null) city = cityFromCurrentWeather
-            city.name = cityName
-            list.add(city)
+            val city = getCity(cityName)
+            city?.let { cities.add(city) }
         }
-        _showAllCities.value = list
+        sendCitiesToView()
     }
 
-    private fun createCityWithCurrentWeather(weather: CurrentWeather): City {
-        val temp = weather.currentWeatherTemp?.temp?.toInt()
-        val icon = weather.weatherTitle?.get(0)?.icon
-        val city = City()
-        if (temp != null) city.temp = temp.toString()
-        if (icon != null) city.tempIconId = icon
-        return city
+    private suspend fun getCity(cityName: String): City? {
+        val weather = getCurrentWeather(cityName, WeatherUnit.METRIC)
+        val weatherTemp = weather?.currentWeatherTemp?.temp?.toInt().toString()
+        val weatherIcon = weather?.weatherTitle?.get(0)?.icon
+        weather?.let {
+            return City().apply {
+                name = cityName
+                if (weatherTemp != null) temp = weatherTemp
+                if (weatherIcon != null) tempIconId = weatherIcon
+            }
+        }
+        return null
     }
+
 
     private suspend fun getCurrentWeather(city: String, unit: WeatherUnit): CurrentWeather? {
         val response = repository.getCurrentWeather(city, WeatherUnit.METRIC)
