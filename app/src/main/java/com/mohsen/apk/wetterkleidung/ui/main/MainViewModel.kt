@@ -17,7 +17,7 @@ class MainViewModel(
 ) : ViewModel() {
 
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
-    private lateinit var forecast5DaysWeather: Forecast5DaysWeather
+    private var forecast5DaysWeather: Forecast5DaysWeather? = null
 
     private val _snackBarError = MutableLiveData<String>()
     private val _cityName = MutableLiveData<String>()
@@ -64,7 +64,7 @@ class MainViewModel(
             is RepositoryResponse.Success -> {
                 forecast5DaysWeather = weather.data
             }
-            is RepositoryResponse.Filure ->
+            is RepositoryResponse.Failure ->
                 _snackBarError.value = weather.exception.message
         }
     }
@@ -75,7 +75,9 @@ class MainViewModel(
     }
 
     private fun changeCurrentWeatherList(date: LocalDateTime) {
-        forecast5DaysWeather.weatherList?.let { weatherList ->
+        if (forecast5DaysWeather == null)
+            return
+        forecast5DaysWeather?.weatherList?.let { weatherList ->
             selectedDayWeatherList = weatherList.filter { weather ->
                 weather.dateTimeText.substringBefore(" ") ==
                         date.toString().substringBefore("T")
@@ -100,7 +102,7 @@ class MainViewModel(
                 if (forecastWeather.data.weatherList != null)
                     getForecastWeatherForList(forecastWeather.data.weatherList)
             }
-            is RepositoryResponse.Filure -> null
+            is RepositoryResponse.Failure -> null
         }
     }
 
@@ -148,7 +150,7 @@ class MainViewModel(
         seekBarSetup(selectedDayWeatherList.size)
         val currentWeather = selectedDayWeatherList[index]
         _progress.value = false
-        _cityName.value = forecast5DaysWeather.city.cityName
+        _cityName.value = forecast5DaysWeather?.city?.cityName
         _date.value = currentWeather.dateTimeText.substringBefore(" ")
         _temp.value = currentWeather.temp?.temp?.roundToInt()
         _tempDesc.value = currentWeather.weatherTitleList[0].description

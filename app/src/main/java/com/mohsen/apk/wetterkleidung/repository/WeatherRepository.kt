@@ -4,7 +4,6 @@ import com.mohsen.apk.wetterkleidung.db.localService.WeatherLocalService
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.network.remoteService.WeatherRemoteService
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
-import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.coroutines.*
 import okio.IOException
 import org.threeten.bp.LocalDateTime
@@ -56,13 +55,10 @@ class WeatherRepositoryImpl(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<CurrentWeather> = coroutineScope {
-        try {
-            val remoteData = remote.getCurrentWeather(city, weatherUnit)
-            launch(Dispatchers.IO) { local.setCurrentWeather(remoteData) }.join()
-            RepositoryResponse.Success(remoteData)
-        } catch (e: IOException) {
-            RepositoryResponse.Filure(e)
-        }
+        val remoteData = remote.getCurrentWeather(city, weatherUnit)
+        if (remoteData is RepositoryResponse.Success)
+            launch(Dispatchers.IO) { local.setCurrentWeather(remoteData.data) }
+        remoteData
     }
 
     override suspend fun getForecastWeather7DaysAVG(
@@ -88,13 +84,10 @@ class WeatherRepositoryImpl(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<ForecastWeather> = coroutineScope {
-        try {
-            val remoteData = remote.getForecastWeather(city, weatherUnit)
-            launch(Dispatchers.IO) { local.setForecastWeather(remoteData) }
-            RepositoryResponse.Success(remoteData)
-        } catch (e: Exception) {
-            RepositoryResponse.Filure(e)
-        }
+        val remoteData = remote.getForecastWeather(city, weatherUnit)
+        if (remoteData is RepositoryResponse.Success)
+            launch(Dispatchers.IO) { local.setForecastWeather(remoteData.data) }
+        remoteData
     }
 
     override suspend fun getForecastWeather5DaysHourly(
@@ -120,13 +113,10 @@ class WeatherRepositoryImpl(
         city: String,
         weatherUnit: WeatherUnit
     ): RepositoryResponse<Forecast5DaysWeather> = coroutineScope {
-        try {
-            val remoteData = remote.getForecast5DaysWeather(city, weatherUnit)
-            launch(Dispatchers.IO) { local.setForecast5DaysWeather(remoteData) }
-            RepositoryResponse.Success(remoteData)
-        } catch (e: IOException) {
-            RepositoryResponse.Filure(e)
-        }
+        val remoteData = remote.getForecast5DaysWeather(city, weatherUnit)
+        if (remoteData is RepositoryResponse.Success)
+            launch(Dispatchers.IO) { local.setForecast5DaysWeather(remoteData.data) }
+        remoteData
     }
 
 }

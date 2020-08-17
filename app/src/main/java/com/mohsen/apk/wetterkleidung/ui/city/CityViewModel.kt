@@ -17,8 +17,12 @@ class CityViewModel(
     private val repository: WeatherRepository
 ) : ViewModel() {
     private val cities = mutableListOf<City>()
+
     private val _showAllCities = MutableLiveData<List<City>>()
+    private val _showSnackBarError = MutableLiveData<String>()
+
     val showAllCities: LiveData<List<City>> = _showAllCities
+    val showSnackBarError: LiveData<String> = _showSnackBarError
 
     fun start() {
         getAllCities()
@@ -28,14 +32,14 @@ class CityViewModel(
         if (cityName.isNullOrEmpty())
             return@launch
         val city = getCity(cityName)
-        if(city != null) {
+        if (city != null) {
             prefs.putCity(cityName)
             cities.add(city)
             sendCitiesToView()
         }
     }
 
-    private fun sendCitiesToView(){
+    private fun sendCitiesToView() {
         _showAllCities.value = cities
     }
 
@@ -67,7 +71,10 @@ class CityViewModel(
         val response = repository.getCurrentWeather(city, WeatherUnit.METRIC)
         return when (response) {
             is RepositoryResponse.Success -> response.data
-            is RepositoryResponse.Filure -> null
+            is RepositoryResponse.Failure -> {
+                _showSnackBarError.value = response.exception.message
+                null
+            }
         }
     }
 }

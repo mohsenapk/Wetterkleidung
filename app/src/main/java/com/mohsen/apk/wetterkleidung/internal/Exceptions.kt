@@ -4,6 +4,11 @@ import android.content.Context
 import com.mohsen.apk.wetterkleidung.R
 import java.io.IOException
 
+class GeneralApiException(): IOException(){
+    override val message: String?
+        get() = "Server Not Respond"
+}
+
 class NoInternetConnectionException() : IOException(){
     override val message: String?
         get() = "no internet connection problem !!"

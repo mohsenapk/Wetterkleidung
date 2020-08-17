@@ -38,9 +38,8 @@ class CityActivity : AppCompatActivity() {
     }
 
     private fun listenToViewModel() {
-        viewModel.showAllCities.observe(this, Observer {
-            initRvCities(it)
-        })
+        viewModel.showAllCities.observe(this, Observer { initRvCities(it) })
+        viewModel.showSnackBarError.observe(this , Observer { showSnackBarError(it) })
     }
 
     private fun initRvCities(list: List<City>) {
@@ -60,5 +59,9 @@ class CityActivity : AppCompatActivity() {
 
     private fun initDagger() {
         (application as BaseApplication).cityComponent.inject(this)
+    }
+
+    private fun showSnackBarError(message: String){
+        Toast.makeText(this , message , Toast.LENGTH_SHORT).show()
     }
 }
