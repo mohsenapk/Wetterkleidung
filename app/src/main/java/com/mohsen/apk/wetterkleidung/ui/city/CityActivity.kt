@@ -45,7 +45,9 @@ class CityActivity : AppCompatActivity() {
     private fun initRvCities(list: List<City>) {
         rvCities.apply {
             layoutManager = linearLayoutManager
-            adapter = CityAdapter(list, imageHelper)
+            adapter = CityAdapter(list, imageHelper){
+                viewModel.rvCityClicked(it)
+            }
         }
     }
 

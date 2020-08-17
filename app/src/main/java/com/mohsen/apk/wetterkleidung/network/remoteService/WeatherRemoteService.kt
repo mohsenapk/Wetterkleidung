@@ -47,16 +47,6 @@ class WeatherRemoteServiceImpl(private val retrofit: Retrofit) : WeatherRemoteSe
                 .getForecastWeather(city, weatherUnit.name)
         }
 
-    private suspend fun <T> callAPI(
-        retrofitService: suspend () -> Response<T>
-    ): RepositoryResponse<T> {
-        return try {
-            createRepositoryResponse(retrofitService.invoke())
-        } catch (e: Exception) {
-            RepositoryResponse.Failure(e)
-        }
-    }
-
     override suspend fun getForecast5DaysWeather(
         city: String,
         weatherUnit: WeatherUnit
@@ -66,6 +56,15 @@ class WeatherRemoteServiceImpl(private val retrofit: Retrofit) : WeatherRemoteSe
                 .getForecast5DaysWeather(city, weatherUnit.name)
         }
 
+    private suspend fun <T> callAPI(
+        retrofitService: suspend () -> Response<T>
+    ): RepositoryResponse<T> {
+        return try {
+            createRepositoryResponse(retrofitService.invoke())
+        } catch (e: Exception) {
+            RepositoryResponse.Failure(e)
+        }
+    }
 
     private fun <T> createRepositoryResponse(response: Response<T>): RepositoryResponse<T> {
         return if (response.isSuccessful)

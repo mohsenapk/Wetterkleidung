@@ -11,6 +11,7 @@ import com.mohsen.apk.wetterkleidung.model.RepositoryResponse
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 class CityViewModel(
     private val prefs: SharedPreferenceManager,
@@ -29,14 +30,33 @@ class CityViewModel(
     }
 
     fun addCityClicked(cityName: String) = viewModelScope.launch {
-        if (cityName.isNullOrEmpty())
-            return@launch
+        if (cityName.isEmpty()) return@launch
+        val duplicateCity = cities.filter { it.name.toUpperCase() == cityName.toUpperCase() }
+        if(duplicateCity.isNotEmpty()){
+            _showSnackBarError.value = "duplicate City Name"
+           return@launch
+        }
         val city = getCity(cityName)
         if (city != null) {
-            prefs.putCity(cityName)
-            cities.add(city)
-            sendCitiesToView()
+            saveCity(cityName, city)
         }
+    }
+
+    private fun saveCity(cityName: String, city: City) {
+        prefs.putCity(cityName)
+        cities.map { it.isDefault = false }
+        city.isDefault = true
+        cities.add(city)
+        setDefaultCity(cityName)
+        sendCitiesToView()
+    }
+
+    fun rvCityClicked(selectedCity: City) {
+        setDefaultCity(selectedCity.name)
+    }
+
+    private fun setDefaultCity(cityName: String) {
+        prefs.setCityDefault(cityName)
     }
 
     private fun sendCitiesToView() {
@@ -45,8 +65,11 @@ class CityViewModel(
 
     private fun getAllCities() = viewModelScope.launch {
         val cityNames = prefs.getCities()
+        val cityDefault = prefs.getCityDefault()
         cityNames.forEach { cityName ->
             val city = getCity(cityName)
+            if (cityName == cityDefault)
+                city?.isDefault = true
             city?.let { cities.add(city) }
         }
         sendCitiesToView()
@@ -54,7 +77,7 @@ class CityViewModel(
 
     private suspend fun getCity(cityName: String): City? {
         val weather = getCurrentWeather(cityName, WeatherUnit.METRIC)
-        val weatherTemp = weather?.currentWeatherTemp?.temp?.toInt().toString()
+        val weatherTemp = weather?.currentWeatherTemp?.temp?.roundToInt().toString()
         val weatherIcon = weather?.weatherTitle?.get(0)?.icon
         weather?.let {
             return City().apply {

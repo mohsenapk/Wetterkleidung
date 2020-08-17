@@ -40,7 +40,11 @@ class MainActivity : AppCompatActivity() {
         initUI()
         viewModel.start()
         listenToViewModel()
-        tvCity.callOnClick()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
     }
 
     private fun initUI() {
@@ -65,21 +69,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.weatherImageIconId.observe(this, Observer {
             it?.let { viewModel.weatherIconLoader(ivIcon, it) }
         })
-        viewModel.seekBarTimes.observe(this, Observer {
-            initRvSeekTime(it)
-        })
-        viewModel.weatherLowInfoList.observe(this, Observer {
-            initRvOtherWeather(it)
-        })
-        viewModel.humidity.observe(this, Observer {
-            tvHu.text = "humidity: $it"
-        })
-        viewModel.wind.observe(this, Observer {
-            tvWind.text = "wind + degree : $it"
-        })
-        viewModel.clouds.observe(this, Observer {
-            tvCloudes.text = "clouds : $it"
-        })
+        viewModel.seekBarTimes.observe(this, Observer { initRvSeekTime(it) })
+        viewModel.weatherLowInfoList.observe(this, Observer { initRvOtherWeather(it) })
+        viewModel.humidity.observe(this, Observer { tvHu.text = "humidity: $it" })
+        viewModel.wind.observe(this, Observer { tvWind.text = "wind + degree : $it" })
+        viewModel.clouds.observe(this, Observer { tvCloudes.text = "clouds : $it" })
+        viewModel.goToCityActivity.observe(this, Observer { gotoCityActivity() })
     }
 
     private fun initRvSeekTime(list: List<Int>) {
@@ -131,7 +126,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun gotoCityActivity() {
-        startActivity(Intent(this , CityActivity::class.java))
+        startActivity(Intent(this, CityActivity::class.java))
     }
 
 }

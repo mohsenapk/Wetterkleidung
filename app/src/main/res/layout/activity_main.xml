@@ -42,8 +42,7 @@
                 android:textStyle="bold"
                 app:layout_constraintLeft_toLeftOf="@id/clTitle"
                 app:layout_constraintRight_toRightOf="@id/clTitle"
-                app:layout_constraintTop_toBottomOf="@id/tvDayName"
-                tools:text="Bremen" />
+                app:layout_constraintTop_toBottomOf="@id/tvDayName" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:layout_marginTop="4dp"
-    android:background="@drawable/border"
+    android:background="@drawable/border_white"
     android:paddingLeft="8dp">
 
             <TextView

@@ -9,9 +9,12 @@ import com.mohsen.apk.wetterkleidung.BuildConfig
 interface SharedPreferenceManager {
     fun putCity(cityName: String)
     fun getCities(): List<String>
+    fun setCityDefault(cityName: String)
+    fun getCityDefault(): String
 }
 
 private const val cityKey = "CITY"
+private const val cityDefaultKey = "CITY_DEFAULT_KEY"
 
 class SharedPreferenceManagerImpl(context: Context) : SharedPreferenceManager {
     private val prefs: SharedPreferences =
@@ -31,7 +34,7 @@ class SharedPreferenceManagerImpl(context: Context) : SharedPreferenceManager {
 
     private fun addCityList(list: List<String>) {
         val cities = gson.toJson(list)
-        prefs.edit().putString(cityKey, cities).commit()
+        prefs.edit().putString(cityKey, cities).apply()
     }
 
     private fun getCityList(): List<String> {
@@ -43,4 +46,10 @@ class SharedPreferenceManagerImpl(context: Context) : SharedPreferenceManager {
             listOf()
     }
 
+    override fun setCityDefault(cityName: String) {
+        prefs.edit().putString(cityDefaultKey, cityName).apply()
+    }
+
+    override fun getCityDefault(): String =
+        prefs.getString(cityDefaultKey, "")
 }
