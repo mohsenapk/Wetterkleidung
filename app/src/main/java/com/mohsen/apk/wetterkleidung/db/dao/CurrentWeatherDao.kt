@@ -12,7 +12,7 @@ interface CurrentWeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun set(currentWeather: CurrentWeather)
 
-    @Query("SELECT * FROM current_weather")
-    fun get(): CurrentWeather
+    @Query("SELECT * FROM current_weather WHERE cityName = :cityName")
+    fun get(cityName: String): CurrentWeather
 
 }

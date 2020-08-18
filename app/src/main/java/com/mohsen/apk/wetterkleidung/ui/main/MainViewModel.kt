@@ -1,7 +1,9 @@
-package com.mohsen.apk.wetterkleidung.ui
+package com.mohsen.apk.wetterkleidung.ui.main
 
+import android.preference.PreferenceManager
 import android.widget.ImageView
 import androidx.lifecycle.*
+import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
@@ -13,11 +15,12 @@ import kotlin.math.roundToInt
 class MainViewModel(
     private val weatherRepository: WeatherRepository,
     private val dateHelper: DateHelper,
-    private val imageHelper: ImageHelper
+    private val imageHelper: ImageHelper,
+    private val prefs: SharedPreferenceManager
 ) : ViewModel() {
 
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
-    private lateinit var forecast5DaysWeather: Forecast5DaysWeather
+    private var forecast5DaysWeather: Forecast5DaysWeather? = null
 
     private val _snackBarError = MutableLiveData<String>()
     private val _cityName = MutableLiveData<String>()
@@ -32,6 +35,7 @@ class MainViewModel(
     private val _weatherImageIconId = MutableLiveData<String>()
     private val _weatherLowInfoList = MutableLiveData<List<WeatherLowInformation>>()
     private val _seekBarTimes = MutableLiveData<List<Int>>()
+    private val _goToCityActivity = MutableLiveData<Unit>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -46,11 +50,22 @@ class MainViewModel(
     val weatherImageIconId: LiveData<String> = _weatherImageIconId
     val weatherLowInfoList: LiveData<List<WeatherLowInformation>> = _weatherLowInfoList
     val seekBarTimes: LiveData<List<Int>> = _seekBarTimes
+    val goToCityActivity: LiveData<Unit> = _goToCityActivity
 
     fun start() = viewModelScope.launch {
-        forecastWeather5DaysHourly("bremen", WeatherUnit.METRIC)
-        forecastWeather5DaysAVG("bremen", WeatherUnit.METRIC)
-        dateChanged(LocalDateTime.now())
+        val defaultCity = prefs.getCityDefault()
+        if (defaultCity.isNotEmpty()) {
+            forecastWeather5DaysHourly(defaultCity, WeatherUnit.METRIC)
+            forecastWeather5DaysAVG(defaultCity, WeatherUnit.METRIC)
+            dateChanged(LocalDateTime.now())
+        } else
+            _goToCityActivity.value = Unit
+    }
+
+    fun onResume() {
+        val defaultCity = prefs.getCityDefault()
+        if (defaultCity.toUpperCase() != forecast5DaysWeather?.city?.cityName?.toUpperCase())
+            start()
     }
 
     private suspend fun forecastWeather5DaysHourly(
@@ -64,7 +79,7 @@ class MainViewModel(
             is RepositoryResponse.Success -> {
                 forecast5DaysWeather = weather.data
             }
-            is RepositoryResponse.Filure ->
+            is RepositoryResponse.Failure ->
                 _snackBarError.value = weather.exception.message
         }
     }
@@ -75,7 +90,9 @@ class MainViewModel(
     }
 
     private fun changeCurrentWeatherList(date: LocalDateTime) {
-        forecast5DaysWeather.weatherList?.let { weatherList ->
+        if (forecast5DaysWeather == null)
+            return
+        forecast5DaysWeather?.weatherList?.let { weatherList ->
             selectedDayWeatherList = weatherList.filter { weather ->
                 weather.dateTimeText.substringBefore(" ") ==
                         date.toString().substringBefore("T")
@@ -100,7 +117,7 @@ class MainViewModel(
                 if (forecastWeather.data.weatherList != null)
                     getForecastWeatherForList(forecastWeather.data.weatherList)
             }
-            is RepositoryResponse.Filure -> null
+            is RepositoryResponse.Failure -> null
         }
     }
 
@@ -143,11 +160,12 @@ class MainViewModel(
         }
     }
 
+    //bug IndexOutOfBoundsException: Index: 7, Size: 2 todo
     private fun weatherPresentation(index: Int = 0) {
         seekBarSetup(selectedDayWeatherList.size)
         val currentWeather = selectedDayWeatherList[index]
         _progress.value = false
-        _cityName.value = forecast5DaysWeather.city.cityName
+        _cityName.value = forecast5DaysWeather?.city?.cityName
         _date.value = currentWeather.dateTimeText.substringBefore(" ")
         _temp.value = currentWeather.temp?.temp?.roundToInt()
         _tempDesc.value = currentWeather.weatherTitleList[0].description

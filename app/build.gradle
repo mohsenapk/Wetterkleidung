@@ -21,13 +21,15 @@ android {
             buildConfigField("String", "BASE_URL", '"http://api.openweathermap.org/data/2.5/"')
             buildConfigField("String", "API_URL_ICON", '"http://openweathermap.org/img/wn/"')
             buildConfigField("String", "APP_API", '"373f042baa281bb2b15c933f08f3e5b4"')
-            buildConfigField 'long', 'REMOTE_CACH_MINUTES_TIME', '1'
+            buildConfigField("String", "SHARED_PREFRENCES_NAME", '"SHARED_PREFRENCES_NAME"')
+            buildConfigField('long', 'REMOTE_CACH_MINUTES_TIME', '0')
         }
         release {
             buildConfigField("String", "BASE_URL", '"http://api.openweathermap.org/data/2.5/"')
             buildConfigField("String", "API_URL_ICON", '"http://openweathermap.org/img/wn/"')
             buildConfigField("String", "APP_API", '"373f042baa281bb2b15c933f08f3e5b4"')
-            buildConfigField 'long', 'REMOTE_CACH_MINUTES_TIME', '1'
+            buildConfigField("String", "SHARED_PREFRENCES_NAME", '"SHARED_PREFRENCES_NAME"')
+            buildConfigField ('long', 'REMOTE_CACH_MINUTES_TIME', '0')
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

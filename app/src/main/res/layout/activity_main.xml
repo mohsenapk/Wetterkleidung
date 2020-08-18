@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backBottom"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.main.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clTop"
@@ -42,20 +42,18 @@
                 android:textStyle="bold"
                 app:layout_constraintLeft_toLeftOf="@id/clTitle"
                 app:layout_constraintRight_toRightOf="@id/clTitle"
-                app:layout_constraintTop_toBottomOf="@id/tvDayName"
-                tools:text="Bremen" />
+                app:layout_constraintTop_toBottomOf="@id/tvDayName" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
             android:id="@+id/ivIcon"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="40dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:scaleType="centerCrop"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/clTitle"/>
 
         <ImageView
             android:layout_width="wrap_content"

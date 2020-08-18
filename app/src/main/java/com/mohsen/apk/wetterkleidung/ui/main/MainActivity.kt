@@ -1,5 +1,6 @@
-package com.mohsen.apk.wetterkleidung.ui
+package com.mohsen.apk.wetterkleidung.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -14,15 +15,16 @@ import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
 import com.mohsen.apk.wetterkleidung.ui.adapter.SeekTimeAdapter
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
+import com.mohsen.apk.wetterkleidung.ui.city.CityActivity
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.android.synthetic.main.activity_main.*
-import timber.log.Timber
 import travel.ithaka.android.horizontalpickerlib.PickerLayoutManager
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
+
     @Inject
     lateinit var imageHelper: ImageHelper
 
@@ -32,16 +34,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         injectDagger()
+        setContentView(R.layout.activity_main)
         initViewModel()
         initUI()
         viewModel.start()
         listenToViewModel()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
     private fun initUI() {
         LinearSnapHelper().attachToRecyclerView(rvSeekTimes)
+        tvCity.setOnClickListener { gotoCityActivity() }
     }
 
     private fun listenToViewModel() {
@@ -61,21 +69,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.weatherImageIconId.observe(this, Observer {
             it?.let { viewModel.weatherIconLoader(ivIcon, it) }
         })
-        viewModel.seekBarTimes.observe(this, Observer {
-            initRvSeekTime(it)
-        })
-        viewModel.weatherLowInfoList.observe(this, Observer {
-            initRvOtherWeather(it)
-        })
-        viewModel.humidity.observe(this, Observer {
-            tvHu.text = "humidity: $it"
-        })
-        viewModel.wind.observe(this, Observer {
-            tvWind.text = "wind + degree : $it"
-        })
-        viewModel.clouds.observe(this, Observer {
-            tvCloudes.text = "clouds : $it"
-        })
+        viewModel.seekBarTimes.observe(this, Observer { initRvSeekTime(it) })
+        viewModel.weatherLowInfoList.observe(this, Observer { initRvOtherWeather(it) })
+        viewModel.humidity.observe(this, Observer { tvHu.text = "humidity: $it" })
+        viewModel.wind.observe(this, Observer { tvWind.text = "wind + degree : $it" })
+        viewModel.clouds.observe(this, Observer { tvCloudes.text = "clouds : $it" })
+        viewModel.goToCityActivity.observe(this, Observer { gotoCityActivity() })
     }
 
     private fun initRvSeekTime(list: List<Int>) {
@@ -124,6 +123,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
+    }
+
+    private fun gotoCityActivity() {
+        startActivity(Intent(this, CityActivity::class.java))
     }
 
 }
