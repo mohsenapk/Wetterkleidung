@@ -1,18 +1,18 @@
 package com.mohsen.apk.wetterkleidung.ui.splash
 
-import android.app.Activity
 import android.content.Intent
-import android.os.BaseBundle
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.animation.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.ui.city.CityActivity
-import com.mohsen.apk.wetterkleidung.ui.di.ActivityScope
 import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
+import kotlinx.android.synthetic.main.activity_splash.*
 import javax.inject.Inject
+
 
 class SplashActivity : AppCompatActivity() {
     @Inject
@@ -31,6 +31,10 @@ class SplashActivity : AppCompatActivity() {
     private fun listenToViewModel() {
         viewModel.gotoCityActivity.observe(this, Observer { gotoCityActivity() })
         viewModel.gotoMainActivity.observe(this, Observer { gotoMainActivity() })
+        viewModel.changeLoaderImageResource.observe(this, Observer {
+            imgLoading.setImageResource(it)
+            imgLoading.startAnimation(AnimationUtils.loadAnimation(this, R.anim.alfa_0_1))
+        })
     }
 
     private fun gotoCityActivity() {
