@@ -3,6 +3,8 @@
     <string name="error_no_internet_connection">no internet connection!!</string>
     <string name="tomorrow">morning</string>
     <string name="add_city">Add City</string>
-    <string name="insert_city">Insert City Name</string>
+    <string name="insert_city">Insert City Name Here</string>
     <string name="set_default_city">default</string>
+    <string name="city_input_title">city :</string>
+    <string name="city_not_selected_note">You Must Insert City Name Or \n Select Location Button </string>
 </resources>

@@ -21,20 +21,24 @@ class CityViewModel(
 
     private val _showAllCities = MutableLiveData<List<City>>()
     private val _showSnackBarError = MutableLiveData<String>()
+    private val _goBackToMainActivity = MutableLiveData<Unit>()
+    private val _showNoneCitySelectedError = MutableLiveData<Boolean>()
 
     val showAllCities: LiveData<List<City>> = _showAllCities
     val showSnackBarError: LiveData<String> = _showSnackBarError
+    val goBackToMainActivity: LiveData<Unit> = _goBackToMainActivity
+    val showNoneCitySelectedError: LiveData<Boolean> = _showNoneCitySelectedError
 
     fun start() {
         getAllCities()
     }
 
     fun addCityClicked(cityName: String) = viewModelScope.launch {
-        if (cityName.isEmpty()) return@launch
+        if (cityName.length < 4) return@launch
         val duplicateCity = cities.filter { it.name.toUpperCase() == cityName.toUpperCase() }
-        if(duplicateCity.isNotEmpty()){
+        if (duplicateCity.isNotEmpty()) {
             _showSnackBarError.value = "duplicate City Name"
-           return@launch
+            return@launch
         }
         val city = getCity(cityName)
         if (city != null) {
@@ -53,6 +57,7 @@ class CityViewModel(
 
     fun rvCityClicked(selectedCity: City) {
         setDefaultCity(selectedCity.name)
+        _goBackToMainActivity.value = Unit
     }
 
     private fun setDefaultCity(cityName: String) {
@@ -60,11 +65,26 @@ class CityViewModel(
     }
 
     private fun sendCitiesToView() {
-        _showAllCities.value = cities
+        checkHasCitiesOrNot()
+        if (cities.isNotEmpty())
+            _showAllCities.value = cities
+    }
+
+    private fun checkHasCitiesOrNot() {
+        _showNoneCitySelectedError.value = cities.isEmpty()
     }
 
     private fun getAllCities() = viewModelScope.launch {
         val cityNames = prefs.getCities()
+        if (cityNames.isEmpty()) {
+            checkHasCitiesOrNot()
+            return@launch
+        }
+        setCitiesFromCityNames(cityNames)
+        sendCitiesToView()
+    }
+
+    private suspend fun setCitiesFromCityNames(cityNames: List<String>){
         val cityDefault = prefs.getCityDefault()
         cityNames.forEach { cityName ->
             val city = getCity(cityName)
@@ -72,7 +92,6 @@ class CityViewModel(
                 city?.isDefault = true
             city?.let { cities.add(city) }
         }
-        sendCitiesToView()
     }
 
     private suspend fun getCity(cityName: String): City? {
@@ -88,7 +107,6 @@ class CityViewModel(
         }
         return null
     }
-
 
     private suspend fun getCurrentWeather(city: String, unit: WeatherUnit): CurrentWeather? {
         val response = repository.getCurrentWeather(city, WeatherUnit.METRIC)

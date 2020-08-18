@@ -2,6 +2,7 @@ package com.mohsen.apk.wetterkleidung.ui.city
 
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -39,13 +40,17 @@ class CityActivity : AppCompatActivity() {
 
     private fun listenToViewModel() {
         viewModel.showAllCities.observe(this, Observer { initRvCities(it) })
-        viewModel.showSnackBarError.observe(this , Observer { showSnackBarError(it) })
+        viewModel.showSnackBarError.observe(this, Observer { showSnackBarError(it) })
+        viewModel.goBackToMainActivity.observe(this, Observer { onBackPressed() })
+        viewModel.showNoneCitySelectedError.observe(this, Observer {
+            clNoneCity.visibility = if (it) View.VISIBLE else View.INVISIBLE
+        })
     }
 
     private fun initRvCities(list: List<City>) {
         rvCities.apply {
             layoutManager = linearLayoutManager
-            adapter = CityAdapter(list, imageHelper){
+            adapter = CityAdapter(list, imageHelper) {
                 viewModel.rvCityClicked(it)
             }
         }
@@ -63,7 +68,7 @@ class CityActivity : AppCompatActivity() {
         (application as BaseApplication).cityComponent.inject(this)
     }
 
-    private fun showSnackBarError(message: String){
-        Toast.makeText(this , message , Toast.LENGTH_SHORT).show()
+    private fun showSnackBarError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
