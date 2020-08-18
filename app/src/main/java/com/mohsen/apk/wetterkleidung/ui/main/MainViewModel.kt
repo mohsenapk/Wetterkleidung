@@ -1,6 +1,5 @@
 package com.mohsen.apk.wetterkleidung.ui.main
 
-import android.preference.PreferenceManager
 import android.widget.ImageView
 import androidx.lifecycle.*
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
@@ -54,12 +53,13 @@ class MainViewModel(
 
     fun start() = viewModelScope.launch {
         val defaultCity = prefs.getCityDefault()
-        if (defaultCity.isNotEmpty()) {
-            forecastWeather5DaysHourly(defaultCity, WeatherUnit.METRIC)
-            forecastWeather5DaysAVG(defaultCity, WeatherUnit.METRIC)
-            dateChanged(LocalDateTime.now())
-        } else
+        if(defaultCity.isEmpty()){
             _goToCityActivity.value = Unit
+            return@launch
+        }
+        forecastWeather5DaysHourly(defaultCity, WeatherUnit.METRIC)
+        forecastWeather5DaysAVG(defaultCity, WeatherUnit.METRIC)
+        dateChanged(LocalDateTime.now())
     }
 
     fun onResume() {

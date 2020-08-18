@@ -55,5 +55,6 @@ class BaseApplication : Application() {
                 .cityModule(CityModule())
                 .applicationComponent(applicationComponent)
                 .build()
+
     }
 }

@@ -3,6 +3,7 @@ package com.mohsen.apk.wetterkleidung.ui.main.di
 import com.mohsen.apk.wetterkleidung.base.di.ApplicationComponent
 import com.mohsen.apk.wetterkleidung.ui.di.ActivityScope
 import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
+import com.mohsen.apk.wetterkleidung.ui.main.SplashActivity
 import dagger.Component
 
 @ActivityScope
@@ -12,4 +13,5 @@ import dagger.Component
 )
 interface MainComponent {
     fun inject(target: MainActivity)
+    fun inject(target: SplashActivity)
 }

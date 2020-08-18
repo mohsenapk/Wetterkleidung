@@ -21,20 +21,22 @@ class CityViewModel(
 
     private val _showAllCities = MutableLiveData<List<City>>()
     private val _showSnackBarError = MutableLiveData<String>()
-    private val _goBackToMainActivity = MutableLiveData<Unit>()
+    private val _goToMainActivity = MutableLiveData<Unit>()
+    private val _finishApp = MutableLiveData<Unit>()
     private val _showNoneCitySelectedError = MutableLiveData<Boolean>()
 
     val showAllCities: LiveData<List<City>> = _showAllCities
     val showSnackBarError: LiveData<String> = _showSnackBarError
-    val goBackToMainActivity: LiveData<Unit> = _goBackToMainActivity
+    val goToMainActivity: LiveData<Unit> = _goToMainActivity
     val showNoneCitySelectedError: LiveData<Boolean> = _showNoneCitySelectedError
+    val finishApp: LiveData<Unit> = _finishApp
 
     fun start() {
         getAllCities()
     }
 
     fun addCityClicked(cityName: String) = viewModelScope.launch {
-        if (cityName.length < 4) return@launch
+        if (cityName.length < 3) return@launch
         val duplicateCity = cities.filter { it.name.toUpperCase() == cityName.toUpperCase() }
         if (duplicateCity.isNotEmpty()) {
             _showSnackBarError.value = "duplicate City Name"
@@ -57,7 +59,7 @@ class CityViewModel(
 
     fun rvCityClicked(selectedCity: City) {
         setDefaultCity(selectedCity.name)
-        _goBackToMainActivity.value = Unit
+        _goToMainActivity.value = Unit
     }
 
     private fun setDefaultCity(cityName: String) {
@@ -84,7 +86,7 @@ class CityViewModel(
         sendCitiesToView()
     }
 
-    private suspend fun setCitiesFromCityNames(cityNames: List<String>){
+    private suspend fun setCitiesFromCityNames(cityNames: List<String>) {
         val cityDefault = prefs.getCityDefault()
         cityNames.forEach { cityName ->
             val city = getCity(cityName)
@@ -117,5 +119,16 @@ class CityViewModel(
                 null
             }
         }
+    }
+
+    fun fabGpsClicked() {
+
+    }
+
+    fun onBackPressed() {
+        if (prefs.getCities().isNotEmpty())
+            _goToMainActivity.value = Unit
+        else
+            _finishApp.value = Unit
     }
 }
