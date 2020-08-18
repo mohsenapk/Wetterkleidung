@@ -24,6 +24,7 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
+
     @Inject
     lateinit var imageHelper: ImageHelper
 
@@ -131,5 +132,4 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         finish()
     }
-
 }

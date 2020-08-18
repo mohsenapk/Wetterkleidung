@@ -1,15 +1,15 @@
-package com.mohsen.apk.wetterkleidung.ui.main.di
+package com.mohsen.apk.wetterkleidung.ui.splash.di
 
 import com.mohsen.apk.wetterkleidung.base.di.ApplicationComponent
 import com.mohsen.apk.wetterkleidung.ui.di.ActivityScope
-import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
+import com.mohsen.apk.wetterkleidung.ui.splash.SplashActivity
 import dagger.Component
 
 @ActivityScope
 @Component(
-    modules = [MainModule::class],
+    modules = [SplashModule::class],
     dependencies = [ApplicationComponent::class]
 )
-interface MainComponent {
-    fun inject(target: MainActivity)
+interface SplashComponent {
+    fun inject(target: SplashActivity)
 }

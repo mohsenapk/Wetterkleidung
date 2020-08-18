@@ -14,6 +14,9 @@ import com.mohsen.apk.wetterkleidung.ui.city.di.DaggerCityComponent
 import com.mohsen.apk.wetterkleidung.ui.main.di.DaggerMainComponent
 import com.mohsen.apk.wetterkleidung.ui.main.di.MainComponent
 import com.mohsen.apk.wetterkleidung.ui.main.di.MainModule
+import com.mohsen.apk.wetterkleidung.ui.splash.di.DaggerSplashComponent
+import com.mohsen.apk.wetterkleidung.ui.splash.di.SplashComponent
+import com.mohsen.apk.wetterkleidung.ui.splash.di.SplashModule
 import com.mohsen.apk.wetterkleidung.utility.di.UtilityModule
 import timber.log.Timber
 
@@ -22,6 +25,7 @@ class BaseApplication : Application() {
     lateinit var applicationComponent: ApplicationComponent
     lateinit var mainComponent: MainComponent
     lateinit var cityComponent: CityComponent
+    lateinit var splashComponent: SplashComponent
 
     override fun onCreate() {
         super.onCreate()
@@ -53,6 +57,12 @@ class BaseApplication : Application() {
         cityComponent =
             DaggerCityComponent.builder()
                 .cityModule(CityModule())
+                .applicationComponent(applicationComponent)
+                .build()
+
+        splashComponent =
+            DaggerSplashComponent.builder()
+                .splashModule(SplashModule())
                 .applicationComponent(applicationComponent)
                 .build()
 
