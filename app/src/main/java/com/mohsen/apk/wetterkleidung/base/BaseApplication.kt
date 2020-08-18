@@ -4,6 +4,7 @@ import android.app.Application
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.mohsen.apk.wetterkleidung.BuildConfig
 import com.mohsen.apk.wetterkleidung.base.di.ApplicationComponent
+import com.mohsen.apk.wetterkleidung.base.di.BaseModule
 import com.mohsen.apk.wetterkleidung.base.di.DaggerApplicationComponent
 import com.mohsen.apk.wetterkleidung.db.di.DBModule
 import com.mohsen.apk.wetterkleidung.network.di.NetworkModule
@@ -42,6 +43,7 @@ class BaseApplication : Application() {
     private fun initDagger() {
 
         applicationComponent = DaggerApplicationComponent.builder()
+            .baseModule(BaseModule(this))
             .networkModule(NetworkModule(this))
             .dBModule(DBModule(this))
             .repositoryModule(RepositoryModule())

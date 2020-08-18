@@ -1,4 +1,6 @@
 package com.mohsen.apk.wetterkleidung.base.di
+
+import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.db.di.DBModule
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.network.di.NetworkModule
@@ -14,6 +16,7 @@ import javax.inject.Singleton
 
 @Component(
     modules = [
+        BaseModule::class,
         NetworkModule::class,
         DBModule::class,
         RepositoryModule::class,
@@ -25,4 +28,5 @@ interface ApplicationComponent {
     fun getDateHelper(): DateHelper
     fun getImageHelper(): ImageHelper
     fun getSharedPreferenceManager(): SharedPreferenceManager
+    fun getApplication(): BaseApplication
 }

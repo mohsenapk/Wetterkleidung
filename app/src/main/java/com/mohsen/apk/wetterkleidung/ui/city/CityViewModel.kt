@@ -1,33 +1,40 @@
 package com.mohsen.apk.wetterkleidung.ui.city
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.app.ActivityManager
+import android.app.Application
+import android.content.Context.ACTIVITY_SERVICE
+import androidx.lifecycle.*
+import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.model.City
 import com.mohsen.apk.wetterkleidung.model.CurrentWeather
 import com.mohsen.apk.wetterkleidung.model.RepositoryResponse
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
+import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.math.roundToInt
 
+
 class CityViewModel(
+    private val application: BaseApplication,
     private val prefs: SharedPreferenceManager,
     private val repository: WeatherRepository
-) : ViewModel() {
+) : AndroidViewModel(application) {
     private val cities = mutableListOf<City>()
 
     private val _showAllCities = MutableLiveData<List<City>>()
     private val _showSnackBarError = MutableLiveData<String>()
     private val _goToMainActivity = MutableLiveData<Unit>()
+    private val _goToLastActivity = MutableLiveData<Unit>()
     private val _finishApp = MutableLiveData<Unit>()
     private val _showNoneCitySelectedError = MutableLiveData<Boolean>()
 
     val showAllCities: LiveData<List<City>> = _showAllCities
     val showSnackBarError: LiveData<String> = _showSnackBarError
     val goToMainActivity: LiveData<Unit> = _goToMainActivity
+    val goToLastActivity: LiveData<Unit> = _goToMainActivity
     val showNoneCitySelectedError: LiveData<Boolean> = _showNoneCitySelectedError
     val finishApp: LiveData<Unit> = _finishApp
 
@@ -126,9 +133,10 @@ class CityViewModel(
     }
 
     fun onBackPressed() {
-        if (prefs.getCities().isNotEmpty())
-            _goToMainActivity.value = Unit
-        else
+        if (prefs.getCities().isEmpty()) {
             _finishApp.value = Unit
+            return
+        } else
+            _goToMainActivity.value = Unit
     }
 }

@@ -44,10 +44,11 @@ class CityActivity : AppCompatActivity() {
         viewModel.showAllCities.observe(this, Observer { initRvCities(it) })
         viewModel.showSnackBarError.observe(this, Observer { showSnackBarError(it) })
         viewModel.goToMainActivity.observe(this, Observer { gotoMainActivity() })
+        viewModel.goToLastActivity.observe(this, Observer { backToLastActivity() })
         viewModel.showNoneCitySelectedError.observe(this, Observer {
             clNoneCity.visibility = if (it) View.VISIBLE else View.INVISIBLE
         })
-        viewModel.finishApp.observe(this , Observer { finishApp() })
+        viewModel.finishApp.observe(this, Observer { finishApp() })
     }
 
     private fun finishApp() {
@@ -87,6 +88,10 @@ class CityActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         viewModel.onBackPressed()
+    }
+
+    private fun backToLastActivity() {
+        super.onBackPressed()
     }
 
     private fun gotoMainActivity() {
