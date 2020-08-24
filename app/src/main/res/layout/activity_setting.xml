@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.setting.SettingActivity"
-    android:background="@drawable/gradient_backtop_backbottom"
+    android:background="@drawable/gradient_white_green"
     android:padding="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +23,7 @@
             app:layout_constraintTop_toTopOf="@id/clCity"
             app:layout_constraintLeft_toLeftOf="@id/clCity"
             android:src="@drawable/location"
-            android:tint="@color/white"/>
+            android:tint="@color/dark_green"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
             app:layout_constraintTop_toTopOf="@id/clCity"
             app:layout_constraintRight_toRightOf="@id/clCity"
             android:src="@drawable/right"
-            android:tint="@color/white"/>
+            android:tint="@color/dark_green"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:layout_constraintTop_toBottomOf="@+id/clCity"
-        android:background="@color/white"
+        android:background="@color/dark_green"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
@@ -82,7 +82,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             android:src="@drawable/temp"
-            android:tint="@color/white"/>
+            android:tint="@color/dark_green"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -134,7 +134,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:layout_constraintTop_toBottomOf="@+id/clUnit"
-        android:background="@color/white"
+        android:background="@color/dark_green"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
@@ -153,7 +153,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             android:src="@drawable/time"
-            android:tint="@color/white"/>
+            android:tint="@color/dark_green"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -174,7 +174,7 @@
             app:layout_constraintTop_toTopOf="@id/clTimes"
             app:layout_constraintRight_toRightOf="@id/clTimes"
             android:src="@drawable/right"
-            android:tint="@color/white"/>
+            android:tint="@color/dark_green"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -193,7 +193,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:layout_constraintTop_toBottomOf="@+id/clTimes"
-        android:background="@color/white"
+        android:background="@color/dark_green"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
@@ -212,7 +212,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             android:src="@drawable/advance"
-            android:tint="@color/white"/>
+            android:tint="@color/dark_green"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -239,7 +239,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:layout_constraintTop_toBottomOf="@+id/clAdvance"
-        android:background="@color/white"
+        android:background="@color/dark_green"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
@@ -258,7 +258,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             android:src="@drawable/exit"
-            android:tint="@color/white"/>
+            android:tint="@color/dark_green"/>
 
         <TextView
             android:layout_width="wrap_content"

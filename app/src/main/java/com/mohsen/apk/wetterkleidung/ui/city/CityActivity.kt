@@ -17,7 +17,6 @@ import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.android.synthetic.main.activity_city.*
 import javax.inject.Inject
-import kotlin.system.exitProcess
 
 class CityActivity : AppCompatActivity() {
 
