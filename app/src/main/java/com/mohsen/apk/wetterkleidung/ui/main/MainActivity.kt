@@ -8,17 +8,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
-import com.mohsen.apk.wetterkleidung.ui.adapter.SeekTimeAdapter
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import com.mohsen.apk.wetterkleidung.ui.city.CityActivity
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
+import com.warkiz.tickseekbar.OnSeekChangeListener
+import com.warkiz.tickseekbar.SeekParams
+import com.warkiz.tickseekbar.TickSeekBar
 import kotlinx.android.synthetic.main.activity_main.*
-import travel.ithaka.android.horizontalpickerlib.PickerLayoutManager
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -29,8 +28,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var imageHelper: ImageHelper
 
     lateinit var viewModel: MainViewModel
-    private val linearLayoutManagerVertical = LinearLayoutManager(this)
-    private var rvSeekBarLastPosition = 0
+    private val rvOtherWeatherLayoutManager = LinearLayoutManager(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +46,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        LinearSnapHelper().attachToRecyclerView(rvSeekTimes)
         tvCity.setOnClickListener { gotoCityActivity() }
+        seekBarInit()
+    }
+
+    private fun seekBarInit() {
+        seekBar.onSeekChangeListener = object : OnSeekChangeListener {
+            override fun onSeeking(seekParams: SeekParams?) {
+                seekParams?.let {viewModel.seekBarProgressChanged(it.progress) }
+            }
+
+            override fun onStartTrackingTouch(seekBar: TickSeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: TickSeekBar?) {}
+        }
+    }
+
+    private fun seekBarInitTexts(seekTimes: List<String>) {
+        seekBar.tickCount = seekTimes.size
+        seekBar.max = seekTimes.size.toFloat() - 1
+        seekBar.customTickTexts(seekTimes.toTypedArray())
     }
 
     private fun listenToViewModel() {
@@ -69,52 +84,25 @@ class MainActivity : AppCompatActivity() {
         viewModel.weatherImageIconId.observe(this, Observer {
             it?.let { viewModel.weatherIconLoader(ivIcon, it) }
         })
-        viewModel.seekBarTimes.observe(this, Observer { initRvSeekTime(it) })
         viewModel.weatherLowInfoList.observe(this, Observer { initRvOtherWeather(it) })
         viewModel.humidity.observe(this, Observer { tvHu.text = "humidity: $it" })
         viewModel.wind.observe(this, Observer { tvWind.text = "wind + degree : $it" })
         viewModel.clouds.observe(this, Observer { tvCloudes.text = "clouds : $it" })
         viewModel.goToCityActivity.observe(this, Observer { gotoCityActivity() })
-    }
-
-    private fun initRvSeekTime(list: List<Int>) {
-        rvSeekTimes.apply {
-            layoutManager = getPickerLayoutManager()
-            list?.let {
-                adapter = SeekTimeAdapter(it)
-            }
-            rvSeekTimes.smoothScrollToPosition(0)
-        }
+        viewModel.seekBarSelectedText.observe(this, Observer { tvSeekTime.text = it })
+        viewModel.seekBarTextList.observe(this, Observer { seekBarInitTexts(it) })
+        viewModel.seekTimeProgress.observe(this , Observer { seekBar.setProgress(it) })
     }
 
     private fun initRvOtherWeather(list: List<WeatherLowInformation>) {
         rvOtherWeather.apply {
-            layoutManager = linearLayoutManagerVertical
+            layoutManager = rvOtherWeatherLayoutManager
             list?.let {
                 adapter = WeatherLowInfoAdapter(list, imageHelper) {
                     viewModel.dateChanged(it)
                 }
             }
         }
-    }
-
-    private fun getPickerLayoutManager(): RecyclerView.LayoutManager {
-        val pickerLayoutManager = PickerLayoutManager(
-            this, PickerLayoutManager.HORIZONTAL, false
-        )
-        pickerLayoutManager.apply {
-            isChangeAlpha = true
-            scaleDownBy = 1.5f
-            scaleDownDistance = 1.5f
-        }
-        pickerLayoutManager.setOnScrollStopListener {
-            val position = pickerLayoutManager.findLastVisibleItemPosition()
-            if (position >= 0 && position != rvSeekBarLastPosition) {
-                rvSeekBarLastPosition = position
-                viewModel.rvSeekBarChangeIndex(position)
-            }
-        }
-        return pickerLayoutManager
     }
 
     private fun injectDagger() {

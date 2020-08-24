@@ -97,6 +97,6 @@ dependencies {
     //Jacke Wharton TreeTenabp date library
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.4'
     //picker
-    implementation "com.github.adityagohad:HorizontalPicker:1.0.1"
+    implementation 'com.github.warkiz.tickseekbar:tickseekbar:0.1.4'
 
 }

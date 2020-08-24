@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:layout_marginTop="4dp"
-    android:background="@drawable/border_white"
+    android:background="@drawable/border_solid_white"
     android:paddingLeft="8dp">
 
             <TextView
@@ -17,7 +17,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="14.4.2009"
-                android:textColor="@color/white"/>
+                android:textColor="@color/black"/>
 
             <ImageView
                 android:id="@+id/ivIcon"
@@ -35,7 +35,7 @@
                 app:layout_constraintRight_toLeftOf="@id/ivIcon"
                 app:layout_constraintTop_toTopOf="@id/tvTemp"
                 android:textSize="10sp"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:layout_marginLeft="4dp"
                 android:layout_marginBottom="4dp"/>
 
@@ -48,6 +48,6 @@
                 app:layout_constraintRight_toLeftOf="@id/tvTempDegree"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="14"
-                android:textColor="@color/white"/>
+                android:textColor="@color/black"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

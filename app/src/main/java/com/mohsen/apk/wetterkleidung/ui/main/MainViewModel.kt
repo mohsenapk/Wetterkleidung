@@ -20,6 +20,7 @@ class MainViewModel(
 
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
     private var forecast5DaysWeather: Forecast5DaysWeather? = null
+    private lateinit var allSeekBarIndex: List<Int>
 
     private val _snackBarError = MutableLiveData<String>()
     private val _cityName = MutableLiveData<String>()
@@ -33,8 +34,10 @@ class MainViewModel(
     private val _progress = MutableLiveData<Boolean>()
     private val _weatherImageIconId = MutableLiveData<String>()
     private val _weatherLowInfoList = MutableLiveData<List<WeatherLowInformation>>()
-    private val _seekBarTimes = MutableLiveData<List<Int>>()
     private val _goToCityActivity = MutableLiveData<Unit>()
+    private val _seekBarTextList = MutableLiveData<List<String>>()
+    private val _seekBarSelectedText = MutableLiveData<String>()
+    private val _seekTimeProgress = MutableLiveData<Float>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -48,12 +51,14 @@ class MainViewModel(
     val progress: LiveData<Boolean> = _progress
     val weatherImageIconId: LiveData<String> = _weatherImageIconId
     val weatherLowInfoList: LiveData<List<WeatherLowInformation>> = _weatherLowInfoList
-    val seekBarTimes: LiveData<List<Int>> = _seekBarTimes
     val goToCityActivity: LiveData<Unit> = _goToCityActivity
+    val seekBarTextList: LiveData<List<String>> = _seekBarTextList
+    val seekBarSelectedText: LiveData<String> = _seekBarSelectedText
+    val seekTimeProgress: LiveData<Float> = _seekTimeProgress
 
     fun start() = viewModelScope.launch {
         val defaultCity = prefs.getCityDefault()
-        if(defaultCity.isEmpty()){
+        if (defaultCity.isEmpty()) {
             _goToCityActivity.value = Unit
             return@launch
         }
@@ -85,6 +90,7 @@ class MainViewModel(
     }
 
     fun dateChanged(date: LocalDateTime) {
+        _seekTimeProgress.value = 0F
         _dayName.value = getDayName(date)
         changeCurrentWeatherList(date)
     }
@@ -102,8 +108,38 @@ class MainViewModel(
     }
 
     private fun seekBarSetup(maxSize: Int) {
-        val allSeekBarValues = listOf<Int>(7, 6, 5, 4, 3, 2, 1, 0)
-        _seekBarTimes.value = allSeekBarValues.subList(0, maxSize).reversed()
+        if (maxSize < 1) return
+        allSeekBarIndex = listOf<Int>(7, 6, 5, 4, 3, 2, 1, 0).subList(0, maxSize).reversed()
+        _seekBarTextList.value = allSeekBarIndex.map { getMinSeekBarTextFromIndex(it) }
+        _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekBarIndex[0])
+    }
+
+    private fun getMinSeekBarTextFromIndex(index: Int): String {
+        return when (index) {
+            0 -> SeekBarValue.ZERO.minText
+            1 -> SeekBarValue.ONE.minText
+            2 -> SeekBarValue.TWO.minText
+            3 -> SeekBarValue.THREE.minText
+            4 -> SeekBarValue.FOUR.minText
+            5 -> SeekBarValue.FIVE.minText
+            6 -> SeekBarValue.SIX.minText
+            7 -> SeekBarValue.SEVEN.minText
+            else -> ""
+        }
+    }
+
+    private fun getSeekBarTextFromIndex(index: Int): String {
+        return when (index) {
+            0 -> SeekBarValue.ZERO.hours
+            1 -> SeekBarValue.ONE.hours
+            2 -> SeekBarValue.TWO.hours
+            3 -> SeekBarValue.THREE.hours
+            4 -> SeekBarValue.FOUR.hours
+            5 -> SeekBarValue.FIVE.hours
+            6 -> SeekBarValue.SIX.hours
+            7 -> SeekBarValue.SEVEN.hours
+            else -> ""
+        }
     }
 
     private suspend fun forecastWeather5DaysAVG(
@@ -175,11 +211,9 @@ class MainViewModel(
         _wind.value = "${currentWeather.wind?.speed} - ${currentWeather.wind?.degree}"
     }
 
-    fun rvSeekBarChangeIndex(progress: Int) {
-        if (progress < 0)
-            weatherPresentation(0)
-        else
-            weatherPresentation(progress)
+    fun seekBarProgressChanged(progress: Int) {
+        weatherPresentation(progress)
+        _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekBarIndex[progress])
     }
 
     fun weatherIconLoader(ivIcon: ImageView?, imgId: String) {
