@@ -47,6 +47,16 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
+            android:id="@+id/imgSetting"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/setting"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:padding="8dp"
+            android:tint="@color/white"/>
+
+        <ImageView
             android:id="@+id/ivIcon"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -74,36 +84,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivIcon" />
-
-        <TextView
-            android:id="@+id/tvHu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="120dp"
-            android:text="humidity : "
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginLeft="4dp"/>
-
-        <TextView
-            android:id="@+id/tvWind"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="wind+degree : "
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvHu"
-            android:layout_marginLeft="4dp"/>
-
-        <TextView
-            android:id="@+id/tvCloudes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="humidity : "
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvWind"
-            android:layout_marginLeft="4dp"/>
 
         <TextView
             android:id="@+id/tvTemp"
@@ -147,7 +127,6 @@
         android:gravity="center"
         android:textColor="@color/black"
         android:textSize="18sp"
-        android:layout_marginTop="8dp"
         android:textStyle="bold"/>
 
     <com.warkiz.tickseekbar.TickSeekBar
@@ -170,8 +149,7 @@
         app:tsb_tick_texts_size="9sp"
         app:tsb_tick_texts_typeface="monospace"
         app:tsb_show_thumb_text="none"
-        app:tsb_show_tick_texts="below"
-        android:layout_marginTop="8dp"/>
+        app:tsb_show_tick_texts="below" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvOtherWeather"
@@ -180,10 +158,7 @@
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/seekBar"
-        android:fadingEdge="horizontal"
-        android:fadingEdgeLength="4dp"
-        android:fillViewport="false"
-        android:requiresFadingEdge="vertical" />
+        android:layout_marginTop="8dp"/>
 
     <ProgressBar
         android:id="@+id/progress"

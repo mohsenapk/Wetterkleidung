@@ -13,6 +13,7 @@ import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import com.mohsen.apk.wetterkleidung.ui.city.CityActivity
+import com.mohsen.apk.wetterkleidung.ui.setting.SettingActivity
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import com.warkiz.tickseekbar.OnSeekChangeListener
 import com.warkiz.tickseekbar.SeekParams
@@ -47,13 +48,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUI() {
         tvCity.setOnClickListener { gotoCityActivity() }
+        imgSetting.setOnClickListener { gotoSettingActivity() }
         seekBarInit()
+    }
+
+    private fun gotoSettingActivity() {
+        startActivity(Intent(this, SettingActivity::class.java))
     }
 
     private fun seekBarInit() {
         seekBar.onSeekChangeListener = object : OnSeekChangeListener {
             override fun onSeeking(seekParams: SeekParams?) {
-                seekParams?.let {viewModel.seekBarProgressChanged(it.progress) }
+                seekParams?.let { viewModel.seekBarProgressChanged(it.progress) }
             }
 
             override fun onStartTrackingTouch(seekBar: TickSeekBar?) {}
@@ -85,13 +91,10 @@ class MainActivity : AppCompatActivity() {
             it?.let { viewModel.weatherIconLoader(ivIcon, it) }
         })
         viewModel.weatherLowInfoList.observe(this, Observer { initRvOtherWeather(it) })
-        viewModel.humidity.observe(this, Observer { tvHu.text = "humidity: $it" })
-        viewModel.wind.observe(this, Observer { tvWind.text = "wind + degree : $it" })
-        viewModel.clouds.observe(this, Observer { tvCloudes.text = "clouds : $it" })
         viewModel.goToCityActivity.observe(this, Observer { gotoCityActivity() })
         viewModel.seekBarSelectedText.observe(this, Observer { tvSeekTime.text = it })
         viewModel.seekBarTextList.observe(this, Observer { seekBarInitTexts(it) })
-        viewModel.seekTimeProgress.observe(this , Observer { seekBar.setProgress(it) })
+        viewModel.seekTimeProgress.observe(this, Observer { seekBar.setProgress(it) })
     }
 
     private fun initRvOtherWeather(list: List<WeatherLowInformation>) {
