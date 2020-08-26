@@ -17,6 +17,12 @@ interface WeatherRemoteService {
         weatherUnit: WeatherUnit
     ): RepositoryResponse<CurrentWeather>
 
+    suspend fun getCurrentWeatherWithLatAndLon(
+        lat: String,
+        lon: String,
+        weatherUnit: WeatherUnit
+    ): RepositoryResponse<CurrentWeather>
+
     suspend fun getForecastWeather(
         city: String,
         weatherUnit: WeatherUnit
@@ -37,6 +43,16 @@ class WeatherRemoteServiceImpl(private val retrofit: Retrofit) : WeatherRemoteSe
         retrofit.create(WeatherApi::class.java)
             .getCurrentWeather(city, weatherUnit.name)
     }
+
+    override suspend fun getCurrentWeatherWithLatAndLon(
+        lat: String,
+        lon: String,
+        weatherUnit: WeatherUnit
+    ): RepositoryResponse<CurrentWeather> =
+        callAPI {
+            retrofit.create(WeatherApi::class.java)
+                .getCurrentWeatherWithLatAndLon(lat, lon, weatherUnit.name)
+        }
 
     override suspend fun getForecastWeather(
         city: String,

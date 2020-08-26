@@ -15,7 +15,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
 interface LocationHelper {
-    fun getLastLocationAsync(): Deferred<Location>
+    fun getLastLocationAsync(): Deferred<Location?>
 }
 
 class LocationHelperImpl(private val context: Context) : LocationHelper {
@@ -24,7 +24,7 @@ class LocationHelperImpl(private val context: Context) : LocationHelper {
         LocationServices.getFusedLocationProviderClient(context)
 
     @SuppressLint("MissingPermission")
-    override fun getLastLocationAsync(): Deferred<Location> {
+    override fun getLastLocationAsync(): Deferred<Location?> {
         return if (hasLocationPermission()) {
             fusedLocationProviderClient.lastLocation.asDeferred()
         } else

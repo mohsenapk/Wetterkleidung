@@ -1,17 +1,14 @@
 package com.mohsen.apk.wetterkleidung.ui.city
 
-import android.app.ActivityManager
-import android.app.Application
-import android.content.Context.ACTIVITY_SERVICE
 import androidx.lifecycle.*
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
+import com.mohsen.apk.wetterkleidung.internal.LocationPermissionNotGrantedException
 import com.mohsen.apk.wetterkleidung.model.City
 import com.mohsen.apk.wetterkleidung.model.CurrentWeather
 import com.mohsen.apk.wetterkleidung.model.RepositoryResponse
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
-import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
 import com.mohsen.apk.wetterkleidung.utility.LocationHelper
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -105,22 +102,55 @@ class CityViewModel(
         }
     }
 
-    private suspend fun getCity(cityName: String): City? {
-        val weather = getCurrentWeather(cityName, WeatherUnit.METRIC)
-        val weatherTemp = weather?.currentWeatherTemp?.temp?.roundToInt().toString()
-        val weatherIcon = weather?.weatherTitle?.get(0)?.icon
-        weather?.let {
-            return City().apply {
-                name = cityName
-                if (weatherTemp != null) temp = weatherTemp
-                if (weatherIcon != null) tempIconId = weatherIcon
-            }
-        }
-        return null
+    private suspend fun getCurrentWeather(cityName: String, unit: WeatherUnit): CurrentWeather? {
+        val response = repository.getCurrentWeather(cityName, unit)
+        return currentWeatherToRepoResponse(response)
     }
 
-    private suspend fun getCurrentWeather(city: String, unit: WeatherUnit): CurrentWeather? {
-        val response = repository.getCurrentWeather(city, WeatherUnit.METRIC)
+    fun fabGpsClicked() = viewModelScope.launch {
+        try {
+            val location = locationHelper.getLastLocationAsync().await()
+            if (location != null) {
+                prefs.setLastLocation(location.latitude, location.longitude)
+                getCityFromLatAndLon(location.latitude, location.longitude)
+                Timber.d("location - ${location.latitude},${location.longitude}")
+            } else
+                getCityFromLatAndLonPref()
+        } catch (e: LocationPermissionNotGrantedException) {
+            Timber.d("location - ${e.message}")
+        }
+    }
+
+    private fun getCityFromLatAndLonPref() {
+        val latAndLonPair = prefs.getLastLocation()
+        latAndLonPair?.let {
+            val lat = latAndLonPair.first
+            val lon = latAndLonPair.second
+            if (lat > 0 && lon > 0) {
+                getCityFromLatAndLon(lat, lon)
+                Timber.d("location from pref $lat,$lon")
+            }
+        }
+    }
+
+    private fun getCityFromLatAndLon(lat: Double, lon: Double) = viewModelScope.launch {
+        getCurrentWeatherWithLatAndLon(lat, lon, WeatherUnit.METRIC)
+    }
+
+    private suspend fun getCurrentWeatherWithLatAndLon(
+        lat: Double,
+        lon: Double,
+        unit: WeatherUnit
+    ): CurrentWeather? {
+        val response = repository.getCurrentWeatherWithLatAndLon(
+            lat,
+            lon,
+            unit
+        )
+        return currentWeatherToRepoResponse(response)
+    }
+
+    private fun currentWeatherToRepoResponse(response: RepositoryResponse<CurrentWeather>): CurrentWeather? {
         return when (response) {
             is RepositoryResponse.Success -> response.data
             is RepositoryResponse.Failure -> {
@@ -130,8 +160,33 @@ class CityViewModel(
         }
     }
 
-    fun fabGpsClicked() {
+    private suspend fun getCity(
+        cityName: String = "",
+        lat: Double = 0.0,
+        lon: Double = 0.0
+    ): City? {
+        var weather: CurrentWeather? = null
+        if (cityName.isNotEmpty())
+            weather = getCurrentWeather(cityName, WeatherUnit.METRIC)
+        else if (lat > 0 && lon > 0)
+            weather = getCurrentWeatherWithLatAndLon(lat, lon, WeatherUnit.METRIC)
+        weather?.let {
+            return getCityFromWeather(weather, cityName)
+        }
+        return null
+    }
 
+    private fun getCityFromWeather(
+        weather: CurrentWeather,
+        cityName: String
+    ): City? {
+        val weatherTemp = weather.currentWeatherTemp?.temp?.roundToInt().toString()
+        val weatherIcon = weather.weatherTitle?.get(0)?.icon
+        return City().apply {
+            name = cityName
+            temp = weatherTemp
+            if (weatherIcon != null) tempIconId = weatherIcon
+        }
     }
 
     fun onBackPressed() {
