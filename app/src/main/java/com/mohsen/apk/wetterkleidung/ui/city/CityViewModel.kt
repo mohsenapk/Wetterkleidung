@@ -12,6 +12,7 @@ import com.mohsen.apk.wetterkleidung.model.RepositoryResponse
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
+import com.mohsen.apk.wetterkleidung.utility.LocationHelper
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.math.roundToInt
@@ -20,7 +21,8 @@ import kotlin.math.roundToInt
 class CityViewModel(
     private val application: BaseApplication,
     private val prefs: SharedPreferenceManager,
-    private val repository: WeatherRepository
+    private val repository: WeatherRepository,
+    private val locationHelper: LocationHelper
 ) : AndroidViewModel(application) {
     private val cities = mutableListOf<City>()
 

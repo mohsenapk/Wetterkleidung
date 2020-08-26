@@ -25,7 +25,6 @@ class CityActivity : AppCompatActivity() {
 
     @Inject
     lateinit var imageHelper: ImageHelper
-
     lateinit var viewModel: CityViewModel
     private val linearLayoutManager = LinearLayoutManager(this)
 

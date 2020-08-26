@@ -10,6 +10,7 @@ import com.mohsen.apk.wetterkleidung.repository.di.RepositoryModule
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelperImpl
+import com.mohsen.apk.wetterkleidung.utility.LocationHelper
 import com.mohsen.apk.wetterkleidung.utility.di.UtilityModule
 import dagger.Component
 import javax.inject.Singleton
@@ -29,4 +30,5 @@ interface ApplicationComponent {
     fun getImageHelper(): ImageHelper
     fun getSharedPreferenceManager(): SharedPreferenceManager
     fun getApplication(): BaseApplication
+    fun getLocationHelper(): LocationHelper
 }

@@ -1,9 +1,8 @@
 package com.mohsen.apk.wetterkleidung.utility.di
 
-import com.mohsen.apk.wetterkleidung.utility.DateHelper
-import com.mohsen.apk.wetterkleidung.utility.DateHelperImpl
-import com.mohsen.apk.wetterkleidung.utility.ImageHelper
-import com.mohsen.apk.wetterkleidung.utility.ImageHelperImpl
+import android.content.Context
+import com.mohsen.apk.wetterkleidung.base.BaseApplication
+import com.mohsen.apk.wetterkleidung.utility.*
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -18,5 +17,9 @@ class UtilityModule {
     @Provides
     @Singleton
     fun provideImageHelper(): ImageHelper = ImageHelperImpl()
+
+    @Provides
+    fun provideLocationHelper(application: BaseApplication): LocationHelper =
+        LocationHelperImpl(application.applicationContext)
 
 }
