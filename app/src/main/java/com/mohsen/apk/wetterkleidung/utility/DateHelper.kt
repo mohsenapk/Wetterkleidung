@@ -16,6 +16,7 @@ interface DateHelper {
     fun getDayOfWeekFromTimestamp(date: LocalDateTime): DayOfWeek
     fun isToday(date: LocalDateTime): Boolean
     fun isMorning(date: LocalDateTime): Boolean
+    fun isDateExpiredWithOneHour(date: LocalDateTime): Boolean
 }
 
 class DateHelperImpl : DateHelper {
@@ -50,5 +51,11 @@ class DateHelperImpl : DateHelper {
             DateTimeUtils.toLocalDateTime(Timestamp(timeStampNumber * 1000))
         else
             DateTimeUtils.toLocalDateTime(Timestamp(timeStampNumber))
+    }
+
+    override fun isDateExpiredWithOneHour(date: LocalDateTime): Boolean {
+        val currentHour = LocalDateTime.now().hour
+        val oldHour = date.hour
+        return (currentHour - oldHour > 1)
     }
 }

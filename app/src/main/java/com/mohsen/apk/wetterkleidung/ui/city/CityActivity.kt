@@ -1,11 +1,15 @@
 package com.mohsen.apk.wetterkleidung.ui.city
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +20,10 @@ import com.mohsen.apk.wetterkleidung.ui.adapter.CityAdapter
 import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.android.synthetic.main.activity_city.*
+import timber.log.Timber
 import javax.inject.Inject
+
+private const val locationRequestCode = 10000
 
 class CityActivity : AppCompatActivity() {
 
@@ -47,6 +54,33 @@ class CityActivity : AppCompatActivity() {
             clNoneCity.visibility = if (it) View.VISIBLE else View.INVISIBLE
         })
         viewModel.finishApp.observe(this, Observer { finishApp() })
+        viewModel.getLocationPermission.observe(this, Observer { getLocationPermission() })
+    }
+
+    private fun getLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ), locationRequestCode
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if(requestCode == locationRequestCode){
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Timber.d("location -permission granted")
+            }
+        }
     }
 
     private fun finishApp() {

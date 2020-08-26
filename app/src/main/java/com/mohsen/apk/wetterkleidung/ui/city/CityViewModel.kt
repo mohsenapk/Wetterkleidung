@@ -1,5 +1,8 @@
 package com.mohsen.apk.wetterkleidung.ui.city
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.*
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
@@ -29,6 +32,7 @@ class CityViewModel(
     private val _goToLastActivity = MutableLiveData<Unit>()
     private val _finishApp = MutableLiveData<Unit>()
     private val _showNoneCitySelectedError = MutableLiveData<Boolean>()
+    private val _getLocationPermission = MutableLiveData<Unit>()
 
     val showAllCities: LiveData<List<City>> = _showAllCities
     val showSnackBarError: LiveData<String> = _showSnackBarError
@@ -36,6 +40,7 @@ class CityViewModel(
     val goToLastActivity: LiveData<Unit> = _goToMainActivity
     val showNoneCitySelectedError: LiveData<Boolean> = _showNoneCitySelectedError
     val finishApp: LiveData<Unit> = _finishApp
+    val getLocationPermission: LiveData<Unit> = _getLocationPermission
 
     fun start() {
         getAllCities()
@@ -55,6 +60,8 @@ class CityViewModel(
     }
 
     private fun saveCity(cityName: String, city: City) {
+        if (cities.any { it.name == cityName })
+            return
         prefs.putCity(cityName)
         cities.map { it.isDefault = false }
         city.isDefault = true
@@ -109,7 +116,7 @@ class CityViewModel(
 
     fun fabGpsClicked() = viewModelScope.launch {
         try {
-            val location = locationHelper.getLastLocationAsync().await()
+            val location = locationHelper.getLastLocationAsync()
             if (location != null) {
                 prefs.setLastLocation(location.latitude, location.longitude)
                 getCityFromLatAndLon(location.latitude, location.longitude)
@@ -117,6 +124,7 @@ class CityViewModel(
             } else
                 getCityFromLatAndLonPref()
         } catch (e: LocationPermissionNotGrantedException) {
+            _getLocationPermission.value = Unit
             Timber.d("location - ${e.message}")
         }
     }
@@ -134,7 +142,13 @@ class CityViewModel(
     }
 
     private fun getCityFromLatAndLon(lat: Double, lon: Double) = viewModelScope.launch {
-        getCurrentWeatherWithLatAndLon(lat, lon, WeatherUnit.METRIC)
+        val currentWeather = getCurrentWeatherWithLatAndLon(lat, lon, WeatherUnit.METRIC)
+        currentWeather?.let { currentWeather ->
+            val city = getCityFromWeather(currentWeather, currentWeather.cityName)
+            city?.let { city ->
+                saveCity(city.name, city)
+            }
+        }
     }
 
     private suspend fun getCurrentWeatherWithLatAndLon(

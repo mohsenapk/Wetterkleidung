@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mohsen.apk.wetterkleidung.BuildConfig
+import com.mohsen.apk.wetterkleidung.utility.DateHelper
+import org.threeten.bp.LocalDateTime
 import java.lang.Exception
 
 interface SharedPreferenceManager {
@@ -20,7 +22,10 @@ private const val cityKey = "CITY"
 private const val cityDefaultKey = "CITY_DEFAULT_KEY"
 private const val location = "LOCATION"
 
-class SharedPreferenceManagerImpl(context: Context) : SharedPreferenceManager {
+class SharedPreferenceManagerImpl(
+    context: Context,
+    private val dateHelper: DateHelper
+) : SharedPreferenceManager {
     private val prefs: SharedPreferences =
         context.getSharedPreferences(BuildConfig.SHARED_PREFRENCES_NAME, 0)
     private val gson = Gson()
@@ -58,13 +63,18 @@ class SharedPreferenceManagerImpl(context: Context) : SharedPreferenceManager {
         prefs.getString(cityDefaultKey, "")
 
     override fun setLastLocation(lat: Double, lon: Double) {
-        val strLocation = "$lat-$lon"
+        val strLocation = "$lat-$lon@${LocalDateTime.now()}"
         prefs.edit().putString(location, strLocation).apply()
     }
 
     override fun getLastLocation(): Pair<Double, Double>? {
         val strLocation = prefs.getString(location, "")
         if (strLocation.isNotEmpty()) {
+            val prefCreateDate = LocalDateTime.parse(strLocation.substringAfter("@"))
+            if (!dateHelper.isToday(prefCreateDate) || dateHelper.isDateExpiredWithOneHour(prefCreateDate)) {
+                prefs.edit().remove(location)
+                return null
+            }
             return Pair(
                 getDoubleFromString(strLocation.substringBefore("-")),
                 getDoubleFromString(strLocation.substringAfter("-"))

@@ -6,6 +6,7 @@ import com.mohsen.apk.wetterkleidung.db.WeatherDB
 import com.mohsen.apk.wetterkleidung.db.localService.WeatherLocalServiceImpl
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManagerImpl
+import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -29,7 +30,7 @@ class DBModule(private val context: Context) {
 
     @Provides
     @Singleton
-    fun provideSharedPreference(): SharedPreferenceManager =
-        SharedPreferenceManagerImpl(context)
+    fun provideSharedPreference(dateHelper: DateHelper): SharedPreferenceManager =
+        SharedPreferenceManagerImpl(context, dateHelper)
 
 }
