@@ -25,18 +25,12 @@ class CityViewModel(
 
     private val _showAllCities = MutableLiveData<List<City>>()
     private val _showSnackBarError = MutableLiveData<String>()
-    private val _goToMainActivity = MutableLiveData<Unit>()
-    private val _goToLastActivity = MutableLiveData<Unit>()
-    private val _finishApp = MutableLiveData<Unit>()
     private val _showNoneCitySelectedError = MutableLiveData<Boolean>()
     private val _getLocationPermission = MutableLiveData<Unit>()
 
     val showAllCities: LiveData<List<City>> = _showAllCities
     val showSnackBarError: LiveData<String> = _showSnackBarError
-    val goToMainActivity: LiveData<Unit> = _goToMainActivity
-    val goToLastActivity: LiveData<Unit> = _goToMainActivity
     val showNoneCitySelectedError: LiveData<Boolean> = _showNoneCitySelectedError
-    val finishApp: LiveData<Unit> = _finishApp
     val getLocationPermission: LiveData<Unit> = _getLocationPermission
 
     fun start() {
@@ -44,32 +38,38 @@ class CityViewModel(
     }
 
     fun addCityClicked(cityName: String) = viewModelScope.launch {
-        if (cityName.length < 3) return@launch
-        val duplicateCity = cities.filter { it.name.toUpperCase() == cityName.toUpperCase() }
-        if (duplicateCity.isNotEmpty()) {
-            _showSnackBarError.value = "duplicate City Name"
+        if (cityName.length < 3 && isDuplicatedCity(cityName))
             return@launch
-        }
         val city = getCity(cityName)
-        if (city != null) {
-            saveCity(cityName, city)
+        city?.let { saveCity(city) }
+    }
+
+    private fun isDuplicatedCity(cityName: String): Boolean {
+        val duplicateCity = cities.filter { it.name.toUpperCase() == cityName.toUpperCase() }
+        return duplicateCity.isNotEmpty()
+    }
+
+    private fun saveCity(city: City) {
+        if (isNewCity(city.name)) {
+            saveCityIntoPrefsAndList(city)
+            sendCitiesToView()
         }
     }
 
-    private fun saveCity(cityName: String, city: City) {
-        if (cities.any { it.name == cityName })
-            return
-        prefs.putCity(cityName)
+    private fun saveCityIntoPrefsAndList(city: City, isDefault: Boolean = true) {
+        prefs.putCity(city.name)
+        if (!isDefault) return
+        setDefaultCity(city.name)
         cities.map { it.isDefault = false }
         city.isDefault = true
         cities.add(city)
-        setDefaultCity(cityName)
-        sendCitiesToView()
     }
+
+    private fun isNewCity(cityName: String): Boolean =
+        !cities.any { it.name == cityName }
 
     fun rvCityClicked(selectedCity: City) {
         setDefaultCity(selectedCity.name)
-        _goToMainActivity.value = Unit
     }
 
     private fun setDefaultCity(cityName: String) {
@@ -77,19 +77,19 @@ class CityViewModel(
     }
 
     private fun sendCitiesToView() {
-        checkHasCitiesOrNot()
+        showHasNotCityError()
         if (cities.isNotEmpty())
             _showAllCities.value = cities
     }
 
-    private fun checkHasCitiesOrNot() {
+    private fun showHasNotCityError() {
         _showNoneCitySelectedError.value = cities.isEmpty()
     }
 
     private fun getAllCities() = viewModelScope.launch {
         val cityNames = prefs.getCities()
         if (cityNames.isEmpty()) {
-            checkHasCitiesOrNot()
+            showHasNotCityError()
             return@launch
         }
         setCitiesFromCityNames(cityNames)
@@ -97,6 +97,7 @@ class CityViewModel(
     }
 
     private suspend fun setCitiesFromCityNames(cityNames: List<String>) {
+        if (cityNames.isEmpty()) return
         val cityDefault = prefs.getCityDefault()
         cityNames.forEach { cityName ->
             val city = getCity(cityName)
@@ -116,13 +117,11 @@ class CityViewModel(
             val location = locationHelper.getLastLocationAsync()
             if (location != null) {
                 prefs.setLastLocation(location.latitude, location.longitude)
-                getCityFromLatAndLon(location.latitude, location.longitude)
-                Timber.d("location - ${location.latitude},${location.longitude}")
+                getCityFromLatAndLonRemote(location.latitude, location.longitude)
             } else
                 getCityFromLatAndLonPref()
         } catch (e: LocationPermissionNotGrantedException) {
             _getLocationPermission.value = Unit
-            Timber.d("location - ${e.message}")
         }
     }
 
@@ -132,19 +131,16 @@ class CityViewModel(
             val lat = latAndLonPair.first
             val lon = latAndLonPair.second
             if (lat > 0 && lon > 0) {
-                getCityFromLatAndLon(lat, lon)
+                getCityFromLatAndLonRemote(lat, lon)
                 Timber.d("location from pref $lat,$lon")
             }
         }
     }
 
-    private fun getCityFromLatAndLon(lat: Double, lon: Double) = viewModelScope.launch {
-        val currentWeather = getCurrentWeatherWithLatAndLon(lat, lon, WeatherUnit.METRIC)
-        currentWeather?.let { currentWeather ->
-            val city = getCityFromWeather(currentWeather, currentWeather.cityName)
-            city?.let { city ->
-                saveCity(city.name, city)
-            }
+    private fun getCityFromLatAndLonRemote(lat: Double, lon: Double) = viewModelScope.launch {
+        val city = getCity(lat, lon)
+        city?.let { city ->
+            saveCity(city)
         }
     }
 
@@ -152,14 +148,9 @@ class CityViewModel(
         lat: Double,
         lon: Double,
         unit: WeatherUnit
-    ): CurrentWeather? {
-        val response = repository.getCurrentWeatherWithLatAndLon(
-            lat,
-            lon,
-            unit
-        )
-        return currentWeatherToRepoResponse(response)
-    }
+    ): CurrentWeather? =
+        currentWeatherToRepoResponse(repository.getCurrentWeatherWithLatAndLon(lat, lon, unit))
+
 
     private fun currentWeatherToRepoResponse(response: RepositoryResponse<CurrentWeather>): CurrentWeather? {
         return when (response) {
@@ -171,26 +162,27 @@ class CityViewModel(
         }
     }
 
-    private suspend fun getCity(
-        cityName: String = "",
-        lat: Double = 0.0,
-        lon: Double = 0.0
-    ): City? {
-        var weather: CurrentWeather? = null
-        if (cityName.isNotEmpty())
-            weather = getCurrentWeather(cityName, WeatherUnit.METRIC)
-        else if (lat > 0 && lon > 0)
-            weather = getCurrentWeatherWithLatAndLon(lat, lon, WeatherUnit.METRIC)
+    private suspend fun getCity(cityName: String): City? {
+        val weather = getCurrentWeather(cityName, WeatherUnit.METRIC)
         weather?.let {
-            return getCityFromWeather(weather, cityName)
+            return getCityFromWeather(weather)
         }
         return null
     }
 
+    private suspend fun getCity(lat: Double, lon: Double): City? {
+        val weather = getCurrentWeatherWithLatAndLon(lat, lon, WeatherUnit.METRIC)
+        weather?.let {
+            return getCityFromWeather(weather)
+        }
+        return null
+    }
+
+
     private fun getCityFromWeather(
-        weather: CurrentWeather,
-        cityName: String
+        weather: CurrentWeather
     ): City? {
+        val cityName = weather.cityName
         val weatherTemp = weather.currentWeatherTemp?.temp?.roundToInt().toString()
         val weatherIcon = weather.weatherTitle?.get(0)?.icon
         return City().apply {
@@ -200,11 +192,4 @@ class CityViewModel(
         }
     }
 
-    fun onBackPressed() {
-        if (prefs.getCities().isEmpty()) {
-            _finishApp.value = Unit
-            return
-        } else
-            _goToMainActivity.value = Unit
-    }
 }

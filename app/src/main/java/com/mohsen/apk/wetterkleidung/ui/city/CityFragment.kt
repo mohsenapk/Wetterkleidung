@@ -9,11 +9,9 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mohsen.apk.wetterkleidung.R
-import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.City
 import com.mohsen.apk.wetterkleidung.ui.adapter.CityAdapter
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
