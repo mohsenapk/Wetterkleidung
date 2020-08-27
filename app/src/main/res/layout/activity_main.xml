@@ -9,6 +9,10 @@
     <FrameLayout
         android:id="@+id/mainFrame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <include layout="@layout/fragment_splash" />
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

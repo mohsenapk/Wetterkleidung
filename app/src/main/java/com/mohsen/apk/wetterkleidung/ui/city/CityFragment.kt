@@ -43,6 +43,16 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
         listenToViewModel()
     }
 
+    private fun initUI() {
+        etCity.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE)
+                imgAdd.callOnClick()
+            return@setOnEditorActionListener true
+        }
+        imgAdd.setOnClickListener { viewModel.addCityClicked(etCity.text.toString()) }
+        fabGPS.setOnClickListener { viewModel.fabGpsClicked() }
+    }
+
     private fun listenToViewModel() {
         viewModel.showAllCities.observe(this, Observer { initRvCities(it) })
         viewModel.showSnackBarError.observe(this, Observer { showSnackBarError(it) })
@@ -92,16 +102,6 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
                 viewModel.rvCityClicked(it)
             }
         }
-    }
-
-    private fun initUI() {
-        etCity.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE)
-                imgAdd.callOnClick()
-            return@setOnEditorActionListener true
-        }
-        imgAdd.setOnClickListener { viewModel.addCityClicked(etCity.text.toString()) }
-        fabGPS.setOnClickListener { viewModel.fabGpsClicked() }
     }
 
     private fun initViewModel() {

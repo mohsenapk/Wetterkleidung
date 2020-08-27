@@ -10,25 +10,25 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
-    private val _gotoCityActivity = MutableLiveData<Unit>()
-    private val _gotoMainActivity = MutableLiveData<Unit>()
+    private val _gotoCityFragment = MutableLiveData<Unit>()
+    private val _gotoWeatherFragment = MutableLiveData<Unit>()
     private val _changeLoaderImageResource = MutableLiveData<Int>()
 
-    val gotoMainActivity: LiveData<Unit> = _gotoMainActivity
-    val gotoCityActivity: LiveData<Unit> = _gotoCityActivity
+    val gotoWeatherFragment: LiveData<Unit> = _gotoWeatherFragment
+    val gotoCityFragment: LiveData<Unit> = _gotoCityFragment
     val changeLoaderImageResource: LiveData<Int> = _changeLoaderImageResource
 
     fun start() = viewModelScope.launch {
         loaderImageStart()
         if (prefs.getCityDefault().isEmpty())
-            _gotoCityActivity.value = Unit
+            _gotoCityFragment.value = Unit
         else
-            _gotoMainActivity.value = Unit
+            _gotoWeatherFragment.value = Unit
     }
 
     private suspend fun loaderImageStart() {
         for(i in 1..6){
-            delay(300)
+            delay(250)
             var resourceId = R.drawable.w1
             when (i) {
                 1 -> resourceId = R.drawable.w1
