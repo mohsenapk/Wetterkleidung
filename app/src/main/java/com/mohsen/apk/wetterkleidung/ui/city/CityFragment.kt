@@ -26,6 +26,10 @@ private const val locationRequestCode = 10000
 
 class CityFragment : BaseFragment(R.layout.fragment_city) {
 
+    companion object {
+        fun getInstance(): CityFragment = CityFragment()
+    }
+
     @Inject
     lateinit var viewModelFactory: CityViewModelFactory
 
@@ -54,28 +58,26 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
     }
 
     private fun listenToViewModel() {
-        viewModel.showAllCities.observe(this, Observer { initRvCities(it) })
-        viewModel.showSnackBarError.observe(this, Observer { showSnackBarError(it) })
-        viewModel.goToMainActivity.observe(this, Observer { gotoMainActivity() })
-        viewModel.goToLastActivity.observe(this, Observer {
-
-        })
-        viewModel.showNoneCitySelectedError.observe(this, Observer {
+        liveDataListener(viewModel.showAllCities) { initRvCities(it) }
+        liveDataListener(viewModel.showSnackBarError) { showSnackBarError(it) }
+        liveDataListener(viewModel.getLocationPermission) { getLocationPermission() }
+        liveDataListener(viewModel.showNoneCitySelectedError) {
             clNoneCity.visibility = if (it) View.VISIBLE else View.INVISIBLE
-        })
-        viewModel.finishApp.observe(this, Observer { finishApp() })
-        viewModel.getLocationPermission.observe(this, Observer { getLocationPermission() })
+        }
     }
 
     private fun getLocationPermission() {
-            if (ContextCompat.checkSelfPermission(context as Activity, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    context as Activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    locationRequestCode
-                )
-            }
+        if (ContextCompat.checkSelfPermission(
+                context as Activity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                context as Activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                locationRequestCode
+            )
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -89,10 +91,6 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
                 fabGPS.callOnClick()
             }
         }
-    }
-
-    private fun finishApp() {
-//        finishAffinity()
     }
 
     private fun initRvCities(list: List<City>) {
@@ -109,16 +107,11 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
     }
 
     override fun initDagger() {
-        ((context as Activity).application as BaseApplication).cityComponent.inject(this)
+        application.cityComponent.inject(this)
     }
 
     override fun showSnackBarError(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun gotoMainActivity() {
-//        val intent = Intent(this, WeatherFragment::class.java)
-//        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//        startActivity(intent)
-    }
 }

@@ -13,6 +13,10 @@ import javax.inject.Inject
 
 class SettingFragment : BaseFragment(R.layout.fragment_setting) {
 
+    companion object {
+        fun getInstance(): SettingFragment = SettingFragment()
+    }
+
     @Inject
     lateinit var viewModelFactory: SettingViewModelFactory
     lateinit var viewModel: SettingViewModel
@@ -26,17 +30,8 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
     }
 
 
-
     private fun listenToViewModel() {
-        viewModel.exitApp.observe(this, Observer {
-
-        })
-        viewModel.gotoCityActivity.observe(this, Observer { gotoCityActivity() })
-        viewModel.gotoTimeSetting.observe(this , Observer {  })
-    }
-
-    private fun gotoCityActivity() {
-//        startActivity(Intent(this, CityFragment::class.java))
+        liveDataListener(viewModel.exitApp) { activity?.let { it.finishAffinity() } }
     }
 
     private fun initUi() {
@@ -61,7 +56,7 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
     }
 
     override fun initDagger() {
-        ((context as Activity).application as BaseApplication).settingComponent.inject(this)
+        application.settingComponent.inject(this)
     }
 
     override fun showSnackBarError(message: String) {

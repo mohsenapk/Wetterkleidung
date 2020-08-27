@@ -34,7 +34,6 @@ class WeatherViewModel(
     private val _progress = MutableLiveData<Boolean>()
     private val _weatherImageIconId = MutableLiveData<String>()
     private val _weatherLowInfoList = MutableLiveData<List<WeatherLowInformation>>()
-    private val _goToCityActivity = MutableLiveData<Unit>()
     private val _seekBarTextList = MutableLiveData<List<String>>()
     private val _seekBarSelectedText = MutableLiveData<String>()
     private val _seekTimeProgress = MutableLiveData<Float>()
@@ -51,7 +50,6 @@ class WeatherViewModel(
     val progress: LiveData<Boolean> = _progress
     val weatherImageIconId: LiveData<String> = _weatherImageIconId
     val weatherLowInfoList: LiveData<List<WeatherLowInformation>> = _weatherLowInfoList
-    val goToCityActivity: LiveData<Unit> = _goToCityActivity
     val seekBarTextList: LiveData<List<String>> = _seekBarTextList
     val seekBarSelectedText: LiveData<String> = _seekBarSelectedText
     val seekTimeProgress: LiveData<Float> = _seekTimeProgress
@@ -59,7 +57,6 @@ class WeatherViewModel(
     fun start() = viewModelScope.launch {
         val defaultCity = prefs.getCityDefault()
         if (defaultCity.isEmpty()) {
-            _goToCityActivity.value = Unit
             return@launch
         }
         forecastWeather5DaysHourly(defaultCity, WeatherUnit.METRIC)
