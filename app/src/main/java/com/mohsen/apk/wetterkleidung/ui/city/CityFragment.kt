@@ -1,13 +1,12 @@
 package com.mohsen.apk.wetterkleidung.ui.city
 
 import android.Manifest
-import android.content.Intent
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -17,15 +16,15 @@ import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.City
 import com.mohsen.apk.wetterkleidung.ui.adapter.CityAdapter
-import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
+import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
-import kotlinx.android.synthetic.main.activity_city.*
+import kotlinx.android.synthetic.main.fragment_city.*
 import timber.log.Timber
 import javax.inject.Inject
 
 private const val locationRequestCode = 10000
 
-class CityActivity : AppCompatActivity() {
+class CityFragment : BaseFragment(R.layout.fragment_city) {
 
     @Inject
     lateinit var viewModelFactory: CityViewModelFactory
@@ -33,11 +32,10 @@ class CityActivity : AppCompatActivity() {
     @Inject
     lateinit var imageHelper: ImageHelper
     lateinit var viewModel: CityViewModel
-    private val linearLayoutManager = LinearLayoutManager(this)
+    private val linearLayoutManager = LinearLayoutManager(context)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_city)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initDagger()
         initViewModel()
         viewModel.start()
@@ -49,7 +47,9 @@ class CityActivity : AppCompatActivity() {
         viewModel.showAllCities.observe(this, Observer { initRvCities(it) })
         viewModel.showSnackBarError.observe(this, Observer { showSnackBarError(it) })
         viewModel.goToMainActivity.observe(this, Observer { gotoMainActivity() })
-        viewModel.goToLastActivity.observe(this, Observer { backToLastActivity() })
+        viewModel.goToLastActivity.observe(this, Observer {
+
+        })
         viewModel.showNoneCitySelectedError.observe(this, Observer {
             clNoneCity.visibility = if (it) View.VISIBLE else View.INVISIBLE
         })
@@ -58,17 +58,14 @@ class CityActivity : AppCompatActivity() {
     }
 
     private fun getLocationPermission() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ), locationRequestCode
-            )
-        }
+            if (ContextCompat.checkSelfPermission(context as Activity, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    context as Activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    locationRequestCode
+                )
+            }
     }
 
     override fun onRequestPermissionsResult(
@@ -76,15 +73,16 @@ class CityActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if(requestCode == locationRequestCode){
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == locationRequestCode) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Timber.d("location -permission granted")
+                fabGPS.callOnClick()
             }
         }
     }
 
     private fun finishApp() {
-        finishAffinity()
+//        finishAffinity()
     }
 
     private fun initRvCities(list: List<City>) {
@@ -110,25 +108,17 @@ class CityActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(CityViewModel::class.java)
     }
 
-    private fun initDagger() {
-        (application as BaseApplication).cityComponent.inject(this)
+    override fun initDagger() {
+        ((context as Activity).application as BaseApplication).cityComponent.inject(this)
     }
 
-    private fun showSnackBarError(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onBackPressed() {
-        viewModel.onBackPressed()
-    }
-
-    private fun backToLastActivity() {
-        super.onBackPressed()
+    override fun showSnackBarError(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun gotoMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+//        val intent = Intent(this, WeatherFragment::class.java)
+//        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//        startActivity(intent)
     }
 }

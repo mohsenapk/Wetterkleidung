@@ -1,44 +1,42 @@
 package com.mohsen.apk.wetterkleidung.ui.setting
 
-import android.content.Intent
-import android.os.BaseBundle
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
-import android.widget.CompoundButton
-import android.widget.RadioButton
-import android.widget.RadioGroup
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
-import com.mohsen.apk.wetterkleidung.ui.city.CityActivity
-import kotlinx.android.synthetic.main.activity_setting.*
+import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
+import kotlinx.android.synthetic.main.fragment_setting.*
 import javax.inject.Inject
 
-class SettingActivity : AppCompatActivity() {
+class SettingFragment : BaseFragment(R.layout.fragment_setting) {
 
     @Inject
     lateinit var viewModelFactory: SettingViewModelFactory
     lateinit var viewModel: SettingViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_setting)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initDagger()
         initViewModel()
         initUi()
         listenToViewModel()
     }
 
+
+
     private fun listenToViewModel() {
         viewModel.exitApp.observe(this, Observer {
-            finishAffinity() })
+
+        })
         viewModel.gotoCityActivity.observe(this, Observer { gotoCityActivity() })
         viewModel.gotoTimeSetting.observe(this , Observer {  })
     }
 
     private fun gotoCityActivity() {
-        startActivity(Intent(this, CityActivity::class.java))
+//        startActivity(Intent(this, CityFragment::class.java))
     }
 
     private fun initUi() {
@@ -62,7 +60,11 @@ class SettingActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(SettingViewModel::class.java)
     }
 
-    private fun initDagger() {
-        (application as BaseApplication).settingComponent.inject(this)
+    override fun initDagger() {
+        ((context as Activity).application as BaseApplication).settingComponent.inject(this)
+    }
+
+    override fun showSnackBarError(message: String) {
+        TODO("Not yet implemented")
     }
 }

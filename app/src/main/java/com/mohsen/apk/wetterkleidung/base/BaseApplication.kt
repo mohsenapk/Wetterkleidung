@@ -12,24 +12,24 @@ import com.mohsen.apk.wetterkleidung.repository.di.RepositoryModule
 import com.mohsen.apk.wetterkleidung.ui.city.di.CityComponent
 import com.mohsen.apk.wetterkleidung.ui.city.di.CityModule
 import com.mohsen.apk.wetterkleidung.ui.city.di.DaggerCityComponent
-import com.mohsen.apk.wetterkleidung.ui.main.di.DaggerMainComponent
-import com.mohsen.apk.wetterkleidung.ui.main.di.MainComponent
-import com.mohsen.apk.wetterkleidung.ui.main.di.MainModule
+import com.mohsen.apk.wetterkleidung.ui.weather.di.DaggerWeatherComponent
+import com.mohsen.apk.wetterkleidung.ui.weather.di.WeatherComponent
+import com.mohsen.apk.wetterkleidung.ui.weather.di.WeatherModule
 import com.mohsen.apk.wetterkleidung.ui.setting.di.DaggerSettingComponent
 import com.mohsen.apk.wetterkleidung.ui.setting.di.SettingComponent
 import com.mohsen.apk.wetterkleidung.ui.setting.di.SettingModule
-import com.mohsen.apk.wetterkleidung.ui.splash.di.DaggerSplashComponent
-import com.mohsen.apk.wetterkleidung.ui.splash.di.SplashComponent
-import com.mohsen.apk.wetterkleidung.ui.splash.di.SplashModule
+import com.mohsen.apk.wetterkleidung.ui.main.di.DaggerMainComponent
+import com.mohsen.apk.wetterkleidung.ui.main.di.MainComponent
+import com.mohsen.apk.wetterkleidung.ui.main.di.MainModule
 import com.mohsen.apk.wetterkleidung.utility.di.UtilityModule
 import timber.log.Timber
 
 class BaseApplication : Application() {
 
     lateinit var applicationComponent: ApplicationComponent
-    lateinit var mainComponent: MainComponent
+    lateinit var weatherComponent: WeatherComponent
     lateinit var cityComponent: CityComponent
-    lateinit var splashComponent: SplashComponent
+    lateinit var mainComponent: MainComponent
     lateinit var settingComponent: SettingComponent
 
     override fun onCreate() {
@@ -54,9 +54,9 @@ class BaseApplication : Application() {
             .utilityModule(UtilityModule())
             .build()
 
-        mainComponent =
-            DaggerMainComponent.builder()
-                .mainModule(MainModule())
+        weatherComponent =
+            DaggerWeatherComponent.builder()
+                .weatherModule(WeatherModule())
                 .applicationComponent(applicationComponent)
                 .build()
 
@@ -66,9 +66,9 @@ class BaseApplication : Application() {
                 .applicationComponent(applicationComponent)
                 .build()
 
-        splashComponent =
-            DaggerSplashComponent.builder()
-                .splashModule(SplashModule())
+        mainComponent =
+            DaggerMainComponent.builder()
+                .mainModule(MainModule())
                 .applicationComponent(applicationComponent)
                 .build()
 

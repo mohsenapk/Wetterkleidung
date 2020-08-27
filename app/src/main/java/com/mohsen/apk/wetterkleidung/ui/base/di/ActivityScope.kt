@@ -1,4 +1,4 @@
-package com.mohsen.apk.wetterkleidung.ui.di
+package com.mohsen.apk.wetterkleidung.ui.base.di
 
 import java.lang.annotation.Documented
 import java.lang.annotation.Retention

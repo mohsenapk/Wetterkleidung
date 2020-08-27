@@ -1,8 +1,5 @@
 package com.mohsen.apk.wetterkleidung.ui.city
 
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.*
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager

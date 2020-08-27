@@ -1,8 +1,8 @@
 package com.mohsen.apk.wetterkleidung.ui.setting.di
 
 import com.mohsen.apk.wetterkleidung.base.di.ApplicationComponent
-import com.mohsen.apk.wetterkleidung.ui.di.ActivityScope
-import com.mohsen.apk.wetterkleidung.ui.setting.SettingActivity
+import com.mohsen.apk.wetterkleidung.ui.base.di.ActivityScope
+import com.mohsen.apk.wetterkleidung.ui.setting.SettingFragment
 import dagger.Component
 
 @ActivityScope
@@ -11,5 +11,5 @@ import dagger.Component
     dependencies = [ApplicationComponent::class]
 )
 interface SettingComponent {
-    fun inject(target: SettingActivity)
+    fun inject(target: SettingFragment)
 }
