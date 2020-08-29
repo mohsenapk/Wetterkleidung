@@ -21,6 +21,7 @@ class WeatherViewModel(
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
     private var forecast5DaysWeather: Forecast5DaysWeather? = null
     private lateinit var allSeekBarIndex: List<Int>
+    private lateinit var weatherUnit: WeatherUnit
 
     private val _snackBarError = MutableLiveData<String>()
     private val _cityName = MutableLiveData<String>()
@@ -55,16 +56,18 @@ class WeatherViewModel(
     val seekTimeProgress: LiveData<Float> = _seekTimeProgress
 
     fun start() = viewModelScope.launch {
+        weatherUnit = prefs.getWeatherUnit()
         val defaultCity = prefs.getCityDefault()
         if (defaultCity.isEmpty()) {
             return@launch
         }
-        forecastWeather5DaysHourly(defaultCity, WeatherUnit.METRIC)
-        forecastWeather5DaysAVG(defaultCity, WeatherUnit.METRIC)
+        forecastWeather5DaysHourly(defaultCity,weatherUnit)
+        forecastWeather5DaysAVG(defaultCity, weatherUnit)
         dateChanged(LocalDateTime.now())
     }
 
     fun onResume() {
+        weatherUnit = prefs.getWeatherUnit()
         val defaultCity = prefs.getCityDefault()
         if (defaultCity.toUpperCase() != forecast5DaysWeather?.city?.cityName?.toUpperCase())
             start()

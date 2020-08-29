@@ -6,24 +6,28 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mohsen.apk.wetterkleidung.BuildConfig
 import com.mohsen.apk.wetterkleidung.model.City
+import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import org.threeten.bp.LocalDateTime
 import java.lang.Exception
 
 interface SharedPreferenceManager {
-    fun putCity(cityName: String)
-    fun putCity(cityList: List<City>)
+    fun setCity(cityName: String)
+    fun setCity(cityList: List<City>)
     fun getCities(): List<String>
     fun setCityDefault(cityName: String)
     fun getCityDefault(): String
     fun setLastLocation(lat: Double, lon: Double)
     fun getLastLocation(): Pair<Double, Double>?
     fun removeCities()
+    fun setWeatherUnit(unit: String)
+    fun getWeatherUnit(): WeatherUnit
 }
 
 private const val cityKey = "CITY"
 private const val cityDefaultKey = "CITY_DEFAULT_KEY"
 private const val location = "LOCATION"
+private const val weatherUnit = "WEATHER_UNIT"
 
 class SharedPreferenceManagerImpl(
     context: Context,
@@ -33,15 +37,15 @@ class SharedPreferenceManagerImpl(
         context.getSharedPreferences(BuildConfig.SHARED_PREFRENCES_NAME, 0)
     private val gson = Gson()
 
-    override fun putCity(cityName: String) {
+    override fun setCity(cityName: String) {
         getCityList().forEach { if (it == cityName) return }
         val list = getCityList().toMutableList()
         list.add(cityName)
         addCityList(list)
     }
 
-    override fun putCity(cityList: List<City>) {
-        cityList.forEach { putCity(it.name) }
+    override fun setCity(cityList: List<City>) {
+        cityList.forEach { setCity(it.name) }
     }
 
     override fun getCities(): List<String> {
@@ -102,5 +106,20 @@ class SharedPreferenceManagerImpl(
     override fun removeCities() {
         prefs.edit().remove(cityKey).apply()
         prefs.edit().remove(cityDefaultKey).apply()
+    }
+
+    override fun setWeatherUnit(unit: String) {
+        prefs.edit().putString(weatherUnit, unit).apply()
+    }
+
+    override fun getWeatherUnit(): WeatherUnit {
+        val weatherUnitStr = prefs.getString(weatherUnit, "")
+        weatherUnitStr?.let {
+            if (weatherUnitStr.toUpperCase() == WeatherUnit.METRIC.name.toUpperCase())
+                return WeatherUnit.METRIC
+            if (weatherUnitStr.toUpperCase() == WeatherUnit.IMPERIAL.name.toUpperCase())
+                return WeatherUnit.IMPERIAL
+        }
+        return WeatherUnit.METRIC
     }
 }

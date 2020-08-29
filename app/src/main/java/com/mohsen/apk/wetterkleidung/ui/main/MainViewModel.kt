@@ -1,6 +1,5 @@
 package com.mohsen.apk.wetterkleidung.ui.main
 
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
     private val _gotoCityFragment = MutableLiveData<Unit>()

@@ -1,7 +1,8 @@
 package com.mohsen.apk.wetterkleidung.model
 
 enum class WeatherUnit {
-    METRIC
+    METRIC,
+    IMPERIAL
 }
 
 enum class SeekBarValue(

@@ -113,4 +113,8 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
 }

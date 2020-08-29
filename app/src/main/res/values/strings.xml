@@ -15,4 +15,6 @@
     <string name="set_time_periods">set time periods</string>
     <string name="add_or_remove_cities">add or remove cities</string>
     <string name="exit_app">Exit App</string>
+    <string name="set_celsius">Celsius Set</string>
+    <string name="set_fahrenheit">Fahrenheit set</string>
 </resources>

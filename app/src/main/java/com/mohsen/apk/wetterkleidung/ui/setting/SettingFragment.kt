@@ -3,6 +3,7 @@ package com.mohsen.apk.wetterkleidung.ui.setting
 import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.mohsen.apk.wetterkleidung.R
@@ -32,6 +33,11 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
 
     private fun listenToViewModel() {
         liveDataListener(viewModel.exitApp) { activity?.let { it.finishAffinity() } }
+        liveDataListener(viewModel.showSnackBarText){showSnackBarText(it)}
+    }
+
+    private fun showSnackBarText(text: String) {
+        Toast.makeText(context ,text , Toast.LENGTH_SHORT).show()
     }
 
     private fun initUi() {

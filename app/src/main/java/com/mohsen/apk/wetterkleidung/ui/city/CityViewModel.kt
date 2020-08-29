@@ -22,6 +22,7 @@ class CityViewModel(
     private val locationHelper: LocationHelper
 ) : AndroidViewModel(application) {
     private val cities = mutableListOf<City>()
+    private lateinit var weatherUnit : WeatherUnit
 
     private val _showAllCities = MutableLiveData<List<City>>()
     private val _showSnackBarError = MutableLiveData<String>()
@@ -34,7 +35,12 @@ class CityViewModel(
     val getLocationPermission: LiveData<Unit> = _getLocationPermission
 
     fun start() {
+        weatherUnit = prefs.getWeatherUnit()
         getAllCities()
+    }
+
+    fun onResume() {
+        weatherUnit = prefs.getWeatherUnit()
     }
 
     fun addCityClicked(cityName: String) = viewModelScope.launch {
@@ -57,7 +63,7 @@ class CityViewModel(
     }
 
     private fun saveCityIntoPrefsAndList(city: City, isDefault: Boolean = true) {
-        prefs.putCity(city.name)
+        prefs.setCity(city.name)
         if (!isDefault) return
         setDefaultCity(city.name)
         cities.map { it.isDefault = false }
@@ -163,7 +169,7 @@ class CityViewModel(
     }
 
     private suspend fun getCity(cityName: String): City? {
-        val weather = getCurrentWeather(cityName, WeatherUnit.METRIC)
+        val weather = getCurrentWeather(cityName, weatherUnit)
         weather?.let {
             return getCityFromWeather(weather)
         }
@@ -171,7 +177,7 @@ class CityViewModel(
     }
 
     private suspend fun getCity(lat: Double, lon: Double): City? {
-        val weather = getCurrentWeatherWithLatAndLon(lat, lon, WeatherUnit.METRIC)
+        val weather = getCurrentWeatherWithLatAndLon(lat, lon, weatherUnit)
         weather?.let {
             return getCityFromWeather(weather)
         }
@@ -213,7 +219,8 @@ class CityViewModel(
 
     private fun updateCityPref(list: List<City>) {
         prefs.removeCities()
-        prefs.putCity(list)
+        prefs.setCity(list)
     }
+
 
 }
