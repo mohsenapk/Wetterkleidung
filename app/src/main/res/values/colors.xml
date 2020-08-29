@@ -9,6 +9,8 @@
     <color name="backBottom">#79bd65</color>
     <color name="backBottomDark">#5c8c4d</color>
     <color name="gray">#999999</color>
+    <color name="red">#FF2222</color>
+    <color name="light_red">#FFBBBB</color>
     <color name="blue">#0088ff</color>
     <color name="light_gray">#cccccc</color>
     <color name="dark_green">#046532</color>

@@ -21,12 +21,31 @@
         tools:text="14.4.2009" />
 
     <ImageView
+        android:id="@+id/ivDelete"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:src="@android:drawable/ic_menu_delete"
+        android:padding="8dp"
+        android:tint="@color/red" />
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        app:layout_constraintRight_toLeftOf="@id/ivDelete"
+        android:background="@color/light_red"
+        />
+
+    <ImageView
         android:id="@+id/ivIcon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintRight_toLeftOf="@id/ivDelete"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="4dp"/>
 
     <TextView
         android:id="@+id/tvTempDegree"

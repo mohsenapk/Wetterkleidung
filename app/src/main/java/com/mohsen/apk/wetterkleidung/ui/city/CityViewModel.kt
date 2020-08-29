@@ -38,7 +38,7 @@ class CityViewModel(
     }
 
     fun addCityClicked(cityName: String) = viewModelScope.launch {
-        if (cityName.length < 3 && isDuplicatedCity(cityName))
+        if (cityName.length < 3 || isDuplicatedCity(cityName))
             return@launch
         val city = getCity(cityName)
         city?.let { saveCity(city) }
@@ -190,6 +190,30 @@ class CityViewModel(
             temp = weatherTemp
             if (weatherIcon != null) tempIconId = weatherIcon
         }
+    }
+
+    fun rvDeleteItem(city: City) {
+        removeCity(city)
+    }
+
+    private fun removeCity(city: City) {
+        if (city.isDefault && cities.size > 1)
+            changeDefaultCityAfterRemove(city)
+        cities.remove(city)
+        updateCityPref(cities)
+    }
+
+    private fun changeDefaultCityAfterRemove(removedCity: City) {
+        val removedItemPosition = cities.indexOf(removedCity)
+        if (removedItemPosition == 0)
+            cities[1].isDefault = true
+        else
+            cities[removedItemPosition - 1].isDefault = true
+    }
+
+    private fun updateCityPref(list: List<City>) {
+        prefs.removeCities()
+        prefs.putCity(list)
     }
 
 }

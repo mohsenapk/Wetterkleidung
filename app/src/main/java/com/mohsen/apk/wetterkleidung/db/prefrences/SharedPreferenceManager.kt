@@ -5,17 +5,20 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mohsen.apk.wetterkleidung.BuildConfig
+import com.mohsen.apk.wetterkleidung.model.City
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import org.threeten.bp.LocalDateTime
 import java.lang.Exception
 
 interface SharedPreferenceManager {
     fun putCity(cityName: String)
+    fun putCity(cityList: List<City>)
     fun getCities(): List<String>
     fun setCityDefault(cityName: String)
     fun getCityDefault(): String
     fun setLastLocation(lat: Double, lon: Double)
     fun getLastLocation(): Pair<Double, Double>?
+    fun removeCities()
 }
 
 private const val cityKey = "CITY"
@@ -35,6 +38,10 @@ class SharedPreferenceManagerImpl(
         val list = getCityList().toMutableList()
         list.add(cityName)
         addCityList(list)
+    }
+
+    override fun putCity(cityList: List<City>) {
+        cityList.forEach { putCity(it.name) }
     }
 
     override fun getCities(): List<String> {
@@ -71,7 +78,10 @@ class SharedPreferenceManagerImpl(
         val strLocation = prefs.getString(location, "")
         if (strLocation.isNotEmpty()) {
             val prefCreateDate = LocalDateTime.parse(strLocation.substringAfter("@"))
-            if (!dateHelper.isToday(prefCreateDate) || dateHelper.isDateExpiredWithOneHour(prefCreateDate)) {
+            if (!dateHelper.isToday(prefCreateDate) || dateHelper.isDateExpiredWithOneHour(
+                    prefCreateDate
+                )
+            ) {
                 prefs.edit().remove(location)
                 return null
             }
@@ -87,5 +97,10 @@ class SharedPreferenceManagerImpl(
         str.toDouble()
     } catch (e: Exception) {
         0.0
+    }
+
+    override fun removeCities() {
+        prefs.edit().remove(cityKey).apply()
+        prefs.edit().remove(cityDefaultKey).apply()
     }
 }

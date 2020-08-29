@@ -94,9 +94,10 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
     private fun initRvCities(list: List<City>) {
         rvCities.apply {
             layoutManager = linearLayoutManager
-            adapter = CityAdapter(list, imageHelper) {
-                viewModel.rvCityClicked(it)
-            }
+            adapter = CityAdapter(list, imageHelper,
+                { viewModel.rvCityClicked(it) },
+                { viewModel.rvDeleteItem(it) }
+            )
         }
     }
 

@@ -15,10 +15,12 @@ import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 class CityAdapter(
     private val list: List<City>,
     private val imageHelper: ImageHelper,
-    private val itemClicked: (city: City) -> Unit
+    private val itemClicked: (city: City) -> Unit,
+    private val itemDeleteClicked: (city: City) -> Unit
 ) :
     RecyclerView.Adapter<CityAdapter.CityHolder>() {
     private lateinit var context: Context
+    private lateinit var deletedItem: City
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityHolder {
         context = parent.context
         val view = LayoutInflater.from(parent.context)
@@ -36,22 +38,33 @@ class CityAdapter(
         private val tvCity: TextView = view.findViewById(R.id.tvCity)
         private val tvTemp: TextView = view.findViewById(R.id.tvTemp)
         private val ivIcon: ImageView = view.findViewById(R.id.ivIcon)
+        private val ivDelete: ImageView = view.findViewById(R.id.ivDelete)
+
 
         init {
             parentView.setOnClickListener {
-                val city = list[adapterPosition]
-                itemClicked(city)
+                itemClicked(list[adapterPosition])
                 setDefaultCityWithItemClicked(adapterPosition)
+            }
+            ivDelete.setOnClickListener {
+                deleteItem(adapterPosition)
+                itemDeleteClicked(deletedItem)
             }
         }
 
         private fun setDefaultCityWithItemClicked(position: Int) {
             list.map { it.isDefault = false }
-            setDefaultCity(adapterPosition)
+            setDefaultCity(position)
         }
 
         private fun setDefaultCity(position: Int) {
             list[position].isDefault = true
+            notifyDataSetChanged()
+        }
+
+        private fun deleteItem(position: Int) {
+            deletedItem = list[position]
+            list.toMutableList().removeAt(position)
             notifyDataSetChanged()
         }
 
