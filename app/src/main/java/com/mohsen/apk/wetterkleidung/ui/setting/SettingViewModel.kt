@@ -11,9 +11,11 @@ class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel()
 
     private val _exitApp = MutableLiveData<Unit>()
     private val _showSnackBarText = MutableLiveData<String>()
+    private val _showTimeSelectingDialog = MutableLiveData<Unit>()
 
     val exitApp: LiveData<Unit> = _exitApp
     val showSnackBarText: LiveData<String> = _showSnackBarText
+    val showTimeSelectingDialog: LiveData<Unit> = _showTimeSelectingDialog
 
 
     fun citySettingClicked() {
@@ -21,7 +23,7 @@ class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel()
     }
 
     fun timeSettingClicked() {
-
+        _showTimeSelectingDialog.value = Unit
     }
 
     fun weatherUnitCelsiusClicked() {

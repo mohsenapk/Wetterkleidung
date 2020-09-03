@@ -7,6 +7,8 @@ import com.mohsen.apk.wetterkleidung.network.di.NetworkModule
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepositoryImpl
 import com.mohsen.apk.wetterkleidung.repository.di.RepositoryModule
+import com.mohsen.apk.wetterkleidung.ui.dialog.DialogManager
+import com.mohsen.apk.wetterkleidung.ui.dialog.di.DialogModule
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelperImpl

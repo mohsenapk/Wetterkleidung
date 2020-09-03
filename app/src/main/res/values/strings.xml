@@ -17,4 +17,6 @@
     <string name="exit_app">Exit App</string>
     <string name="set_celsius">Celsius Set</string>
     <string name="set_fahrenheit">Fahrenheit set</string>
+    <string name="accept">Accept</string>
+    <string name="cancel">cancel</string>
 </resources>

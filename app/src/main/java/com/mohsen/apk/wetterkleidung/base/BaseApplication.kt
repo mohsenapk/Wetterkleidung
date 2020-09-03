@@ -12,6 +12,7 @@ import com.mohsen.apk.wetterkleidung.repository.di.RepositoryModule
 import com.mohsen.apk.wetterkleidung.ui.city.di.CityComponent
 import com.mohsen.apk.wetterkleidung.ui.city.di.CityModule
 import com.mohsen.apk.wetterkleidung.ui.city.di.DaggerCityComponent
+import com.mohsen.apk.wetterkleidung.ui.dialog.di.DialogModule
 import com.mohsen.apk.wetterkleidung.ui.weather.di.DaggerWeatherComponent
 import com.mohsen.apk.wetterkleidung.ui.weather.di.WeatherComponent
 import com.mohsen.apk.wetterkleidung.ui.weather.di.WeatherModule
@@ -76,6 +77,7 @@ class BaseApplication : Application() {
             DaggerSettingComponent.builder()
                 .settingModule(SettingModule())
                 .applicationComponent(applicationComponent)
+                .dialogModule(DialogModule())
                 .build()
 
     }
