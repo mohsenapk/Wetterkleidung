@@ -6,14 +6,17 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.model.SeekBarValue
+import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import com.mohsen.apk.wetterkleidung.ui.adapter.TimeSelectingAdapter
 import kotlinx.android.synthetic.main.dialog_weather_time_selecting.*
+import timber.log.Timber
 
 class WeatherTimeSelectingDialog(
     context: Context
 ) : Dialog(context) {
     private val rvTimesLayoutManager = LinearLayoutManager(context)
-    private val  listStrTimes = mutableListOf<String>()
+    private var listTimes = mutableListOf(TimeSelect("select all", true))
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,16 +26,25 @@ class WeatherTimeSelectingDialog(
     }
 
     private fun initUi() {
+        btnAccept.setOnClickListener {
+            if(listTimes.isEmpty())
+                return@setOnClickListener
+            Timber.d("list-times : \n $listTimes")
+            dismiss()
+        }
+        btnCancel.setOnClickListener { dismiss() }
         rvTimes.apply {
             layoutManager = rvTimesLayoutManager
-            adapter = TimeSelectingAdapter(listStrTimes)
+            adapter = TimeSelectingAdapter(listTimes) {
+                listTimes = it.toMutableList()
+            }
         }
     }
 
     private fun createTimeList() {
         SeekBarValue.values().toList().forEach {
-            listStrTimes.add(it.hours)
+            listTimes.add(TimeSelect(it.hours, true))
         }
     }
-    
+
 }
