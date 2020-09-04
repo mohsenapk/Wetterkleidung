@@ -40,6 +40,7 @@ class TimeSelectingAdapter(
             selectedPosition = position
             tvTime.text = timeSelect.text
             checkTime.isChecked = timeSelect.selected
+            checkForSelectAllChange(false)
         }
 
         private fun initUi() {
@@ -61,10 +62,11 @@ class TimeSelectingAdapter(
             notifyDataSetChanged()
         }
 
-        private fun checkForSelectAllChange() {
+        private fun checkForSelectAllChange(withNotify: Boolean = true) {
             val notTimeSelected = list.subList(1, list.size).firstOrNull { !it.selected }
             list[0].selected = (notTimeSelected == null)
-            notifyItemChanged(0)
+            if (withNotify)
+                notifyItemChanged(0)
         }
     }
 }

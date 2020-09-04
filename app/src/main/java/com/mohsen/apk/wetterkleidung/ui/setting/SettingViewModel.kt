@@ -5,17 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
+import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 
 class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
 
     private val _exitApp = MutableLiveData<Unit>()
     private val _showSnackBarText = MutableLiveData<String>()
-    private val _showTimeSelectingDialog = MutableLiveData<Unit>()
+    private val _showTimeSelectingDialog = MutableLiveData<List<TimeSelect>>()
 
     val exitApp: LiveData<Unit> = _exitApp
     val showSnackBarText: LiveData<String> = _showSnackBarText
-    val showTimeSelectingDialog: LiveData<Unit> = _showTimeSelectingDialog
+    val showTimeSelectingDialog: LiveData<List<TimeSelect>> = _showTimeSelectingDialog
 
 
     fun citySettingClicked() {
@@ -23,7 +24,7 @@ class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel()
     }
 
     fun timeSettingClicked() {
-        _showTimeSelectingDialog.value = Unit
+        _showTimeSelectingDialog.value = prefs.getTimeSelectedList()
     }
 
     fun weatherUnitCelsiusClicked() {
@@ -39,5 +40,9 @@ class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel()
     fun advancedAppClicked(bool: Boolean) {}
     fun exitAppClicked() {
         _exitApp.value = Unit
+    }
+
+    fun changeTimeSelectedList(it: List<TimeSelect>) {
+        prefs.setTimeSelectedList(it)
     }
 }

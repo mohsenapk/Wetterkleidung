@@ -8,10 +8,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
+import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
 import com.mohsen.apk.wetterkleidung.ui.dialog.DialogManager
 import com.mohsen.apk.wetterkleidung.ui.dialog.WeatherTimeSelectingDialog
 import kotlinx.android.synthetic.main.fragment_setting.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class SettingFragment : BaseFragment(R.layout.fragment_setting) {
@@ -40,11 +42,16 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
     private fun listenToViewModel() {
         liveDataListener(viewModel.exitApp) { activity?.let { it.finishAffinity() } }
         liveDataListener(viewModel.showSnackBarText) { showSnackBarText(it) }
-        liveDataListener(viewModel.showTimeSelectingDialog) { showTimeSelectingDialog() }
+        liveDataListener(viewModel.showTimeSelectingDialog) {
+            showTimeSelectingDialog(it)
+        }
     }
 
-    private fun showTimeSelectingDialog() {
-        dialogManager.showWeatherTimeSelectingDialog(act)
+    private fun showTimeSelectingDialog(list: List<TimeSelect>) {
+        dialogManager.showWeatherTimeSelectingDialog(act, list) {
+            Timber.d("time-select-list $it")
+            viewModel.changeTimeSelectedList(it)
+        }
     }
 
     private fun showSnackBarText(text: String) {

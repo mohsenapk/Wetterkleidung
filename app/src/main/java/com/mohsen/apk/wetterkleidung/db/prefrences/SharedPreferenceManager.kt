@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mohsen.apk.wetterkleidung.BuildConfig
 import com.mohsen.apk.wetterkleidung.model.City
+import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import org.threeten.bp.LocalDateTime
@@ -14,20 +15,25 @@ import java.lang.Exception
 interface SharedPreferenceManager {
     fun setCity(cityName: String)
     fun setCity(cityList: List<City>)
-    fun getCities(): List<String>
     fun setCityDefault(cityName: String)
-    fun getCityDefault(): String
     fun setLastLocation(lat: Double, lon: Double)
-    fun getLastLocation(): Pair<Double, Double>?
-    fun removeCities()
     fun setWeatherUnit(unit: String)
+    fun setTimeSelectedList(timeSelectedList: List<TimeSelect>)
+
+    fun getCityDefault(): String
+    fun getCities(): List<String>
+    fun getLastLocation(): Pair<Double, Double>?
     fun getWeatherUnit(): WeatherUnit
+    fun getTimeSelectedList(): List<TimeSelect>?
+
+    fun removeCities()
 }
 
 private const val cityKey = "CITY"
 private const val cityDefaultKey = "CITY_DEFAULT_KEY"
 private const val location = "LOCATION"
 private const val weatherUnit = "WEATHER_UNIT"
+private const val timeSelected = "TIME_SELECTED"
 
 class SharedPreferenceManagerImpl(
     context: Context,
@@ -53,17 +59,12 @@ class SharedPreferenceManagerImpl(
     }
 
     private fun addCityList(list: List<String>) {
-        val cities = gson.toJson(list)
-        prefs.edit().putString(cityKey, cities).apply()
+        prefs.edit().putString(cityKey, createStrFromListWithGSON(list)).apply()
     }
 
     private fun getCityList(): List<String> {
         val cities = prefs.getString(cityKey, "")
-        val typeToke = object : TypeToken<List<String>>() {}.type
-        return if (cities.isNotEmpty())
-            gson.fromJson(cities, typeToke)
-        else
-            listOf()
+        return createListFromStrWithGSON(cities)
     }
 
     override fun setCityDefault(cityName: String) {
@@ -121,5 +122,39 @@ class SharedPreferenceManagerImpl(
                 return WeatherUnit.IMPERIAL
         }
         return WeatherUnit.METRIC
+    }
+
+    override fun setTimeSelectedList(timeSelectedList: List<TimeSelect>) {
+        val selectedTimesStr = createStrFromListWithGSON(timeSelectedList.map { it.text })
+        selectedTimesStr?.let {
+            prefs.edit().putString(timeSelected, selectedTimesStr).commit()
+        }
+    }
+
+    override fun getTimeSelectedList(): List<TimeSelect>? {
+        val timeSelectedListStr = prefs.getString(timeSelected, "")
+        if (!timeSelectedListStr.isNullOrEmpty()) {
+            return getTimeSelectedListFromStrList(createListFromStrWithGSON(timeSelectedListStr))
+        }
+        return null
+    }
+
+    private fun getTimeSelectedListFromStrList(strList: List<String>): List<TimeSelect> {
+        val list = mutableListOf<TimeSelect>()
+        strList.forEach {
+            list.add(TimeSelect(it))
+        }
+        return list
+    }
+
+    private fun createStrFromListWithGSON(list: List<String>): String? =
+        gson.toJson(list)
+
+    private fun createListFromStrWithGSON(str: String): List<String> {
+        val typeToke = object : TypeToken<List<String>>() {}.type
+        return if (str.isNotEmpty())
+            gson.fromJson(str, typeToke)
+        else
+            return listOf()
     }
 }

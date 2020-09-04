@@ -9,14 +9,14 @@ import com.mohsen.apk.wetterkleidung.model.SeekBarValue
 import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import com.mohsen.apk.wetterkleidung.ui.adapter.TimeSelectingAdapter
 import kotlinx.android.synthetic.main.dialog_weather_time_selecting.*
-import timber.log.Timber
 
 class WeatherTimeSelectingDialog(
-    context: Context
+    context: Context,
+    private val selectedList: List<TimeSelect>,
+    private val backTimeList: (list: List<TimeSelect>) -> Unit
 ) : Dialog(context) {
     private val rvTimesLayoutManager = LinearLayoutManager(context)
     private var listTimes = mutableListOf(TimeSelect("select all", true))
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,14 +25,36 @@ class WeatherTimeSelectingDialog(
         initUi()
     }
 
+    private fun createTimeList() {
+        SeekBarValue.values().toList().forEach {
+            listTimes.add(TimeSelect(it.hours, false))
+        }
+        if (selectedList.isNotEmpty())
+            changeListFromSelectedList()
+        else
+            listTimes.map { it.selected = true }
+    }
+
+    private fun changeListFromSelectedList() {
+        listTimes.map { it.selected = false }
+        listTimes.forEach { time ->
+            selectedList.forEach { selectedTime ->
+                if (time.text == selectedTime.text)
+                    time.selected = true
+            }
+        }
+    }
+
     private fun initUi() {
         btnAccept.setOnClickListener {
-            if(listTimes.isEmpty())
+            if (listTimes.isEmpty())
                 return@setOnClickListener
-            Timber.d("list-times : \n $listTimes")
+            backTimeList(listTimes)
             dismiss()
         }
+
         btnCancel.setOnClickListener { dismiss() }
+
         rvTimes.apply {
             layoutManager = rvTimesLayoutManager
             adapter = TimeSelectingAdapter(listTimes) {
@@ -40,11 +62,4 @@ class WeatherTimeSelectingDialog(
             }
         }
     }
-
-    private fun createTimeList() {
-        SeekBarValue.values().toList().forEach {
-            listTimes.add(TimeSelect(it.hours, true))
-        }
-    }
-
 }
