@@ -1,6 +1,5 @@
 package com.mohsen.apk.wetterkleidung.ui.base
 
-import android.R.attr.fragment
 import android.app.Activity
 import android.os.Bundle
 import android.view.KeyEvent
@@ -8,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.mohsen.apk.wetterkleidung.base.BaseApplication

@@ -1,10 +1,8 @@
 package com.mohsen.apk.wetterkleidung.ui.setting
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
@@ -48,8 +46,7 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
     }
 
     private fun showTimeSelectingDialog(list: List<TimeSelect>) {
-        dialogManager.showWeatherTimeSelectingDialog(act, list) {
-            Timber.d("time-select-list $it")
+        dialogManager.showWeatherTimeSelectingDialog(act,list) {
             viewModel.changeTimeSelectedList(it)
         }
     }

@@ -12,44 +12,24 @@ import kotlinx.android.synthetic.main.dialog_weather_time_selecting.*
 
 class WeatherTimeSelectingDialog(
     context: Context,
-    private val selectedList: List<TimeSelect>,
+    private val listTimes: List<TimeSelect>,
     private val backTimeList: (list: List<TimeSelect>) -> Unit
 ) : Dialog(context) {
     private val rvTimesLayoutManager = LinearLayoutManager(context)
-    private var listTimes = mutableListOf(TimeSelect("select all", true))
+    private var acceptedList = listOf<TimeSelect>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_weather_time_selecting)
-        createTimeList()
         initUi()
-    }
-
-    private fun createTimeList() {
-        SeekBarValue.values().toList().forEach {
-            listTimes.add(TimeSelect(it.hours, false))
-        }
-        if (selectedList.isNotEmpty())
-            changeListFromSelectedList()
-        else
-            listTimes.map { it.selected = true }
-    }
-
-    private fun changeListFromSelectedList() {
-        listTimes.map { it.selected = false }
-        listTimes.forEach { time ->
-            selectedList.forEach { selectedTime ->
-                if (time.text == selectedTime.text)
-                    time.selected = true
-            }
-        }
     }
 
     private fun initUi() {
         btnAccept.setOnClickListener {
-            if (listTimes.isEmpty())
+            val allSelected = acceptedList.filter { it.selected }
+            if(allSelected.isNullOrEmpty())
                 return@setOnClickListener
-            backTimeList(listTimes)
+            backTimeList(acceptedList)
             dismiss()
         }
 
@@ -58,7 +38,7 @@ class WeatherTimeSelectingDialog(
         rvTimes.apply {
             layoutManager = rvTimesLayoutManager
             adapter = TimeSelectingAdapter(listTimes) {
-                listTimes = it.toMutableList()
+                acceptedList = it
             }
         }
     }

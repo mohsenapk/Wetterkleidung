@@ -59,12 +59,12 @@ class SharedPreferenceManagerImpl(
     }
 
     private fun addCityList(list: List<String>) {
-        prefs.edit().putString(cityKey, createStrFromListWithGSON(list)).apply()
+        prefs.edit().putString(cityKey, createJsonFromList(list)).apply()
     }
 
     private fun getCityList(): List<String> {
         val cities = prefs.getString(cityKey, "")
-        return createListFromStrWithGSON(cities)
+        return createListFromJson(cities)
     }
 
     override fun setCityDefault(cityName: String) {
@@ -125,36 +125,34 @@ class SharedPreferenceManagerImpl(
     }
 
     override fun setTimeSelectedList(timeSelectedList: List<TimeSelect>) {
-        val selectedTimesStr = createStrFromListWithGSON(timeSelectedList.map { it.text })
-        selectedTimesStr?.let {
-            prefs.edit().putString(timeSelected, selectedTimesStr).commit()
-        }
+        val strJson = createJsonFromTimeSelectedList(timeSelectedList)
+        prefs.edit().putString(timeSelected, strJson).apply()
     }
 
     override fun getTimeSelectedList(): List<TimeSelect>? {
-        val timeSelectedListStr = prefs.getString(timeSelected, "")
-        if (!timeSelectedListStr.isNullOrEmpty()) {
-            return getTimeSelectedListFromStrList(createListFromStrWithGSON(timeSelectedListStr))
-        }
-        return null
+        val strJson = prefs.getString(timeSelected, "")
+        return if (!strJson.isNullOrEmpty())
+            createTimeSelectedListFromJson(strJson)
+        else
+            null
     }
 
-    private fun getTimeSelectedListFromStrList(strList: List<String>): List<TimeSelect> {
-        val list = mutableListOf<TimeSelect>()
-        strList.forEach {
-            list.add(TimeSelect(it))
-        }
-        return list
-    }
-
-    private fun createStrFromListWithGSON(list: List<String>): String? =
+    private fun createJsonFromList(list: List<String>): String =
         gson.toJson(list)
 
-    private fun createListFromStrWithGSON(str: String): List<String> {
+    private fun createListFromJson(str: String): List<String> {
         val typeToke = object : TypeToken<List<String>>() {}.type
         return if (str.isNotEmpty())
             gson.fromJson(str, typeToke)
         else
             return listOf()
+    }
+
+    private fun createJsonFromTimeSelectedList(timeSelected: List<TimeSelect>): String =
+        gson.toJson(timeSelected)
+
+    private fun createTimeSelectedListFromJson(jsonStr: String): List<TimeSelect> {
+        val typeToken = object : TypeToken<List<TimeSelect>>() {}.type
+        return gson.fromJson(jsonStr, typeToken)
     }
 }

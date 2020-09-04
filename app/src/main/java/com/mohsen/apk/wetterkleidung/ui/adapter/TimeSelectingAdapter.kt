@@ -14,6 +14,7 @@ class TimeSelectingAdapter(
     private val list: List<TimeSelect>,
     private val backList: (list: List<TimeSelect>) -> Unit
 ) : RecyclerView.Adapter<TimeSelectingAdapter.MHolder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MHolder {
         val view: View = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_time_selecting, parent, false)
@@ -40,7 +41,6 @@ class TimeSelectingAdapter(
             selectedPosition = position
             tvTime.text = timeSelect.text
             checkTime.isChecked = timeSelect.selected
-            checkForSelectAllChange(false)
         }
 
         private fun initUi() {
@@ -50,23 +50,7 @@ class TimeSelectingAdapter(
         private fun selectedItem() {
             checkTime.isChecked = !checkTime.isChecked
             list[selectedPosition].selected = !list[selectedPosition].selected
-            if (selectedPosition == 0)
-                selectAllItems()
-            else
-                checkForSelectAllChange()
-            backList(list.filter { it.selected })
-        }
-
-        private fun selectAllItems() {
-            list.map { it.selected = list[0].selected }
-            notifyDataSetChanged()
-        }
-
-        private fun checkForSelectAllChange(withNotify: Boolean = true) {
-            val notTimeSelected = list.subList(1, list.size).firstOrNull { !it.selected }
-            list[0].selected = (notTimeSelected == null)
-            if (withNotify)
-                notifyItemChanged(0)
+            backList(list)
         }
     }
 }

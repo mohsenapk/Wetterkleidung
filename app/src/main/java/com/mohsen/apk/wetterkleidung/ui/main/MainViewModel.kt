@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
+import com.mohsen.apk.wetterkleidung.model.SeekBarValue
+import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -22,7 +24,7 @@ class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
     val changeLoaderImageResource: LiveData<Int> = _changeLoaderImageResource
     val removeTopBackStackItem: LiveData<Unit> = _removeTopBackStackItem
     val finishApp: LiveData<Unit> = _finishApp
-    val showLoadingView :LiveData<Boolean> = _showLoadingView
+    val showLoadingView: LiveData<Boolean> = _showLoadingView
 
     fun start() = viewModelScope.launch {
         loaderImageStart()
@@ -30,6 +32,21 @@ class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
             _gotoCityFragment.value = Unit
         else
             _gotoWeatherFragment.value = Unit
+        prefsDefaultValuesSet()
+    }
+
+    private fun prefsDefaultValuesSet() {
+        setFirstTimeTimeSelectingList()
+    }
+
+    private fun setFirstTimeTimeSelectingList() {
+        if (prefs.getTimeSelectedList().isNullOrEmpty()) {
+            val listTimes = mutableListOf<TimeSelect>()
+            SeekBarValue.values().toList().forEach {
+                listTimes.add(TimeSelect(it.hours, true))
+            }
+            prefs.setTimeSelectedList(listTimes)
+        }
     }
 
     private suspend fun loaderImageStart() {
