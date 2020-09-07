@@ -10,6 +10,7 @@ import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
 import kotlin.math.roundToInt
+import com.mohsen.apk.wetterkleidung.R
 
 class WeatherViewModel(
     private val weatherRepository: WeatherRepository,
@@ -20,7 +21,7 @@ class WeatherViewModel(
 
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
     private var forecast5DaysWeather: Forecast5DaysWeather? = null
-    private lateinit var allSeekBarIndex: List<Int>
+    private lateinit var allSeekTimeIndexes: List<Int>
     private lateinit var weatherUnit: WeatherUnit
 
     private val _snackBarError = MutableLiveData<String>()
@@ -38,6 +39,9 @@ class WeatherViewModel(
     private val _seekBarTextList = MutableLiveData<List<String>>()
     private val _seekBarSelectedText = MutableLiveData<String>()
     private val _seekTimeProgress = MutableLiveData<Float>()
+    private val _changeBackImage = MutableLiveData<Int>()
+    private val _changeBackBottomColor = MutableLiveData<Int>()
+    private val _changeTextColor = MutableLiveData<Int>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -54,6 +58,9 @@ class WeatherViewModel(
     val seekBarTextList: LiveData<List<String>> = _seekBarTextList
     val seekBarSelectedText: LiveData<String> = _seekBarSelectedText
     val seekTimeProgress: LiveData<Float> = _seekTimeProgress
+    val changeBackImage: LiveData<Int> = _changeBackImage
+    val changeBackBottomColor: LiveData<Int> = _changeBackBottomColor
+    val changeTextColor: LiveData<Int> = _changeTextColor
 
     fun start() = viewModelScope.launch {
         weatherUnit = prefs.getWeatherUnit()
@@ -61,7 +68,7 @@ class WeatherViewModel(
         if (defaultCity.isEmpty()) {
             return@launch
         }
-        forecastWeather5DaysHourly(defaultCity,weatherUnit)
+        forecastWeather5DaysHourly(defaultCity, weatherUnit)
         forecastWeather5DaysAVG(defaultCity, weatherUnit)
         dateChanged(LocalDateTime.now())
     }
@@ -109,9 +116,9 @@ class WeatherViewModel(
 
     private fun seekBarSetup(maxSize: Int) {
         if (maxSize < 1) return
-        allSeekBarIndex = listOf<Int>(7, 6, 5, 4, 3, 2, 1, 0).subList(0, maxSize).reversed()
-        _seekBarTextList.value = allSeekBarIndex.map { getMinSeekBarTextFromIndex(it) }
-        _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekBarIndex[0])
+        allSeekTimeIndexes = listOf<Int>(7, 6, 5, 4, 3, 2, 1, 0).subList(0, maxSize).reversed()
+        _seekBarTextList.value = allSeekTimeIndexes.map { getMinSeekBarTextFromIndex(it) }
+        _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekTimeIndexes[0])
     }
 
     private fun getMinSeekBarTextFromIndex(index: Int): String {
@@ -181,7 +188,7 @@ class WeatherViewModel(
     private fun getDayName(timeStampNumber: Long): String {
         return when {
             dateHelper.isToday(timeStampNumber) -> "Today"
-            dateHelper.isMorning(timeStampNumber) -> "Morning"
+            dateHelper.isMorning(timeStampNumber) -> "Tomorrow"
             else -> dateHelper.getDayOfWeekFromTimestamp(timeStampNumber)
                 .toString().toLowerCase().capitalize()
         }
@@ -199,6 +206,9 @@ class WeatherViewModel(
     //bug IndexOutOfBoundsException: Index: 7, Size: 2 todo
     private fun weatherPresentation(index: Int = 0) {
         seekBarSetup(selectedDayWeatherList.size)
+        changeBackImageWithIndex(index)
+        changeBackBottomColorWithIndex(index)
+        changeTextColorWithIndex(index)
         val currentWeather = selectedDayWeatherList[index]
         _progress.value = false
         _cityName.value = forecast5DaysWeather?.city?.cityName
@@ -213,7 +223,44 @@ class WeatherViewModel(
 
     fun seekBarProgressChanged(progress: Int) {
         weatherPresentation(progress)
-        _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekBarIndex[progress])
+        _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekTimeIndexes[progress])
+    }
+
+    private fun changeBackImageWithIndex(index: Int) {
+        _changeBackImage.value = getBackImageResourceId(allSeekTimeIndexes[index])
+    }
+
+    private fun changeBackBottomColorWithIndex(index: Int) {
+        _changeBackBottomColor.value = getBackBottomColorId(allSeekTimeIndexes[index])
+    }
+
+    private fun changeTextColorWithIndex(index: Int) {
+        _changeTextColor.value = getTextColorId(allSeekTimeIndexes[index])
+    }
+
+    private fun getTextColorId(index: Int): Int {
+        return when (index) {
+            6, 7 -> R.color.white
+            else -> R.color.black
+        }
+    }
+
+    private fun getBackImageResourceId(index: Int): Int {
+        return when (index) {
+            0, 1 -> R.drawable.back_day_break
+            6 -> R.drawable.back_evening
+            7 -> R.drawable.back_night
+            else -> R.drawable.back_day
+        }
+    }
+
+    private fun getBackBottomColorId(index: Int): Int {
+        return when (index) {
+            0, 1 -> R.color.backBottomDayBreak
+            6 -> R.color.backBottomEvening
+            7 -> R.color.backBottomNight
+            else -> R.color.backBottomDay
+        }
     }
 
     fun weatherIconLoader(ivIcon: ImageView?, imgId: String) {

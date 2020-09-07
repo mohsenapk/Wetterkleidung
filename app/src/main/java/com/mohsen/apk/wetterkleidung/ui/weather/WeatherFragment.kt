@@ -3,6 +3,7 @@ package com.mohsen.apk.wetterkleidung.ui.weather
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mohsen.apk.wetterkleidung.R
@@ -86,6 +87,11 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         liveDataListener(viewModel.seekBarTextList) { seekBarInitTexts(it) }
         liveDataListener(viewModel.seekTimeProgress) { seekBar.setProgress(it) }
         liveDataListener(viewModel.tempDesc) { tvTempDesc.text = it }
+        liveDataListener(viewModel.changeBackImage) { imgBack.setImageResource(it) }
+        liveDataListener(viewModel.changeTextColor){changeAllTextColors(it)}
+        liveDataListener(viewModel.changeBackBottomColor) {
+            clParent.setBackgroundColor(ContextCompat.getColor(act ,it))
+        }
         liveDataListener(viewModel.snackBarError) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
@@ -99,6 +105,15 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
             tvTemp.text = it.toString()
             tvTempDegreeIcon.visibility = View.VISIBLE
         }
+    }
+
+    private fun changeAllTextColors(color: Int) {
+        tvDayName.setTextColor(ContextCompat.getColor(act , color))
+        tvCity.setTextColor(ContextCompat.getColor(act , color))
+        tvTemp.setTextColor(ContextCompat.getColor(act , color))
+        tvTempDegreeIcon.setTextColor(ContextCompat.getColor(act , color))
+        tvTempDesc.setTextColor(ContextCompat.getColor(act , color))
+        tvSeekTime.setTextColor(ContextCompat.getColor(act , color))
     }
 
 

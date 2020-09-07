@@ -6,7 +6,10 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="backTop">#8fece5</color>
-    <color name="backBottom">#79bd65</color>
+    <color name="backBottomDay">#7dc363</color>
+    <color name="backBottomNight">#506642</color>
+    <color name="backBottomEvening">#648752</color>
+    <color name="backBottomDayBreak">#709e5c</color>
     <color name="backBottomDark">#5c8c4d</color>
     <color name="gray">#999999</color>
     <color name="red">#FF2222</color>
