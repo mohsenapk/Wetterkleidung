@@ -12,21 +12,32 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
+    private val _gotoSplashFragment = MutableLiveData<Unit>()
     private val _gotoCityFragment = MutableLiveData<Unit>()
     private val _gotoWeatherFragment = MutableLiveData<Unit>()
     private val _changeLoaderImageResource = MutableLiveData<Int>()
     private val _removeTopBackStackItem = MutableLiveData<Unit>()
     private val _finishApp = MutableLiveData<Unit>()
     private val _showLoadingView = MutableLiveData<Boolean>()
+    private val _hasWeatherFragmentINnStackOrNot = MutableLiveData<HasFragmentListener>()
+    private val _callOnBackPressed = MutableLiveData<Unit>()
 
+    val gotoSplashFragment: LiveData<Unit> = _gotoSplashFragment
     val gotoWeatherFragment: LiveData<Unit> = _gotoWeatherFragment
     val gotoCityFragment: LiveData<Unit> = _gotoCityFragment
     val changeLoaderImageResource: LiveData<Int> = _changeLoaderImageResource
     val removeTopBackStackItem: LiveData<Unit> = _removeTopBackStackItem
     val finishApp: LiveData<Unit> = _finishApp
-    val showLoadingView: LiveData<Boolean> = _showLoadingView
+    val hasWeatherFragmentINnStackOrNot: LiveData<HasFragmentListener> =
+        _hasWeatherFragmentINnStackOrNot
+    val callOnBackPressed: LiveData<Unit> = _callOnBackPressed
+
+    interface HasFragmentListener {
+        fun hasFragment(has: Boolean)
+    }
 
     fun start() = viewModelScope.launch {
+        _gotoSplashFragment.value = Unit
         loaderImageStart()
         if (prefs.getCityDefault().isEmpty())
             _gotoCityFragment.value = Unit
@@ -66,14 +77,25 @@ class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
         _showLoadingView.value = false
     }
 
-    fun backPressedFromCityFragment() {
-        if (prefs.getCityDefault().isEmpty())
-            _finishApp.value = Unit
-        else
-            _removeTopBackStackItem.value = Unit
+    fun backedFromCityFragment() {
+        val defCity = prefs.getCityDefault()
+        if (defCity.isEmpty()) {
+            _callOnBackPressed.value = Unit
+            return
+        }
+        ifHasWeatherFragmentGotoThat()
     }
 
-    fun backPressedFromWeatherFragment() {
-        _finishApp.value = Unit
+    private fun ifHasWeatherFragmentGotoThat() {
+        _hasWeatherFragmentINnStackOrNot.value = object : HasFragmentListener {
+            override fun hasFragment(has: Boolean) {
+                _gotoWeatherFragment.value = Unit
+            }
+        }
     }
+
+    fun backFromSettingFragment() {
+        ifHasWeatherFragmentGotoThat()
+    }
+
 }

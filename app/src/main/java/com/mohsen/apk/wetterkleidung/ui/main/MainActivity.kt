@@ -1,7 +1,6 @@
 package com.mohsen.apk.wetterkleidung.ui.main
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
@@ -12,8 +11,8 @@ import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
 import com.mohsen.apk.wetterkleidung.ui.city.CityFragment
 import com.mohsen.apk.wetterkleidung.ui.setting.SettingFragment
+import com.mohsen.apk.wetterkleidung.ui.splash.SplashFragment
 import com.mohsen.apk.wetterkleidung.ui.weather.WeatherFragment
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_splash.*
 import javax.inject.Inject
 
@@ -28,28 +27,34 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initDagger()
         initViewModel()
-        initUi()
         viewModel.start()
+        initUi()
         viewModelListener()
     }
 
     private fun viewModelListener() {
-        liveDataListener(viewModel.gotoCityFragment) { loadFragment(CityFragment.getInstance()) }
-        liveDataListener(viewModel.gotoWeatherFragment) { loadFragment(WeatherFragment.getInstance()) }
+        liveDataListener(viewModel.gotoSplashFragment) { replaceFragment(SplashFragment.getInstance()) }
+        liveDataListener(viewModel.gotoCityFragment) { addFragment(CityFragment.getInstance()) }
+        liveDataListener(viewModel.gotoWeatherFragment) { addFragment(WeatherFragment.getInstance()) }
         liveDataListener(viewModel.changeLoaderImageResource) { imgLoading.setImageResource(it) }
         liveDataListener(viewModel.finishApp) { finishAffinity() }
-        liveDataListener(viewModel.showLoadingView) { loadingViewShowing(it) }
+        liveDataListener(viewModel.callOnBackPressed) { onBackPressedCustom() }
+        liveDataListener(viewModel.hasWeatherFragmentINnStackOrNot) {
+            it.hasFragment(hasWeatherFragmentInStock())
+        }
         liveDataListener(viewModel.removeTopBackStackItem) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     }
 
-    private fun loadingViewShowing(it: Boolean) {
-        if (it)
-            loadingFrame.visibility = View.VISIBLE
-        else
-            loadingFrame.visibility = View.INVISIBLE
+    private fun hasWeatherFragmentInStock(): Boolean {
+        val weatherFragment =
+            supportFragmentManager
+                .fragments
+                .firstOrNull { it.tag == WeatherFragment::class.java.name }
+        return weatherFragment != null
     }
+
 
     private fun initUi() {}
 
@@ -61,11 +66,18 @@ class MainActivity : AppCompatActivity() {
         (application as BaseApplication).mainComponent.inject(this)
     }
 
-    private fun loadFragment(fragment: BaseFragment) {
+    private fun addFragment(fragment: BaseFragment) {
         supportFragmentManager
             .beginTransaction()
             .add(R.id.mainFrame, fragment)
             .addToBackStack(fragment::class.java.name)
+            .commit()
+    }
+
+    private fun replaceFragment(fragment: BaseFragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.mainFrame, fragment)
             .commit()
     }
 
@@ -77,16 +89,26 @@ class MainActivity : AppCompatActivity() {
 
     fun gotoFragment(fragmentJavaClassName: String) {
         when (fragmentJavaClassName) {
-            CityFragment::class.java.name -> loadFragment(CityFragment.getInstance())
-            SettingFragment::class.java.name -> loadFragment(SettingFragment.getInstance())
+            CityFragment::class.java.name -> addFragment(CityFragment.getInstance())
+            SettingFragment::class.java.name -> addFragment(SettingFragment.getInstance())
         }
     }
 
-    fun backPressedFromFragment(fragmentJavaClassName: String) {
-        when (fragmentJavaClassName) {
-            WeatherFragment::class.java.name -> viewModel.backPressedFromWeatherFragment()
-            CityFragment::class.java.name -> viewModel.backPressedFromCityFragment()
+    fun backPressedFromFragment(fragmentJavaName: String) {
+        when (fragmentJavaName) {
+            CityFragment::class.java.name -> viewModel.backedFromCityFragment()
+            SettingFragment::class.java.name -> viewModel.backFromSettingFragment()
+            else -> onBackPressedCustom()
         }
     }
 
+    override fun onBackPressed() {
+        supportFragmentManager.fragments.forEach {
+            (it as BaseFragment).onBackPressed()
+        }
+    }
+
+    private fun onBackPressedCustom() {
+        super.onBackPressed()
+    }
 }

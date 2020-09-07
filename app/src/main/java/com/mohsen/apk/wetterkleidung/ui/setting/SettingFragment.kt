@@ -8,6 +8,7 @@ import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
+import com.mohsen.apk.wetterkleidung.ui.city.CityFragment
 import com.mohsen.apk.wetterkleidung.ui.dialog.DialogManager
 import com.mohsen.apk.wetterkleidung.ui.dialog.WeatherTimeSelectingDialog
 import kotlinx.android.synthetic.main.fragment_setting.*
@@ -56,7 +57,7 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
     }
 
     private fun initUi() {
-        clCity.setOnClickListener { viewModel.citySettingClicked() }
+        clCity.setOnClickListener { gotoFragment(CityFragment::class.java.name) }
         clTimes.setOnClickListener { viewModel.timeSettingClicked() }
         clExit.setOnClickListener { viewModel.exitAppClicked() }
         radioUnitC.setOnCheckedChangeListener { _, isChecked ->

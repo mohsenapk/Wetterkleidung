@@ -18,11 +18,6 @@ class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel()
     val showSnackBarText: LiveData<String> = _showSnackBarText
     val showTimeSelectingDialog: LiveData<List<TimeSelect>> = _showTimeSelectingDialog
 
-
-    fun citySettingClicked() {
-
-    }
-
     fun timeSettingClicked() {
         _showTimeSelectingDialog.value = prefs.getTimeSelectedList()
     }

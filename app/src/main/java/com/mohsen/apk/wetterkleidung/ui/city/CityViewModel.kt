@@ -28,11 +28,13 @@ class CityViewModel(
     private val _showSnackBarError = MutableLiveData<String>()
     private val _showNoneCitySelectedError = MutableLiveData<Boolean>()
     private val _getLocationPermission = MutableLiveData<Unit>()
+    private val _closeVirtualKeyboard = MutableLiveData<Unit>()
 
     val showAllCities: LiveData<List<City>> = _showAllCities
     val showSnackBarError: LiveData<String> = _showSnackBarError
     val showNoneCitySelectedError: LiveData<Boolean> = _showNoneCitySelectedError
     val getLocationPermission: LiveData<Unit> = _getLocationPermission
+    val closeVirtualKeyboard: LiveData<Unit> = _closeVirtualKeyboard
 
     fun start() {
         weatherUnit = prefs.getWeatherUnit()
@@ -57,6 +59,7 @@ class CityViewModel(
 
     private fun saveCity(city: City) {
         if (isNewCity(city.name)) {
+            _closeVirtualKeyboard.value = Unit
             saveCityIntoPrefsAndList(city)
             sendCitiesToView()
         }

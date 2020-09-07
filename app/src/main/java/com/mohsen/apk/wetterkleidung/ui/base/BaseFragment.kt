@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -30,21 +31,18 @@ abstract class BaseFragment(private val layout: Int) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         act = context as Activity
         application = (act.application as BaseApplication)
-        backPress()
     }
 
-    private fun backPress() {
-        this.view?.let {
-            it.isFocusableInTouchMode = true
-            it.requestFocus()
-            it.setOnKeyListener { _, keyCode, event ->
-                if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                    (act as MainActivity).backPressedFromFragment(this::class.java.name)
-                    true
-                }
-                false
-            }
-        }
+    fun onBackPressed() {
+        (act as MainActivity).backPressedFromFragment(this::class.java.name)
+    }
+
+    fun hideKeyboard(activity: Activity) {
+        val imm: InputMethodManager =
+            activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        var view = activity.currentFocus
+        if (view == null) { view = View(activity) }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     abstract fun initDagger()

@@ -59,6 +59,7 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
         liveDataListener(viewModel.showAllCities) { initRvCities(it) }
         liveDataListener(viewModel.showSnackBarError) { showSnackBarError(it) }
         liveDataListener(viewModel.getLocationPermission) { getLocationPermission() }
+        liveDataListener(viewModel.closeVirtualKeyboard) { hideKeyboard(act) }
         liveDataListener(viewModel.showNoneCitySelectedError) {
             clNoneCity.visibility = if (it) View.VISIBLE else View.INVISIBLE
         }
