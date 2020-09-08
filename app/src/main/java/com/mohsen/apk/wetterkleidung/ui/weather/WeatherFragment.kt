@@ -88,9 +88,10 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         liveDataListener(viewModel.seekTimeProgress) { seekBar.setProgress(it) }
         liveDataListener(viewModel.tempDesc) { tvTempDesc.text = it }
         liveDataListener(viewModel.changeBackImage) { imgBack.setImageResource(it) }
-        liveDataListener(viewModel.changeTextColor){changeAllTextColors(it)}
+        liveDataListener(viewModel.changeTextColor) { changeAllTextColors(it) }
+        liveDataListener(viewModel.changeAvatar) { imgAvatar.setImageResource(it) }
         liveDataListener(viewModel.changeBackBottomColor) {
-            clParent.setBackgroundColor(ContextCompat.getColor(act ,it))
+            clParent.setBackgroundColor(ContextCompat.getColor(act, it))
         }
         liveDataListener(viewModel.snackBarError) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -108,12 +109,12 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
     }
 
     private fun changeAllTextColors(color: Int) {
-        tvDayName.setTextColor(ContextCompat.getColor(act , color))
-        tvCity.setTextColor(ContextCompat.getColor(act , color))
-        tvTemp.setTextColor(ContextCompat.getColor(act , color))
-        tvTempDegreeIcon.setTextColor(ContextCompat.getColor(act , color))
-        tvTempDesc.setTextColor(ContextCompat.getColor(act , color))
-        tvSeekTime.setTextColor(ContextCompat.getColor(act , color))
+        tvDayName.setTextColor(ContextCompat.getColor(act, color))
+        tvCity.setTextColor(ContextCompat.getColor(act, color))
+        tvTemp.setTextColor(ContextCompat.getColor(act, color))
+        tvTempDegreeIcon.setTextColor(ContextCompat.getColor(act, color))
+        tvTempDesc.setTextColor(ContextCompat.getColor(act, color))
+        tvSeekTime.setTextColor(ContextCompat.getColor(act, color))
     }
 
 

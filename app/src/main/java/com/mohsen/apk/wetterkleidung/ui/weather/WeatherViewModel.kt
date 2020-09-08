@@ -42,6 +42,7 @@ class WeatherViewModel(
     private val _changeBackImage = MutableLiveData<Int>()
     private val _changeBackBottomColor = MutableLiveData<Int>()
     private val _changeTextColor = MutableLiveData<Int>()
+    private val _changeAvatar = MutableLiveData<Int>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -61,6 +62,7 @@ class WeatherViewModel(
     val changeBackImage: LiveData<Int> = _changeBackImage
     val changeBackBottomColor: LiveData<Int> = _changeBackBottomColor
     val changeTextColor: LiveData<Int> = _changeTextColor
+    val changeAvatar: LiveData<Int> = _changeAvatar
 
     fun start() = viewModelScope.launch {
         weatherUnit = prefs.getWeatherUnit()
@@ -110,7 +112,7 @@ class WeatherViewModel(
                 weather.dateTimeText.substringBefore(" ") ==
                         date.toString().substringBefore("T")
             }
-            weatherPresentation(0)
+            presentation(0)
         }
     }
 
@@ -203,12 +205,33 @@ class WeatherViewModel(
         }
     }
 
-    //bug IndexOutOfBoundsException: Index: 7, Size: 2 todo
-    private fun weatherPresentation(index: Int = 0) {
+    private fun presentation(index: Int = 0) {
         seekBarSetup(selectedDayWeatherList.size)
         changeBackImageWithIndex(index)
         changeBackBottomColorWithIndex(index)
         changeTextColorWithIndex(index)
+        weatherPresentation(index)
+        changeAvatarWithWeather(selectedDayWeatherList[index])
+    }
+
+    private fun changeAvatarWithWeather(weather: Forecast5DaysWeatherDetail) {
+        var avatarImageResourceId = 0
+        when (weather?.temp?.feels_like?.roundToInt()) {
+            in (-100..5) -> avatarImageResourceId = R.drawable.avatar_very_cold
+            in (5..10) -> avatarImageResourceId = R.drawable.avatar_cold
+            in (10..15) -> avatarImageResourceId = R.drawable.avatar_littel_cold
+            in (15..20) -> avatarImageResourceId = R.drawable.avatar_normal
+            in (20..25) -> avatarImageResourceId = R.drawable.avatar_little_hot
+            in (25..30) -> avatarImageResourceId = R.drawable.avatar_hot
+            in (30..100) -> avatarImageResourceId = R.drawable.avatar_very_hot
+        }
+        if (avatarImageResourceId > 0)
+            _changeAvatar.value = avatarImageResourceId
+    }
+
+
+    //bug IndexOutOfBoundsException: Index: 7, Size: 2 todo
+    private fun weatherPresentation(index: Int) {
         val currentWeather = selectedDayWeatherList[index]
         _progress.value = false
         _cityName.value = forecast5DaysWeather?.city?.cityName
@@ -222,7 +245,7 @@ class WeatherViewModel(
     }
 
     fun seekBarProgressChanged(progress: Int) {
-        weatherPresentation(progress)
+        presentation(progress)
         _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekTimeIndexes[progress])
     }
 

@@ -27,7 +27,7 @@
             android:id="@+id/clTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="4dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -36,7 +36,7 @@
                 android:id="@+id/tvDayName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="23sp"
+                android:textSize="16sp"
                 app:layout_constraintLeft_toLeftOf="@id/clTitle"
                 app:layout_constraintRight_toRightOf="@id/clTitle"
                 app:layout_constraintTop_toTopOf="@id/clTitle" />
@@ -45,7 +45,7 @@
                 android:id="@+id/tvCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="23sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintLeft_toLeftOf="@id/clTitle"
                 app:layout_constraintRight_toRightOf="@id/clTitle"
@@ -73,11 +73,12 @@
             app:layout_constraintTop_toBottomOf="@+id/clTitle" />
 
         <ImageView
+            android:id="@+id/imgAvatar"
             android:layout_width="wrap_content"
-            android:layout_height="250dp"
+            android:layout_height="300dp"
             android:layout_marginBottom="16dp"
             android:padding="8dp"
-            android:src="@drawable/character"
+            android:src="@drawable/avatar_normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
