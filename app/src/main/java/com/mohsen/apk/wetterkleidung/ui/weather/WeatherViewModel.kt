@@ -43,6 +43,7 @@ class WeatherViewModel(
     private val _changeBackBottomColor = MutableLiveData<Int>()
     private val _changeTextColor = MutableLiveData<Int>()
     private val _changeAvatar = MutableLiveData<Int>()
+    private val _imgAvatarUmbrellaVisible = MutableLiveData<Boolean>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -63,6 +64,7 @@ class WeatherViewModel(
     val changeBackBottomColor: LiveData<Int> = _changeBackBottomColor
     val changeTextColor: LiveData<Int> = _changeTextColor
     val changeAvatar: LiveData<Int> = _changeAvatar
+    val imgAvatarUmbrellaVisible: LiveData<Boolean> = _imgAvatarUmbrellaVisible
 
     fun start() = viewModelScope.launch {
         weatherUnit = prefs.getWeatherUnit()
@@ -215,20 +217,31 @@ class WeatherViewModel(
     }
 
     private fun changeAvatarWithWeather(weather: Forecast5DaysWeatherDetail) {
-        var avatarImageResourceId = 0
-        when (weather?.temp?.feels_like?.roundToInt()) {
-            in (-100..5) -> avatarImageResourceId = R.drawable.avatar_very_cold
-            in (5..10) -> avatarImageResourceId = R.drawable.avatar_cold
-            in (10..15) -> avatarImageResourceId = R.drawable.avatar_littel_cold
-            in (15..20) -> avatarImageResourceId = R.drawable.avatar_normal
-            in (20..25) -> avatarImageResourceId = R.drawable.avatar_little_hot
-            in (25..30) -> avatarImageResourceId = R.drawable.avatar_hot
-            in (30..100) -> avatarImageResourceId = R.drawable.avatar_very_hot
-        }
+        val avatarImageResourceId = getAvatarResourceId(weather)
         if (avatarImageResourceId > 0)
             _changeAvatar.value = avatarImageResourceId
+        checkForUmbrella(weather)
     }
 
+    private fun getAvatarResourceId(weather: Forecast5DaysWeatherDetail): Int {
+        return when (weather?.temp?.feels_like?.roundToInt()) {
+            in (-100..5) -> R.drawable.avatar_cold_very
+            in (5..10) -> R.drawable.avatar_cold
+            in (10..15) -> R.drawable.avatar_cold_little
+            in (15..20) -> R.drawable.avatar_normal
+            in (20..25) -> R.drawable.avatar_hot_little
+            in (25..30) -> R.drawable.avatar_hot
+            in (30..100) -> R.drawable.avatar_hot_very
+            else -> 0
+        }
+    }
+
+    private fun checkForUmbrella(weather: Forecast5DaysWeatherDetail) {
+        val hasRain =
+            weather.weatherTitleList[0].description
+                .toLowerCase().contains("rain")
+        _imgAvatarUmbrellaVisible.value = hasRain
+    }
 
     //bug IndexOutOfBoundsException: Index: 7, Size: 2 todo
     private fun weatherPresentation(index: Int) {

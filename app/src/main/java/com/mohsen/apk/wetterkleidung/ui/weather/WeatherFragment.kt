@@ -90,6 +90,9 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         liveDataListener(viewModel.changeBackImage) { imgBack.setImageResource(it) }
         liveDataListener(viewModel.changeTextColor) { changeAllTextColors(it) }
         liveDataListener(viewModel.changeAvatar) { imgAvatar.setImageResource(it) }
+        liveDataListener(viewModel.imgAvatarUmbrellaVisible) {
+            imgAvatarUmbrella.visibility = if (it) View.VISIBLE else View.GONE
+        }
         liveDataListener(viewModel.changeBackBottomColor) {
             clParent.setBackgroundColor(ContextCompat.getColor(act, it))
         }
