@@ -1,8 +1,13 @@
 package com.mohsen.apk.wetterkleidung.ui.weather
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.Animation.AnimationListener
+import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -20,6 +25,7 @@ import com.warkiz.tickseekbar.SeekParams
 import com.warkiz.tickseekbar.TickSeekBar
 import kotlinx.android.synthetic.main.fragment_weather.*
 import javax.inject.Inject
+
 
 class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
 
@@ -44,6 +50,7 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         TODO("Not yet implemented")
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDagger()
@@ -67,11 +74,12 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
     private fun seekBarInit() {
         seekBar.onSeekChangeListener = object : OnSeekChangeListener {
             override fun onSeeking(seekParams: SeekParams?) {
-                seekParams?.let { viewModel.seekBarProgressChanged(it.progress) }
+                viewModel.seekBarSeekingTouched()
             }
-
             override fun onStartTrackingTouch(seekBar: TickSeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: TickSeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: TickSeekBar?) {
+                seekBar?.let { viewModel.seekBarProgressChangedAsync(it.progress) }
+            }
         }
     }
 
@@ -81,6 +89,7 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         seekBar.customTickTexts(seekTimes.toTypedArray())
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun listenToViewModel() {
         liveDataListener(viewModel.cityName) { tvCity.text = it }
         liveDataListener(viewModel.dayName) { tvDayName.text = it }
@@ -90,9 +99,16 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         liveDataListener(viewModel.seekTimeProgress) { seekBar.setProgress(it) }
         liveDataListener(viewModel.tempDesc) { tvTempDesc.text = it }
         liveDataListener(viewModel.changeBackImage) { imgBack.setImageResource(it) }
-        liveDataListener(viewModel.changeStatusBarColor){setStatusBarColor(it)}
+        liveDataListener(viewModel.changeStatusBarColor) { setStatusBarColor(it) }
         liveDataListener(viewModel.changeTextColor) { changeAllTextColors(it) }
-        liveDataListener(viewModel.changeAvatar) { imgAvatar.setImageResource(it) }
+        liveDataListener(viewModel.changeAvatar) {
+            imgAvatar.startAnimation(AnimationUtils.loadAnimation(act, android.R.anim.fade_out))
+            imgAvatar.setImageResource(it)
+            imgAvatar.startAnimation(AnimationUtils.loadAnimation(act, android.R.anim.fade_in))
+        }
+        liveDataListener(viewModel.progressAvatarImageVisible) {
+            progressImgAvatar.visibility = if (it) View.VISIBLE else View.INVISIBLE
+        }
         liveDataListener(viewModel.imgAvatarUmbrellaVisible) {
             imgAvatarUmbrella.visibility = if (it) View.VISIBLE else View.GONE
         }
@@ -117,11 +133,6 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    override fun setStatusBarColor(colorId: Int){
-        super.setStatusBarColor(colorId)
-    }
-
     private fun changeAllTextColors(color: Int) {
         tvDayName.setTextColor(ContextCompat.getColor(act, color))
         tvCity.setTextColor(ContextCompat.getColor(act, color))
@@ -129,6 +140,25 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         tvTempDegreeIcon.setTextColor(ContextCompat.getColor(act, color))
         tvTempDesc.setTextColor(ContextCompat.getColor(act, color))
         tvSeekTime.setTextColor(ContextCompat.getColor(act, color))
+    }
+
+    fun imageChangeWithAnimation(c: Context, imageView: ImageView, imageId: Int) {
+        val animOut = AnimationUtils.loadAnimation(c, android.R.anim.fade_out)
+        val animIn = AnimationUtils.loadAnimation(c, android.R.anim.fade_in)
+        animOut.setAnimationListener(object : AnimationListener {
+            override fun onAnimationStart(animation: Animation) {}
+            override fun onAnimationRepeat(animation: Animation) {}
+            override fun onAnimationEnd(animation: Animation) {
+                imageView.setImageResource(imageId)
+                animIn.setAnimationListener(object : AnimationListener {
+                    override fun onAnimationStart(animation: Animation) {}
+                    override fun onAnimationRepeat(animation: Animation) {}
+                    override fun onAnimationEnd(animation: Animation) {}
+                })
+                imageView.startAnimation(animIn)
+            }
+        })
+        imageView.startAnimation(animOut)
     }
 
     private fun initRvOtherWeather(list: List<WeatherLowInformation>) {

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.setting.SettingFragment"
-    android:background="@drawable/gradient_white_green"
+    android:background="@drawable/gradient_backtop_backbottom"
     android:padding="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout

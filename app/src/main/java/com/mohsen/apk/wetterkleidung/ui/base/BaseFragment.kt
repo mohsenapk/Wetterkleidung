@@ -49,7 +49,7 @@ abstract class BaseFragment(private val layout: Int) : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    protected open fun setStatusBarColor(colorId: Int) {
+    fun setStatusBarColor(colorId: Int) {
         val window: Window = act.window
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)

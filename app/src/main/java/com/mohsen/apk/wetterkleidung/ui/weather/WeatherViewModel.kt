@@ -11,6 +11,9 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
 import kotlin.math.roundToInt
 import com.mohsen.apk.wetterkleidung.R
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 
 class WeatherViewModel(
     private val weatherRepository: WeatherRepository,
@@ -45,6 +48,7 @@ class WeatherViewModel(
     private val _changeBackBottomColor = MutableLiveData<Int>()
     private val _changeTextColor = MutableLiveData<Int>()
     private val _changeAvatar = MutableLiveData<Int>()
+    private val _progressAvatarImageVisible = MutableLiveData<Boolean>()
     private val _imgAvatarUmbrellaVisible = MutableLiveData<Boolean>()
 
     val snackBarError: LiveData<String> = _snackBarError
@@ -68,6 +72,7 @@ class WeatherViewModel(
     val changeBackBottomColor: LiveData<Int> = _changeBackBottomColor
     val changeTextColor: LiveData<Int> = _changeTextColor
     val changeAvatar: LiveData<Int> = _changeAvatar
+    val progressAvatarImageVisible: LiveData<Boolean> = _progressAvatarImageVisible
     val imgAvatarUmbrellaVisible: LiveData<Boolean> = _imgAvatarUmbrellaVisible
 
     fun start() = viewModelScope.launch {
@@ -225,9 +230,20 @@ class WeatherViewModel(
     private fun changeAvatarWithWeather(weather: Forecast5DaysWeatherDetail) {
         val avatarImageResourceId = getAvatarResourceId(weather)
         if (avatarImageResourceId > 0)
-            _changeAvatar.value = avatarImageResourceId
-        checkForUmbrella(weather)
+            changeAvatarImageWithLoadingAsync(avatarImageResourceId)
+        checkForUmbrellaAsync(weather)
     }
+
+    private fun changeAvatarImageWithLoadingAsync(avatarImageResourceId: Int) =
+        viewModelScope.async {
+            _changeAvatar.value = 0
+            _progressAvatarImageVisible.value = true
+            delay(300)
+            _progressAvatarImageVisible.value = false
+            _changeAvatar.value = avatarImageResourceId
+            cancel()
+        }
+
 
     private fun getAvatarResourceId(weather: Forecast5DaysWeatherDetail): Int {
         return when (weather?.temp?.feels_like?.roundToInt()) {
@@ -242,12 +258,18 @@ class WeatherViewModel(
         }
     }
 
-    private fun checkForUmbrella(weather: Forecast5DaysWeatherDetail) {
-        val hasRain =
-            weather.weatherTitleList[0].description
-                .toLowerCase().contains("rain")
-        _imgAvatarUmbrellaVisible.value = hasRain
-    }
+    private fun checkForUmbrellaAsync(weather: Forecast5DaysWeatherDetail) =
+        viewModelScope.async {
+            val hasRain =
+                weather.weatherTitleList[0].description
+                    .toLowerCase().contains("rain")
+            _imgAvatarUmbrellaVisible.value = false
+            _progressAvatarImageVisible.value = true
+            delay(300)
+            _progressAvatarImageVisible.value = false
+            _imgAvatarUmbrellaVisible.value = hasRain
+            cancel()
+        }
 
     //bug IndexOutOfBoundsException: Index: 7, Size: 2 todo
     private fun weatherPresentation(index: Int) {
@@ -264,7 +286,7 @@ class WeatherViewModel(
         _wind.value = "${currentWeather.wind?.speed} - ${currentWeather.wind?.degree}"
     }
 
-    fun seekBarProgressChanged(progress: Int) {
+    fun seekBarProgressChangedAsync(progress: Int) = viewModelScope.async {
         presentation(progress)
         _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekTimeIndexes[progress])
     }
@@ -320,6 +342,12 @@ class WeatherViewModel(
         ivIcon?.let {
             imageHelper.loadWeatherIcon(ivIcon, imgId)
         }
+    }
+
+    fun seekBarSeekingTouched() {
+        _changeAvatar.value = 0
+        _imgAvatarUmbrellaVisible.value = false
+        _progressAvatarImageVisible.value = true
     }
 
 }
