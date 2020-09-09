@@ -75,8 +75,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fabSize="mini"
-        android:src="@drawable/gps"
-        app:maxImageSize="40dp"
+        android:src="@drawable/gps_icon"
+        app:maxImageSize="30dp"
         app:useCompatPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

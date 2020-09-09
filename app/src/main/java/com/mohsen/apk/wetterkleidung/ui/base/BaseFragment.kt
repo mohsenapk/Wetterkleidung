@@ -1,12 +1,13 @@
 package com.mohsen.apk.wetterkleidung.ui.base
 
+import android.R
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -41,20 +42,30 @@ abstract class BaseFragment(private val layout: Int) : Fragment() {
         val imm: InputMethodManager =
             activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         var view = activity.currentFocus
-        if (view == null) { view = View(activity) }
+        if (view == null) {
+            view = View(activity)
+        }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    protected open fun setStatusBarColor(colorId: Int) {
+        val window: Window = act.window
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = ContextCompat.getColor(act, colorId)
     }
 
     abstract fun initDagger()
     abstract fun showSnackBarError(message: String)
 
-    protected fun <T> liveDataListener(liveDataFunc: LiveData<T>, func: (obj: T) -> Unit) {
+    fun <T> liveDataListener(liveDataFunc: LiveData<T>, func: (obj: T) -> Unit) {
         liveDataFunc.observe(this, Observer {
             func(it)
         })
     }
 
-    protected fun gotoFragment(strName: String) {
+    fun gotoFragment(strName: String) {
         (act as MainActivity).gotoFragment(strName)
     }
 

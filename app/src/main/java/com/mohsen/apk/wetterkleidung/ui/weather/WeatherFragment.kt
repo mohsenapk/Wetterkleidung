@@ -1,8 +1,10 @@
 package com.mohsen.apk.wetterkleidung.ui.weather
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -88,6 +90,7 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         liveDataListener(viewModel.seekTimeProgress) { seekBar.setProgress(it) }
         liveDataListener(viewModel.tempDesc) { tvTempDesc.text = it }
         liveDataListener(viewModel.changeBackImage) { imgBack.setImageResource(it) }
+        liveDataListener(viewModel.changeStatusBarColor){setStatusBarColor(it)}
         liveDataListener(viewModel.changeTextColor) { changeAllTextColors(it) }
         liveDataListener(viewModel.changeAvatar) { imgAvatar.setImageResource(it) }
         liveDataListener(viewModel.imgAvatarUmbrellaVisible) {
@@ -99,8 +102,11 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         liveDataListener(viewModel.snackBarError) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
-        liveDataListener(viewModel.progress) {
+        liveDataListener(viewModel.progressVisible) {
             progress.visibility = if (it) View.VISIBLE else View.INVISIBLE
+        }
+        liveDataListener(viewModel.parentVisible) {
+            clParent.visibility = if (it) View.VISIBLE else View.INVISIBLE
         }
         liveDataListener(viewModel.weatherImageIconId) {
             it?.let { viewModel.weatherIconLoader(ivIcon, it) }
@@ -111,6 +117,11 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    override fun setStatusBarColor(colorId: Int){
+        super.setStatusBarColor(colorId)
+    }
+
     private fun changeAllTextColors(color: Int) {
         tvDayName.setTextColor(ContextCompat.getColor(act, color))
         tvCity.setTextColor(ContextCompat.getColor(act, color))
@@ -119,7 +130,6 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         tvTempDesc.setTextColor(ContextCompat.getColor(act, color))
         tvSeekTime.setTextColor(ContextCompat.getColor(act, color))
     }
-
 
     private fun initRvOtherWeather(list: List<WeatherLowInformation>) {
         rvOtherWeather.apply {

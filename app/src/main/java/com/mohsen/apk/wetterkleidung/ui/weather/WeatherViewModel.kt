@@ -33,13 +33,15 @@ class WeatherViewModel(
     private val _dayName = MutableLiveData<String>()
     private val _temp = MutableLiveData<Int>()
     private val _tempDesc = MutableLiveData<String>()
-    private val _progress = MutableLiveData<Boolean>()
+    private val _progressVisible = MutableLiveData<Boolean>()
+    private val _parentVisible = MutableLiveData<Boolean>()
     private val _weatherImageIconId = MutableLiveData<String>()
     private val _weatherLowInfoList = MutableLiveData<List<WeatherLowInformation>>()
     private val _seekBarTextList = MutableLiveData<List<String>>()
     private val _seekBarSelectedText = MutableLiveData<String>()
     private val _seekTimeProgress = MutableLiveData<Float>()
     private val _changeBackImage = MutableLiveData<Int>()
+    private val _changeStatusBarColor = MutableLiveData<Int>()
     private val _changeBackBottomColor = MutableLiveData<Int>()
     private val _changeTextColor = MutableLiveData<Int>()
     private val _changeAvatar = MutableLiveData<Int>()
@@ -54,19 +56,22 @@ class WeatherViewModel(
     val dayName: LiveData<String> = _dayName
     val temp: LiveData<Int> = _temp
     val tempDesc: LiveData<String> = _tempDesc
-    val progress: LiveData<Boolean> = _progress
+    val progressVisible: LiveData<Boolean> = _progressVisible
+    val parentVisible: LiveData<Boolean> = _parentVisible
     val weatherImageIconId: LiveData<String> = _weatherImageIconId
     val weatherLowInfoList: LiveData<List<WeatherLowInformation>> = _weatherLowInfoList
     val seekBarTextList: LiveData<List<String>> = _seekBarTextList
     val seekBarSelectedText: LiveData<String> = _seekBarSelectedText
     val seekTimeProgress: LiveData<Float> = _seekTimeProgress
     val changeBackImage: LiveData<Int> = _changeBackImage
+    val changeStatusBarColor: LiveData<Int> = _changeStatusBarColor
     val changeBackBottomColor: LiveData<Int> = _changeBackBottomColor
     val changeTextColor: LiveData<Int> = _changeTextColor
     val changeAvatar: LiveData<Int> = _changeAvatar
     val imgAvatarUmbrellaVisible: LiveData<Boolean> = _imgAvatarUmbrellaVisible
 
     fun start() = viewModelScope.launch {
+        _changeStatusBarColor.value = getStatusColorId(-1)
         weatherUnit = prefs.getWeatherUnit()
         val defaultCity = prefs.getCityDefault()
         if (defaultCity.isEmpty()) {
@@ -88,7 +93,8 @@ class WeatherViewModel(
         city: String,
         weatherUnit: WeatherUnit
     ) {
-        _progress.value = true
+        _progressVisible.value = true
+        _parentVisible.value = false
         val weather = weatherRepository
             .getForecastWeather5DaysHourly(city, weatherUnit)
         when (weather) {
@@ -246,7 +252,8 @@ class WeatherViewModel(
     //bug IndexOutOfBoundsException: Index: 7, Size: 2 todo
     private fun weatherPresentation(index: Int) {
         val currentWeather = selectedDayWeatherList[index]
-        _progress.value = false
+        _progressVisible.value = false
+        _parentVisible.value = true
         _cityName.value = forecast5DaysWeather?.city?.cityName
         _date.value = currentWeather.dateTimeText.substringBefore(" ")
         _temp.value = currentWeather.temp?.temp?.roundToInt()
@@ -264,6 +271,7 @@ class WeatherViewModel(
 
     private fun changeBackImageWithIndex(index: Int) {
         _changeBackImage.value = getBackImageResourceId(allSeekTimeIndexes[index])
+        _changeStatusBarColor.value = getStatusColorId(allSeekTimeIndexes[index])
     }
 
     private fun changeBackBottomColorWithIndex(index: Int) {
@@ -287,6 +295,15 @@ class WeatherViewModel(
             6 -> R.drawable.back_evening
             7 -> R.drawable.back_night
             else -> R.drawable.back_day
+        }
+    }
+
+    private fun getStatusColorId(index: Int): Int {
+        return when (index) {
+            0, 1 -> R.color.backTopDayBreak
+            6 -> R.color.backTopEvening
+            7 -> R.color.backTopNight
+            else -> R.color.backTopDay
         }
     }
 
