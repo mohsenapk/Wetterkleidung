@@ -10,7 +10,9 @@ import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
 import kotlin.math.roundToInt
-import com.mohsen.apk.wetterkleidung.R
+import com.mohsen.apk.wetterkleidung.ui.weather.managers.ResourceManagerImpl
+import com.mohsen.apk.wetterkleidung.ui.weather.managers.DayNameManagerImpl
+import com.mohsen.apk.wetterkleidung.ui.weather.managers.SeekBarManagerImpl
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -21,6 +23,10 @@ class WeatherViewModel(
     private val imageHelper: ImageHelper,
     private val prefs: SharedPreferenceManager
 ) : ViewModel() {
+
+    private val seekBarManager = SeekBarManagerImpl()
+    private val dayNameManager = DayNameManagerImpl(dateHelper)
+    private val resourceManager = ResourceManagerImpl()
 
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
     private var forecast5DaysWeather: Forecast5DaysWeather? = null
@@ -76,7 +82,7 @@ class WeatherViewModel(
     val imgAvatarUmbrellaVisible: LiveData<Boolean> = _imgAvatarUmbrellaVisible
 
     fun start() = viewModelScope.launch {
-        _changeStatusBarColor.value = getStatusColorId(-1)
+        _changeStatusBarColor.value = resourceManager.getStatusColorId(-1)
         weatherUnit = prefs.getWeatherUnit()
         val defaultCity = prefs.getCityDefault()
         if (defaultCity.isEmpty()) {
@@ -113,7 +119,7 @@ class WeatherViewModel(
 
     fun dateChanged(date: LocalDateTime) {
         _seekTimeProgress.value = 0F
-        _dayName.value = getDayName(date)
+        _dayName.value = dayNameManager.getDayName(date)
         changeCurrentWeatherList(date)
     }
 
@@ -126,41 +132,6 @@ class WeatherViewModel(
                         date.toString().substringBefore("T")
             }
             presentation(0)
-        }
-    }
-
-    private fun seekBarSetup(maxSize: Int) {
-        if (maxSize < 1) return
-        allSeekTimeIndexes = listOf<Int>(7, 6, 5, 4, 3, 2, 1, 0).subList(0, maxSize).reversed()
-        _seekBarTextList.value = allSeekTimeIndexes.map { getMinSeekBarTextFromIndex(it) }
-        _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekTimeIndexes[0])
-    }
-
-    private fun getMinSeekBarTextFromIndex(index: Int): String {
-        return when (index) {
-            0 -> SeekBarValue.ZERO.minText
-            1 -> SeekBarValue.ONE.minText
-            2 -> SeekBarValue.TWO.minText
-            3 -> SeekBarValue.THREE.minText
-            4 -> SeekBarValue.FOUR.minText
-            5 -> SeekBarValue.FIVE.minText
-            6 -> SeekBarValue.SIX.minText
-            7 -> SeekBarValue.SEVEN.minText
-            else -> ""
-        }
-    }
-
-    private fun getSeekBarTextFromIndex(index: Int): String {
-        return when (index) {
-            0 -> SeekBarValue.ZERO.hours
-            1 -> SeekBarValue.ONE.hours
-            2 -> SeekBarValue.TWO.hours
-            3 -> SeekBarValue.THREE.hours
-            4 -> SeekBarValue.FOUR.hours
-            5 -> SeekBarValue.FIVE.hours
-            6 -> SeekBarValue.SIX.hours
-            7 -> SeekBarValue.SEVEN.hours
-            else -> ""
         }
     }
 
@@ -189,33 +160,15 @@ class WeatherViewModel(
 
     private fun getWeatherLowInfoList(list: List<ForecastWeatherDetail>): List<WeatherLowInformation> {
         val weatherLowInfoList = mutableListOf<WeatherLowInformation>()
-        for (i in 0..5) {
+        for (i in 0..4) {
             val daily = list[i]
             val temp = daily.temp?.day?.roundToInt().toString()
             val date = dateHelper.getDateFromTimestamp(daily.date)
-            val day = getDayName(daily.date)
+            val day = dayNameManager.getDayName(daily.date)
             val iconId = daily.weatherTitleList[0].icon
             weatherLowInfoList.add(WeatherLowInformation(day, temp, iconId, date))
         }
         return weatherLowInfoList
-    }
-
-    private fun getDayName(timeStampNumber: Long): String {
-        return when {
-            dateHelper.isToday(timeStampNumber) -> "Today"
-            dateHelper.isMorning(timeStampNumber) -> "Tomorrow"
-            else -> dateHelper.getDayOfWeekFromTimestamp(timeStampNumber)
-                .toString().toLowerCase().capitalize()
-        }
-    }
-
-    private fun getDayName(date: LocalDateTime): String {
-        return when {
-            dateHelper.isToday(date) -> "Today"
-            dateHelper.isMorning(date) -> "Morning"
-            else -> dateHelper.getDayOfWeekFromTimestamp(date)
-                .toString().toLowerCase().capitalize()
-        }
     }
 
     private fun presentation(index: Int = 0) {
@@ -226,8 +179,17 @@ class WeatherViewModel(
         weatherPresentation(index)
     }
 
+    private fun seekBarSetup(maxSize: Int) {
+        if (maxSize < 1) return
+        allSeekTimeIndexes = seekBarManager.getSeekBarValues(maxSize)
+        _seekBarTextList.value =
+            allSeekTimeIndexes.map { seekBarManager.getTinySeekBarTextFromIndex(it) }
+        _seekBarSelectedText.value =
+            seekBarManager.getSeekBarTextFromIndex(allSeekTimeIndexes[0])
+    }
+
     private fun changeAvatarWithWeather(weather: Forecast5DaysWeatherDetail) {
-        val avatarImageResourceId = getAvatarResourceId(weather)
+        val avatarImageResourceId = resourceManager.getAvatarResourceIdFromWeather(weather)
         if (avatarImageResourceId > 0)
             changeAvatarImageWithLoadingAsync(avatarImageResourceId)
         checkForUmbrellaAsync(weather)
@@ -243,32 +205,22 @@ class WeatherViewModel(
             cancel()
         }
 
-
-    private fun getAvatarResourceId(weather: Forecast5DaysWeatherDetail): Int {
-        return when (weather?.temp?.feels_like?.roundToInt()) {
-            in (-100..5) -> R.drawable.avatar_cold_very
-            in (5..10) -> R.drawable.avatar_cold
-            in (10..15) -> R.drawable.avatar_cold_little
-            in (15..20) -> R.drawable.avatar_normal
-            in (20..25) -> R.drawable.avatar_hot_little
-            in (25..30) -> R.drawable.avatar_hot
-            in (30..100) -> R.drawable.avatar_hot_very
-            else -> 0
-        }
-    }
-
     private fun checkForUmbrellaAsync(weather: Forecast5DaysWeatherDetail) =
         viewModelScope.async {
             val hasRain =
                 weather.weatherTitleList[0].description
                     .toLowerCase().contains("rain")
-            _imgAvatarUmbrellaVisible.value = false
-            _progressAvatarImageVisible.value = true
-            delay(300)
-            _progressAvatarImageVisible.value = false
-            _imgAvatarUmbrellaVisible.value = hasRain
+            checkForUmbrellaAsyncHasRain(hasRain)
             cancel()
         }
+
+    private suspend fun checkForUmbrellaAsyncHasRain(hasRain: Boolean) {
+        _imgAvatarUmbrellaVisible.value = false
+        _progressAvatarImageVisible.value = true
+        delay(300)
+        _progressAvatarImageVisible.value = false
+        _imgAvatarUmbrellaVisible.value = hasRain
+    }
 
     //bug IndexOutOfBoundsException: Index: 7, Size: 2 todo
     private fun weatherPresentation(index: Int) {
@@ -287,7 +239,8 @@ class WeatherViewModel(
 
     fun seekBarProgressChangeOnSeeking(progress: Int) {
         presentation(progress)
-        _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekTimeIndexes[progress])
+        _seekBarSelectedText.value =
+            seekBarManager.getSeekBarTextFromIndex(allSeekTimeIndexes[progress])
     }
 
     fun seekBarProgressChangedOnStopTouching(progress: Int) {
@@ -298,50 +251,17 @@ class WeatherViewModel(
     }
 
     private fun changeBackImageWithIndex(index: Int) {
-        _changeBackImage.value = getBackImageResourceId(allSeekTimeIndexes[index])
-        _changeStatusBarColor.value = getStatusColorId(allSeekTimeIndexes[index])
+        _changeBackImage.value = resourceManager.getBackImageResourceId(allSeekTimeIndexes[index])
+        _changeStatusBarColor.value = resourceManager.getStatusColorId(allSeekTimeIndexes[index])
     }
 
     private fun changeBackBottomColorWithIndex(index: Int) {
-        _changeBackBottomColor.value = getBackBottomColorId(allSeekTimeIndexes[index])
+        _changeBackBottomColor.value =
+            resourceManager.getBackBottomColorId(allSeekTimeIndexes[index])
     }
 
     private fun changeTextColorWithIndex(index: Int) {
-        _changeTextColor.value = getTextColorId(allSeekTimeIndexes[index])
-    }
-
-    private fun getTextColorId(index: Int): Int {
-        return when (index) {
-            6, 7 -> R.color.white
-            else -> R.color.black
-        }
-    }
-
-    private fun getBackImageResourceId(index: Int): Int {
-        return when (index) {
-            0, 1 -> R.drawable.back_day_break
-            6 -> R.drawable.back_evening
-            7 -> R.drawable.back_night
-            else -> R.drawable.back_day
-        }
-    }
-
-    private fun getStatusColorId(index: Int): Int {
-        return when (index) {
-            0, 1 -> R.color.backTopDayBreak
-            6 -> R.color.backTopEvening
-            7 -> R.color.backTopNight
-            else -> R.color.backTopDay
-        }
-    }
-
-    private fun getBackBottomColorId(index: Int): Int {
-        return when (index) {
-            0, 1 -> R.color.backBottomDayBreak
-            6 -> R.color.backBottomEvening
-            7 -> R.color.backBottomNight
-            else -> R.color.backBottomDay
-        }
+        _changeTextColor.value = resourceManager.getTextColorId(allSeekTimeIndexes[index])
     }
 
     fun weatherIconLoader(ivIcon: ImageView?, imgId: String) {
