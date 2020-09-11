@@ -224,7 +224,6 @@ class WeatherViewModel(
         changeBackBottomColorWithIndex(index)
         changeTextColorWithIndex(index)
         weatherPresentation(index)
-        changeAvatarWithWeather(selectedDayWeatherList[index])
     }
 
     private fun changeAvatarWithWeather(weather: Forecast5DaysWeatherDetail) {
@@ -286,9 +285,16 @@ class WeatherViewModel(
         _wind.value = "${currentWeather.wind?.speed} - ${currentWeather.wind?.degree}"
     }
 
-    fun seekBarProgressChangedAsync(progress: Int) = viewModelScope.async {
+    fun seekBarProgressChangeOnSeeking(progress: Int) {
         presentation(progress)
         _seekBarSelectedText.value = getSeekBarTextFromIndex(allSeekTimeIndexes[progress])
+    }
+
+    fun seekBarProgressChangedOnStopTouching(progress: Int) {
+        _changeAvatar.value = 0
+        _imgAvatarUmbrellaVisible.value = false
+        _progressAvatarImageVisible.value = true
+        changeAvatarWithWeather(selectedDayWeatherList[progress])
     }
 
     private fun changeBackImageWithIndex(index: Int) {
@@ -342,12 +348,6 @@ class WeatherViewModel(
         ivIcon?.let {
             imageHelper.loadWeatherIcon(ivIcon, imgId)
         }
-    }
-
-    fun seekBarSeekingTouched() {
-        _changeAvatar.value = 0
-        _imgAvatarUmbrellaVisible.value = false
-        _progressAvatarImageVisible.value = true
     }
 
 }

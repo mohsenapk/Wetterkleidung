@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:layout_marginTop="4dp"
-    android:background="@drawable/border_solid_white"
-    android:paddingLeft="8dp">
+    android:paddingLeft="8dp"
+    android:background="@drawable/border_white">
 
             <TextView
                 android:id="@+id/tvDate"
@@ -17,10 +17,10 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="14.4.2009"
-                android:textColor="@color/black"/>
+                android:textColor="@color/white"/>
 
             <ImageView
-                android:id="@+id/ivIcon"
+                android:id="@+id/imgWeatherIcon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 app:layout_constraintRight_toRightOf="parent"
@@ -32,10 +32,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="o"
-                app:layout_constraintRight_toLeftOf="@id/ivIcon"
+                app:layout_constraintRight_toLeftOf="@id/imgWeatherIcon"
                 app:layout_constraintTop_toTopOf="@id/tvTemp"
                 android:textSize="10sp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:layout_marginLeft="4dp"
                 android:layout_marginBottom="4dp"/>
 
@@ -48,6 +48,6 @@
                 app:layout_constraintRight_toLeftOf="@id/tvTempDegree"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="14"
-                android:textColor="@color/black"/>
+                android:textColor="@color/white"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

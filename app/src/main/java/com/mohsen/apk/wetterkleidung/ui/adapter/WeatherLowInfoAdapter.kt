@@ -1,6 +1,5 @@
 package com.mohsen.apk.wetterkleidung.ui.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
-import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
-import java.time.DayOfWeek
 
 class WeatherLowInfoAdapter(
     private val list: List<WeatherLowInformation>,
@@ -32,7 +29,7 @@ class WeatherLowInfoAdapter(
     inner class VHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvDate: TextView = view.findViewById(R.id.tvDate)
         private val tvTemp: TextView = view.findViewById(R.id.tvTemp)
-        private val ivIcon: ImageView = view.findViewById(R.id.ivIcon)
+        private val ivIcon: ImageView = view.findViewById(R.id.imgWeatherIcon)
 
         init {
             view.setOnClickListener { dateSelect(list[adapterPosition].date) }

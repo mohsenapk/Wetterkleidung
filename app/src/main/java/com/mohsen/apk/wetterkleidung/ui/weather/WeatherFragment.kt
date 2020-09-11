@@ -73,12 +73,14 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
 
     private fun seekBarInit() {
         seekBar.onSeekChangeListener = object : OnSeekChangeListener {
-            override fun onSeeking(seekParams: SeekParams?) {
-                viewModel.seekBarSeekingTouched()
-            }
             override fun onStartTrackingTouch(seekBar: TickSeekBar?) {}
+
+            override fun onSeeking(seekParams: SeekParams?) {
+                seekParams?.let { viewModel.seekBarProgressChangeOnSeeking(it.progress) }
+            }
+
             override fun onStopTrackingTouch(seekBar: TickSeekBar?) {
-                seekBar?.let { viewModel.seekBarProgressChangedAsync(it.progress) }
+                seekBar?.let { viewModel.seekBarProgressChangedOnStopTouching(it.progress) }
             }
         }
     }
@@ -125,7 +127,7 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
             clParent.visibility = if (it) View.VISIBLE else View.INVISIBLE
         }
         liveDataListener(viewModel.weatherImageIconId) {
-            it?.let { viewModel.weatherIconLoader(ivIcon, it) }
+            it?.let { viewModel.weatherIconLoader(imgWeatherIcon, it) }
         }
         liveDataListener(viewModel.temp) {
             tvTemp.text = it.toString()

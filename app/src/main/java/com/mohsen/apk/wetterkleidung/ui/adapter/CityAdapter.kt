@@ -37,7 +37,7 @@ class CityAdapter(
         private val parentView: ConstraintLayout = view.findViewById(R.id.parentView)
         private val tvCity: TextView = view.findViewById(R.id.tvCity)
         private val tvTemp: TextView = view.findViewById(R.id.tvTemp)
-        private val ivIcon: ImageView = view.findViewById(R.id.ivIcon)
+        private val ivIcon: ImageView = view.findViewById(R.id.imgWeatherIcon)
         private val ivDelete: ImageView = view.findViewById(R.id.ivDelete)
 
 
