@@ -1,13 +1,9 @@
 package com.mohsen.apk.wetterkleidung.ui.weather
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -56,7 +52,6 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         initDagger()
         initViewModel()
         initUI()
-        viewModel.start()
         listenToViewModel()
     }
 
@@ -83,6 +78,10 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
                 seekBar?.let { viewModel.seekBarProgressChangedOnStopTouching(it.progress) }
             }
         }
+    }
+
+    private fun seekBarVirtualFirstItemClick(){
+        seekBar?.let { viewModel.seekBarProgressChangedOnStopTouching(0) }
     }
 
     private fun seekBarInitTexts(seekTimes: List<String>) {
@@ -142,25 +141,6 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         tvTempDegreeIcon.setTextColor(ContextCompat.getColor(act, color))
         tvTempDesc.setTextColor(ContextCompat.getColor(act, color))
         tvSeekTime.setTextColor(ContextCompat.getColor(act, color))
-    }
-
-    fun imageChangeWithAnimation(c: Context, imageView: ImageView, imageId: Int) {
-        val animOut = AnimationUtils.loadAnimation(c, android.R.anim.fade_out)
-        val animIn = AnimationUtils.loadAnimation(c, android.R.anim.fade_in)
-        animOut.setAnimationListener(object : AnimationListener {
-            override fun onAnimationStart(animation: Animation) {}
-            override fun onAnimationRepeat(animation: Animation) {}
-            override fun onAnimationEnd(animation: Animation) {
-                imageView.setImageResource(imageId)
-                animIn.setAnimationListener(object : AnimationListener {
-                    override fun onAnimationStart(animation: Animation) {}
-                    override fun onAnimationRepeat(animation: Animation) {}
-                    override fun onAnimationEnd(animation: Animation) {}
-                })
-                imageView.startAnimation(animIn)
-            }
-        })
-        imageView.startAnimation(animOut)
     }
 
     private fun initRvOtherWeather(list: List<WeatherLowInformation>) {

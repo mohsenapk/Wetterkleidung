@@ -7,7 +7,6 @@ import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
-import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
 import kotlin.math.roundToInt
 import com.mohsen.apk.wetterkleidung.ui.weather.managers.ResourceManagerImpl
@@ -81,12 +80,12 @@ class WeatherViewModel(
     val progressAvatarImageVisible: LiveData<Boolean> = _progressAvatarImageVisible
     val imgAvatarUmbrellaVisible: LiveData<Boolean> = _imgAvatarUmbrellaVisible
 
-    fun start() = viewModelScope.launch {
+    private fun startAsync() = viewModelScope.async {
         _changeStatusBarColor.value = resourceManager.getStatusColorId(-1)
         weatherUnit = prefs.getWeatherUnit()
         val defaultCity = prefs.getCityDefault()
         if (defaultCity.isEmpty()) {
-            return@launch
+            return@async
         }
         forecastWeather5DaysHourly(defaultCity, weatherUnit)
         forecastWeather5DaysAVG(defaultCity, weatherUnit)
@@ -97,7 +96,7 @@ class WeatherViewModel(
         weatherUnit = prefs.getWeatherUnit()
         val defaultCity = prefs.getCityDefault()
         if (defaultCity.toUpperCase() != forecast5DaysWeather?.city?.cityName?.toUpperCase())
-            start()
+            startAsync()
     }
 
     private suspend fun forecastWeather5DaysHourly(
@@ -132,6 +131,7 @@ class WeatherViewModel(
                         date.toString().substringBefore("T")
             }
             presentation(0)
+            changeAvatarWithWeather(selectedDayWeatherList[0])
         }
     }
 
@@ -238,15 +238,15 @@ class WeatherViewModel(
     }
 
     fun seekBarProgressChangeOnSeeking(progress: Int) {
-        presentation(progress)
-        _seekBarSelectedText.value =
-            seekBarManager.getSeekBarTextFromIndex(allSeekTimeIndexes[progress])
-    }
-
-    fun seekBarProgressChangedOnStopTouching(progress: Int) {
         _changeAvatar.value = 0
         _imgAvatarUmbrellaVisible.value = false
         _progressAvatarImageVisible.value = true
+        _seekBarSelectedText.value =
+            seekBarManager.getSeekBarTextFromIndex(allSeekTimeIndexes[progress])
+        presentation(progress)
+    }
+
+    fun seekBarProgressChangedOnStopTouching(progress: Int) {
         changeAvatarWithWeather(selectedDayWeatherList[progress])
     }
 
