@@ -15,6 +15,7 @@ import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
 import com.mohsen.apk.wetterkleidung.ui.city.CityFragment
 import com.mohsen.apk.wetterkleidung.ui.setting.SettingFragment
+import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import com.warkiz.tickseekbar.OnSeekChangeListener
 import com.warkiz.tickseekbar.SeekParams
@@ -34,6 +35,9 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
 
     @Inject
     lateinit var imageHelper: ImageHelper
+
+    @Inject
+    lateinit var dateHelper: DateHelper
 
     lateinit var viewModel: WeatherViewModel
     private val rvOtherWeatherLayoutManager = LinearLayoutManager(context)
@@ -80,7 +84,7 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         }
     }
 
-    private fun seekBarVirtualFirstItemClick(){
+    private fun seekBarVirtualFirstItemClick() {
         seekBar?.let { viewModel.seekBarProgressChangedOnStopTouching(0) }
     }
 
@@ -102,16 +106,17 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         liveDataListener(viewModel.changeBackImage) { imgBack.setImageResource(it) }
         liveDataListener(viewModel.changeStatusBarColor) { setStatusBarColor(it) }
         liveDataListener(viewModel.changeTextColor) { changeAllTextColors(it) }
+        liveDataListener(viewModel.seekBarVisibility) { seekBar.visibility = setVisibility(it) }
         liveDataListener(viewModel.changeAvatar) {
             imgAvatar.startAnimation(AnimationUtils.loadAnimation(act, android.R.anim.fade_out))
             imgAvatar.setImageResource(it)
             imgAvatar.startAnimation(AnimationUtils.loadAnimation(act, android.R.anim.fade_in))
         }
         liveDataListener(viewModel.progressAvatarImageVisible) {
-            progressImgAvatar.visibility = if (it) View.VISIBLE else View.INVISIBLE
+            progressImgAvatar.visibility = setVisibility(it)
         }
         liveDataListener(viewModel.imgAvatarUmbrellaVisible) {
-            imgAvatarUmbrella.visibility = if (it) View.VISIBLE else View.GONE
+            imgAvatarUmbrella.visibility = setVisibility(it)
         }
         liveDataListener(viewModel.changeBackBottomColor) {
             clParent.setBackgroundColor(ContextCompat.getColor(act, it))
@@ -120,10 +125,10 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
         liveDataListener(viewModel.progressVisible) {
-            progress.visibility = if (it) View.VISIBLE else View.INVISIBLE
+            progress.visibility = setVisibility(it)
         }
         liveDataListener(viewModel.parentVisible) {
-            clParent.visibility = if (it) View.VISIBLE else View.INVISIBLE
+            clParent.visibility = setVisibility(it)
         }
         liveDataListener(viewModel.weatherImageIconId) {
             it?.let { viewModel.weatherIconLoader(imgWeatherIcon, it) }
@@ -133,6 +138,8 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
             tvTempDegreeIcon.visibility = View.VISIBLE
         }
     }
+
+    private fun setVisibility(it: Boolean) = if (it) View.VISIBLE else View.GONE
 
     private fun changeAllTextColors(color: Int) {
         tvDayName.setTextColor(ContextCompat.getColor(act, color))
@@ -147,7 +154,7 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         rvOtherWeather.apply {
             layoutManager = rvOtherWeatherLayoutManager
             list?.let {
-                adapter = WeatherLowInfoAdapter(list, imageHelper) {
+                adapter = WeatherLowInfoAdapter(list, imageHelper, dateHelper) {
                     viewModel.dateChanged(it)
                 }
             }

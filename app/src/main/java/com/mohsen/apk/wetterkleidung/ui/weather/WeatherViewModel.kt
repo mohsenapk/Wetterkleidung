@@ -55,6 +55,7 @@ class WeatherViewModel(
     private val _changeAvatar = MutableLiveData<Int>()
     private val _progressAvatarImageVisible = MutableLiveData<Boolean>()
     private val _imgAvatarUmbrellaVisible = MutableLiveData<Boolean>()
+    private val _seekBarVisibility = MutableLiveData<Boolean>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -79,6 +80,14 @@ class WeatherViewModel(
     val changeAvatar: LiveData<Int> = _changeAvatar
     val progressAvatarImageVisible: LiveData<Boolean> = _progressAvatarImageVisible
     val imgAvatarUmbrellaVisible: LiveData<Boolean> = _imgAvatarUmbrellaVisible
+    val seekBarVisibility: LiveData<Boolean> = _seekBarVisibility
+
+    fun onResume() {
+        weatherUnit = prefs.getWeatherUnit()
+        val defaultCity = prefs.getCityDefault()
+        if (defaultCity.toUpperCase() != forecast5DaysWeather?.city?.cityName?.toUpperCase())
+            startAsync()
+    }
 
     private fun startAsync() = viewModelScope.async {
         _changeStatusBarColor.value = resourceManager.getStatusColorId(-1)
@@ -90,13 +99,6 @@ class WeatherViewModel(
         forecastWeather5DaysHourly(defaultCity, weatherUnit)
         forecastWeather5DaysAVG(defaultCity, weatherUnit)
         dateChanged(LocalDateTime.now())
-    }
-
-    fun onResume() {
-        weatherUnit = prefs.getWeatherUnit()
-        val defaultCity = prefs.getCityDefault()
-        if (defaultCity.toUpperCase() != forecast5DaysWeather?.city?.cityName?.toUpperCase())
-            startAsync()
     }
 
     private suspend fun forecastWeather5DaysHourly(
@@ -130,9 +132,20 @@ class WeatherViewModel(
                 weather.dateTimeText.substringBefore(" ") ==
                         date.toString().substringBefore("T")
             }
-            presentation(0)
-            changeAvatarWithWeather(selectedDayWeatherList[0])
+            firstUiSetup()
         }
+    }
+
+    private fun firstUiSetup() {
+        presentation(0)
+        changeAvatarWithWeather(selectedDayWeatherList[0])
+        checkForSeekBarVisibility(selectedDayWeatherList.size)
+        val firstSeekBarItemIndex = seekBarManager.getSeekBarValues(selectedDayWeatherList.size)[0]
+        _seekBarSelectedText.value = seekBarManager.getSeekBarTextFromIndex(firstSeekBarItemIndex)
+    }
+
+    private fun checkForSeekBarVisibility(size: Int) {
+        _seekBarVisibility.value = (size > 1)
     }
 
     private suspend fun forecastWeather5DaysAVG(
@@ -151,8 +164,7 @@ class WeatherViewModel(
     }
 
     private fun getForecastWeatherForList(list: List<ForecastWeatherDetail>) {
-        if (list.size < 5)
-            return
+        if (list.size < 5) return
         val list = getWeatherLowInfoList(list)
         if (list.isNotEmpty())
             _weatherLowInfoList.value = list
@@ -180,12 +192,12 @@ class WeatherViewModel(
     }
 
     private fun seekBarSetup(maxSize: Int) {
-        if (maxSize < 1) return
+        if (maxSize < 1) {
+            return
+        }
         allSeekTimeIndexes = seekBarManager.getSeekBarValues(maxSize)
         _seekBarTextList.value =
             allSeekTimeIndexes.map { seekBarManager.getTinySeekBarTextFromIndex(it) }
-        _seekBarSelectedText.value =
-            seekBarManager.getSeekBarTextFromIndex(allSeekTimeIndexes[0])
     }
 
     private fun changeAvatarWithWeather(weather: Forecast5DaysWeatherDetail) {
@@ -241,13 +253,18 @@ class WeatherViewModel(
         _changeAvatar.value = 0
         _imgAvatarUmbrellaVisible.value = false
         _progressAvatarImageVisible.value = true
+        setSeekBarSelectedText(progress)
+        presentation(progress)
+    }
+
+    private fun setSeekBarSelectedText(progress: Int) {
         _seekBarSelectedText.value =
             seekBarManager.getSeekBarTextFromIndex(allSeekTimeIndexes[progress])
-        presentation(progress)
     }
 
     fun seekBarProgressChangedOnStopTouching(progress: Int) {
         changeAvatarWithWeather(selectedDayWeatherList[progress])
+        setSeekBarSelectedText(progress)
     }
 
     private fun changeBackImageWithIndex(index: Int) {
