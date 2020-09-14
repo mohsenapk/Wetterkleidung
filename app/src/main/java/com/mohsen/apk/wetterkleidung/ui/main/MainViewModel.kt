@@ -61,8 +61,8 @@ class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
     }
 
     private suspend fun loaderImageStart() {
-        for (i in 1..5) {
-            delay(200)
+        for (i in 1..6) {
+            delay(300)
             var resourceId = R.drawable.w1
             when (i) {
                 1 -> resourceId = R.drawable.w1

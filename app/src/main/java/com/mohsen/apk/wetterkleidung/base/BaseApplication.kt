@@ -22,6 +22,9 @@ import com.mohsen.apk.wetterkleidung.ui.setting.di.SettingModule
 import com.mohsen.apk.wetterkleidung.ui.main.di.DaggerMainComponent
 import com.mohsen.apk.wetterkleidung.ui.main.di.MainComponent
 import com.mohsen.apk.wetterkleidung.ui.main.di.MainModule
+import com.mohsen.apk.wetterkleidung.ui.splash.di.DaggerSplashComponent
+import com.mohsen.apk.wetterkleidung.ui.splash.di.SplashComponent
+import com.mohsen.apk.wetterkleidung.ui.splash.di.SplashModule
 import com.mohsen.apk.wetterkleidung.utility.di.UtilityModule
 import timber.log.Timber
 
@@ -32,6 +35,7 @@ class BaseApplication : Application() {
     lateinit var cityComponent: CityComponent
     lateinit var mainComponent: MainComponent
     lateinit var settingComponent: SettingComponent
+    lateinit var splaComponent: SplashComponent
 
     override fun onCreate() {
         super.onCreate()
@@ -46,7 +50,55 @@ class BaseApplication : Application() {
     }
 
     private fun initDagger() {
+        initApplicationComponent()
+        initWeatherComponent()
+        initCityComponent()
+        initMainComponent()
+        initSettingComponent()
+        initSplashComponent()
+    }
 
+    private fun initSplashComponent() {
+        splaComponent = DaggerSplashComponent.builder()
+            .splashModule(SplashModule())
+            .applicationComponent(applicationComponent)
+            .build()
+    }
+
+    private fun initSettingComponent() {
+        settingComponent =
+            DaggerSettingComponent.builder()
+                .settingModule(SettingModule())
+                .applicationComponent(applicationComponent)
+                .dialogModule(DialogModule())
+                .build()
+    }
+
+    private fun initMainComponent() {
+        mainComponent =
+            DaggerMainComponent.builder()
+                .mainModule(MainModule())
+                .applicationComponent(applicationComponent)
+                .build()
+    }
+
+    private fun initCityComponent() {
+        cityComponent =
+            DaggerCityComponent.builder()
+                .cityModule(CityModule())
+                .applicationComponent(applicationComponent)
+                .build()
+    }
+
+    private fun initWeatherComponent() {
+        weatherComponent =
+            DaggerWeatherComponent.builder()
+                .weatherModule(WeatherModule())
+                .applicationComponent(applicationComponent)
+                .build()
+    }
+
+    private fun initApplicationComponent() {
         applicationComponent = DaggerApplicationComponent.builder()
             .baseModule(BaseModule(this))
             .networkModule(NetworkModule(this))
@@ -54,31 +106,5 @@ class BaseApplication : Application() {
             .repositoryModule(RepositoryModule())
             .utilityModule(UtilityModule())
             .build()
-
-        weatherComponent =
-            DaggerWeatherComponent.builder()
-                .weatherModule(WeatherModule())
-                .applicationComponent(applicationComponent)
-                .build()
-
-        cityComponent =
-            DaggerCityComponent.builder()
-                .cityModule(CityModule())
-                .applicationComponent(applicationComponent)
-                .build()
-
-        mainComponent =
-            DaggerMainComponent.builder()
-                .mainModule(MainModule())
-                .applicationComponent(applicationComponent)
-                .build()
-
-        settingComponent =
-            DaggerSettingComponent.builder()
-                .settingModule(SettingModule())
-                .applicationComponent(applicationComponent)
-                .dialogModule(DialogModule())
-                .build()
-
     }
 }
