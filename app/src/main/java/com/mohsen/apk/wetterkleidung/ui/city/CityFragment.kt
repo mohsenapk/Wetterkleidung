@@ -61,9 +61,12 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
         liveDataListener(viewModel.getLocationPermission) { getLocationPermission() }
         liveDataListener(viewModel.closeVirtualKeyboard) { hideKeyboard(act) }
         liveDataListener(viewModel.showNoneCitySelectedError) {
-            clNoneCity.visibility = if (it) View.VISIBLE else View.INVISIBLE
+            clNoneCity.visibility = setVisibility(it)
         }
+        liveDataListener(viewModel.showProgress) { progress.visibility = setVisibility(it) }
     }
+
+    private fun setVisibility(it: Boolean) = if (it) View.VISIBLE else View.INVISIBLE
 
     private fun getLocationPermission() {
         if (ContextCompat.checkSelfPermission(
