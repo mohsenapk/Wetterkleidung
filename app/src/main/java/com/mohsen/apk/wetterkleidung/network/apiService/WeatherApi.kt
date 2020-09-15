@@ -14,6 +14,13 @@ interface WeatherApi {
         @Query("units") weatherUnitStr: String
     ): Response<CurrentWeather>
 
+    @GET("weather")
+    suspend fun getCurrentWeatherWithLatAndLon(
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("units") weatherUnitStr: String
+    ): Response<CurrentWeather>
+
     @GET("forecast/daily")
     suspend fun getForecastWeather(
         @Query("q") city: String,

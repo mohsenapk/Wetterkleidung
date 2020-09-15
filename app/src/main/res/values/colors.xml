@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimary">#8fece5</color>
+    <color name="colorPrimaryDark">#8fece5</color>
+    <color name="colorAccent">#FFFFFF</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="backTop">#8fece5</color>
-    <color name="backBottom">#79bd65</color>
+    <color name="backBottomDay">#7dc363</color>
+    <color name="backTopDay">#89eae5</color>
+    <color name="backBottomNight">#506642</color>
+    <color name="backTopNight">#193734</color>
+    <color name="backBottomEvening">#648752</color>
+    <color name="backTopEvening">#459990</color>
+    <color name="backBottomDayBreak">#709e5c</color>
+    <color name="backTopDayBreak">#57bbb2</color>
     <color name="backBottomDark">#5c8c4d</color>
     <color name="gray">#999999</color>
+    <color name="red">#FF2222</color>
+    <color name="light_red">#FFBBBB</color>
+    <color name="blue">#0088ff</color>
+    <color name="light_gray">#cccccc</color>
+    <color name="dark_green">#046532</color>
 </resources>

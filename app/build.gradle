@@ -50,6 +50,7 @@ ext {
     room_version = "2.2.5"
     dagger_version = "2.28.1"
     support_library = "28.0.0"
+    google_api_location_version = "17.0.0"
 }
 
 dependencies {
@@ -91,12 +92,15 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
+    //Location
+    implementation "com.google.android.gms:play-services-location:$google_api_location_version"
+
     //tools
     //Jacke Wharton Timber Simple Logger
     implementation "com.jakewharton.timber:timber:4.7.1"
     //Jacke Wharton TreeTenabp date library
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.4'
     //picker
-    implementation "com.github.adityagohad:HorizontalPicker:1.0.1"
+    implementation 'com.github.warkiz.tickseekbar:tickseekbar:0.1.4'
 
 }

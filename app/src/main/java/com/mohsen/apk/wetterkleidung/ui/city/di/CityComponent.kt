@@ -1,8 +1,8 @@
 package com.mohsen.apk.wetterkleidung.ui.city.di
 
 import com.mohsen.apk.wetterkleidung.base.di.ApplicationComponent
-import com.mohsen.apk.wetterkleidung.ui.city.CityActivity
-import com.mohsen.apk.wetterkleidung.ui.di.ActivityScope
+import com.mohsen.apk.wetterkleidung.ui.city.CityFragment
+import com.mohsen.apk.wetterkleidung.ui.base.di.ActivityScope
 import dagger.Component
 
 @ActivityScope
@@ -11,5 +11,5 @@ import dagger.Component
     dependencies = [ApplicationComponent::class]
 )
 interface CityComponent {
-    fun inject(target: CityActivity)
+    fun inject(target: CityFragment)
 }
