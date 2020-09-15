@@ -1,6 +1,5 @@
-package com.mohsen.apk.wetterkleidung.ui.weather.managers
+package com.mohsen.apk.wetterkleidung.utility
 
-import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import org.threeten.bp.LocalDateTime
 
 interface DayNameManager {

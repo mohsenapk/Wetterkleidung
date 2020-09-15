@@ -31,9 +31,7 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initDagger()
-        initViewModel()
-        initUi()
+        initUI()
         listenToViewModel()
     }
 
@@ -56,7 +54,7 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
     }
 
-    private fun initUi() {
+    private fun initUI() {
         clCity.setOnClickListener { gotoFragment(CityFragment::class.java.name) }
         clTimes.setOnClickListener { viewModel.timeSettingClicked() }
         clExit.setOnClickListener { viewModel.exitAppClicked() }
@@ -73,7 +71,7 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
         }
     }
 
-    private fun initViewModel() {
+    override fun initViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(SettingViewModel::class.java)
     }
 

@@ -6,7 +6,6 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import com.mohsen.apk.wetterkleidung.R
-import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_splash.*
 import javax.inject.Inject
@@ -26,8 +25,6 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStatusBarColor(R.color.backTop)
-        initDagger()
-        initViewModel()
         listenToViewModel()
     }
 
@@ -43,12 +40,12 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
         viewModel.onResume()
     }
 
-    private fun initViewModel() {
+    override fun initViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(SplashViewModel::class.java)
     }
 
     override fun initDagger() {
-        (application as BaseApplication).splaComponent.inject(this)
+        application.splashComponent.inject(this)
     }
 
     override fun showSnackBarError(message: String) {}

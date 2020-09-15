@@ -38,12 +38,10 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initDagger()
-        initViewModel()
-        viewModel.start()
         initUI()
         listenToViewModel()
     }
+
 
     private fun initUI() {
         etCity.setOnEditorActionListener { _, actionId, _ ->
@@ -65,8 +63,6 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
         }
         liveDataListener(viewModel.showProgress) { progress.visibility = setVisibility(it) }
     }
-
-    private fun setVisibility(it: Boolean) = if (it) View.VISIBLE else View.INVISIBLE
 
     private fun getLocationPermission() {
         if (ContextCompat.checkSelfPermission(
@@ -105,7 +101,7 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
         }
     }
 
-    private fun initViewModel() {
+    override fun initViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(CityViewModel::class.java)
     }
 

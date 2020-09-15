@@ -32,6 +32,8 @@ abstract class BaseFragment(private val layout: Int) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         act = context as Activity
         application = (act.application as BaseApplication)
+        initDagger()
+        initViewModel()
     }
 
     fun onBackPressed() {
@@ -48,6 +50,8 @@ abstract class BaseFragment(private val layout: Int) : Fragment() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    fun setVisibility(it: Boolean) = if (it) View.VISIBLE else View.GONE
+
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun setStatusBarColor(colorId: Int) {
         val window: Window = act.window
@@ -57,6 +61,7 @@ abstract class BaseFragment(private val layout: Int) : Fragment() {
     }
 
     abstract fun initDagger()
+    abstract fun initViewModel()
     abstract fun showSnackBarError(message: String)
 
     fun <T> liveDataListener(liveDataFunc: LiveData<T>, func: (obj: T) -> Unit) {

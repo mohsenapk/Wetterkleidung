@@ -1,4 +1,4 @@
-package com.mohsen.apk.wetterkleidung.ui.weather.managers
+package com.mohsen.apk.wetterkleidung.utility
 
 import com.mohsen.apk.wetterkleidung.model.SeekBarValue
 

@@ -5,13 +5,9 @@ import androidx.lifecycle.*
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
-import com.mohsen.apk.wetterkleidung.utility.DateHelper
-import com.mohsen.apk.wetterkleidung.utility.ImageHelper
+import com.mohsen.apk.wetterkleidung.utility.*
 import org.threeten.bp.LocalDateTime
 import kotlin.math.roundToInt
-import com.mohsen.apk.wetterkleidung.ui.weather.managers.ResourceManagerImpl
-import com.mohsen.apk.wetterkleidung.ui.weather.managers.DayNameManagerImpl
-import com.mohsen.apk.wetterkleidung.ui.weather.managers.SeekBarManagerImpl
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -20,12 +16,11 @@ class WeatherViewModel(
     private val weatherRepository: WeatherRepository,
     private val dateHelper: DateHelper,
     private val imageHelper: ImageHelper,
+    private val seekBarManager: SeekBarManager,
+    private val dayNameManager: DayNameManager,
+    private val resourceManager: ResourceManager,
     private val prefs: SharedPreferenceManager
 ) : ViewModel() {
-
-    private val seekBarManager = SeekBarManagerImpl()
-    private val dayNameManager = DayNameManagerImpl(dateHelper)
-    private val resourceManager = ResourceManagerImpl()
 
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>
     private var forecast5DaysWeather: Forecast5DaysWeather? = null
@@ -98,7 +93,13 @@ class WeatherViewModel(
         }
         forecastWeather5DaysHourly(defaultCity, weatherUnit)
         forecastWeather5DaysAVG(defaultCity, weatherUnit)
-        dateChanged(LocalDateTime.now())
+        setFirstDayWeather()
+    }
+
+    private fun setFirstDayWeather() {
+        val firstDay = forecast5DaysWeather?.weatherList?.get(0)?.date
+        val firstDayDate = firstDay?.let { dateHelper.getDateFromTimestamp(firstDay) }
+        firstDayDate?.let { dateChanged(it) }
     }
 
     private suspend fun forecastWeather5DaysHourly(

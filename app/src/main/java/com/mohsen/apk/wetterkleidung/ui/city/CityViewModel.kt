@@ -38,12 +38,13 @@ class CityViewModel(
     val closeVirtualKeyboard: LiveData<Unit> = _closeVirtualKeyboard
     val showProgress : LiveData<Boolean> = _showProgress
 
-    fun start() {
+    private fun start() {
         weatherUnit = prefs.getWeatherUnit()
         getAllCities()
     }
 
     fun onResume() {
+        start()
         weatherUnit = prefs.getWeatherUnit()
     }
 

@@ -35,7 +35,7 @@ class BaseApplication : Application() {
     lateinit var cityComponent: CityComponent
     lateinit var mainComponent: MainComponent
     lateinit var settingComponent: SettingComponent
-    lateinit var splaComponent: SplashComponent
+    lateinit var splashComponent: SplashComponent
 
     override fun onCreate() {
         super.onCreate()
@@ -59,7 +59,7 @@ class BaseApplication : Application() {
     }
 
     private fun initSplashComponent() {
-        splaComponent = DaggerSplashComponent.builder()
+        splashComponent = DaggerSplashComponent.builder()
             .splashModule(SplashModule())
             .applicationComponent(applicationComponent)
             .build()

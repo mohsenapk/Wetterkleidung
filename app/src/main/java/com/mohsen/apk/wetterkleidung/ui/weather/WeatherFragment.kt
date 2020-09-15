@@ -32,42 +32,43 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
 
     @Inject
     lateinit var viewModelFactory: WeatherViewModelFactory
-
     @Inject
     lateinit var imageHelper: ImageHelper
-
     @Inject
     lateinit var dateHelper: DateHelper
 
     lateinit var viewModel: WeatherViewModel
+
     private val rvOtherWeatherLayoutManager = LinearLayoutManager(context)
 
     override fun initDagger() {
         application.weatherComponent.inject(this)
     }
 
-    override fun showSnackBarError(message: String) {
-        TODO("Not yet implemented")
+    override fun initViewModel() {
+        viewModel = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initDagger()
-        initViewModel()
         initUI()
         listenToViewModel()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume()
     }
 
     private fun initUI() {
         tvCity.setOnClickListener { gotoFragment(CityFragment::class.java.name) }
         imgSetting.setOnClickListener { gotoFragment(SettingFragment::class.java.name) }
         seekBarInit()
+    }
+
+    override fun showSnackBarError(message: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
     }
 
     private fun seekBarInit() {
@@ -82,10 +83,6 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
                 seekBar?.let { viewModel.seekBarProgressChangedOnStopTouching(it.progress) }
             }
         }
-    }
-
-    private fun seekBarVirtualFirstItemClick() {
-        seekBar?.let { viewModel.seekBarProgressChangedOnStopTouching(0) }
     }
 
     private fun seekBarInitTexts(seekTimes: List<String>) {
@@ -139,8 +136,6 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
         }
     }
 
-    private fun setVisibility(it: Boolean) = if (it) View.VISIBLE else View.GONE
-
     private fun changeAllTextColors(color: Int) {
         tvDayName.setTextColor(ContextCompat.getColor(act, color))
         tvCity.setTextColor(ContextCompat.getColor(act, color))
@@ -160,9 +155,4 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
             }
         }
     }
-
-    private fun initViewModel() {
-        viewModel = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
-    }
-
 }

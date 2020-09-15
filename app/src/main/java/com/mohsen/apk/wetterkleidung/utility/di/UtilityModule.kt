@@ -1,6 +1,5 @@
 package com.mohsen.apk.wetterkleidung.utility.di
 
-import android.content.Context
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.utility.*
 import dagger.Module
@@ -19,7 +18,23 @@ class UtilityModule {
     fun provideImageHelper(): ImageHelper = ImageHelperImpl()
 
     @Provides
+    @Singleton
     fun provideLocationHelper(application: BaseApplication): LocationHelper =
         LocationHelperImpl(application.applicationContext)
+
+    @Provides
+    @Singleton
+    fun provideDayNameManager(dateHelper: DateHelper): DayNameManager =
+        DayNameManagerImpl(dateHelper)
+
+    @Provides
+    @Singleton
+    fun provideResourceManager(): ResourceManager =
+        ResourceManagerImpl()
+
+    @Provides
+    @Singleton
+    fun provideSeekBarManager(): SeekBarManager =
+        SeekBarManagerImpl()
 
 }
