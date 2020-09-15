@@ -19,12 +19,14 @@ interface SharedPreferenceManager {
     fun setLastLocation(lat: Double, lon: Double)
     fun setWeatherUnit(unit: String)
     fun setTimeSelectedList(timeSelectedList: List<TimeSelect>)
+    fun setAdvanceApp(boolean: Boolean)
 
     fun getCityDefault(): String
     fun getCities(): List<String>
     fun getLastLocation(): Pair<Double, Double>?
     fun getWeatherUnit(): WeatherUnit
     fun getTimeSelectedList(): List<TimeSelect>?
+    fun getAdvanceApp(): Boolean
 
     fun removeCities()
 }
@@ -34,6 +36,7 @@ private const val cityDefaultKey = "CITY_DEFAULT_KEY"
 private const val location = "LOCATION"
 private const val weatherUnit = "WEATHER_UNIT"
 private const val timeSelected = "TIME_SELECTED"
+private const val advanceApp = "ADVANCE_APP"
 
 class SharedPreferenceManagerImpl(
     context: Context,
@@ -155,4 +158,11 @@ class SharedPreferenceManagerImpl(
         val typeToken = object : TypeToken<List<TimeSelect>>() {}.type
         return gson.fromJson(jsonStr, typeToken)
     }
+
+    override fun setAdvanceApp(boolean: Boolean) {
+        prefs.edit().putBoolean(advanceApp, boolean).apply()
+    }
+
+    override fun getAdvanceApp(): Boolean =
+        prefs.getBoolean(advanceApp, false)
 }

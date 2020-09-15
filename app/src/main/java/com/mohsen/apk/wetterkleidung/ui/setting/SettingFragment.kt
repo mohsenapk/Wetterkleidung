@@ -5,14 +5,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.mohsen.apk.wetterkleidung.R
-import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
 import com.mohsen.apk.wetterkleidung.ui.city.CityFragment
 import com.mohsen.apk.wetterkleidung.ui.dialog.DialogManager
-import com.mohsen.apk.wetterkleidung.ui.dialog.WeatherTimeSelectingDialog
 import kotlinx.android.synthetic.main.fragment_setting.*
-import timber.log.Timber
 import javax.inject.Inject
 
 class SettingFragment : BaseFragment(R.layout.fragment_setting) {
@@ -35,6 +32,10 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
         listenToViewModel()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
 
     private fun listenToViewModel() {
         liveDataListener(viewModel.exitApp) { activity?.let { it.finishAffinity() } }
@@ -42,10 +43,19 @@ class SettingFragment : BaseFragment(R.layout.fragment_setting) {
         liveDataListener(viewModel.showTimeSelectingDialog) {
             showTimeSelectingDialog(it)
         }
+        liveDataListener(viewModel.setWeatherUnitRadioButtonToImperial) {
+            radioGroup.check(R.id.radioUnitF)
+        }
+        liveDataListener(viewModel.setWeatherUnitRadioButtonToMetric) {
+            radioGroup.check(R.id.radioUnitC)
+        }
+        liveDataListener(viewModel.setAdvanceApp){
+            switchAdvance.isChecked = it
+        }
     }
 
     private fun showTimeSelectingDialog(list: List<TimeSelect>) {
-        dialogManager.showWeatherTimeSelectingDialog(act,list) {
+        dialogManager.showWeatherTimeSelectingDialog(act, list) {
             viewModel.changeTimeSelectedList(it)
         }
     }
