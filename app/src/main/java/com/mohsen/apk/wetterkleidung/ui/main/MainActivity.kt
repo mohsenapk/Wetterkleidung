@@ -8,15 +8,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
+import com.mohsen.apk.wetterkleidung.ui.base.BaseActivity
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
 import com.mohsen.apk.wetterkleidung.ui.city.CityFragment
 import com.mohsen.apk.wetterkleidung.ui.setting.SettingFragment
-import com.mohsen.apk.wetterkleidung.ui.splash.SplashFragment
 import com.mohsen.apk.wetterkleidung.ui.weather.WeatherFragment
-import kotlinx.android.synthetic.main.fragment_splash.*
+
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
@@ -27,16 +27,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initDagger()
         initViewModel()
-        viewModel.start()
         initUi()
         viewModelListener()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
     private fun viewModelListener() {
-        liveDataListener(viewModel.gotoSplashFragment) { replaceFragment(SplashFragment.getInstance()) }
         liveDataListener(viewModel.gotoCityFragment) { addFragment(CityFragment.getInstance()) }
         liveDataListener(viewModel.gotoWeatherFragment) { addFragment(WeatherFragment.getInstance()) }
-        liveDataListener(viewModel.changeLoaderImageResource) { imgLoading.setImageResource(it) }
         liveDataListener(viewModel.finishApp) { finishAffinity() }
         liveDataListener(viewModel.callOnBackPressed) { onBackPressedCustom() }
         liveDataListener(viewModel.hasWeatherFragmentINnStackOrNot) {
@@ -79,12 +81,6 @@ class MainActivity : AppCompatActivity() {
             .beginTransaction()
             .replace(R.id.mainFrame, fragment)
             .commit()
-    }
-
-    private fun <T> liveDataListener(liveDataFunc: LiveData<T>, func: (obj: T) -> Unit) {
-        liveDataFunc.observe(this, Observer {
-            func(it)
-        })
     }
 
     fun gotoFragment(fragmentJavaClassName: String) {

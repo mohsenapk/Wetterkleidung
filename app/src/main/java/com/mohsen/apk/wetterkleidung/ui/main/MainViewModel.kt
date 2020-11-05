@@ -12,7 +12,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
-    private val _gotoSplashFragment = MutableLiveData<Unit>()
     private val _gotoCityFragment = MutableLiveData<Unit>()
     private val _gotoWeatherFragment = MutableLiveData<Unit>()
     private val _changeLoaderImageResource = MutableLiveData<Int>()
@@ -22,7 +21,6 @@ class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
     private val _hasWeatherFragmentINnStackOrNot = MutableLiveData<HasFragmentListener>()
     private val _callOnBackPressed = MutableLiveData<Unit>()
 
-    val gotoSplashFragment: LiveData<Unit> = _gotoSplashFragment
     val gotoWeatherFragment: LiveData<Unit> = _gotoWeatherFragment
     val gotoCityFragment: LiveData<Unit> = _gotoCityFragment
     val changeLoaderImageResource: LiveData<Int> = _changeLoaderImageResource
@@ -36,9 +34,11 @@ class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
         fun hasFragment(has: Boolean)
     }
 
-    fun start() = viewModelScope.launch {
-        _gotoSplashFragment.value = Unit
-        loaderImageStart()
+    fun onResume(){
+        start()
+    }
+
+    private fun start() = viewModelScope.launch {
         if (prefs.getCityDefault().isEmpty())
             _gotoCityFragment.value = Unit
         else
@@ -58,23 +58,6 @@ class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
             }
             prefs.setTimeSelectedList(listTimes)
         }
-    }
-
-    private suspend fun loaderImageStart() {
-        for (i in 1..6) {
-            delay(300)
-            var resourceId = R.drawable.w1
-            when (i) {
-                1 -> resourceId = R.drawable.w1
-                2 -> resourceId = R.drawable.w2
-                3 -> resourceId = R.drawable.w3
-                4 -> resourceId = R.drawable.w1
-                5 -> resourceId = R.drawable.w2
-                6 -> resourceId = R.drawable.w3
-            }
-            _changeLoaderImageResource.value = resourceId
-        }
-        _showLoadingView.value = false
     }
 
     fun backedFromCityFragment() {
