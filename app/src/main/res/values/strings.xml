@@ -9,7 +9,7 @@
     <string name="city_not_selected_note">You Must Insert City Name Or \n Select World Button </string>
     <string name="loading_weather_data_for">loading weather data for</string>
     <string name="city_setting">City Setting</string>
-    <string name="unit">Unit :</string>
+    <string name="weather_unit">Weather Unit :</string>
     <string name="times">Times :</string>
     <string name="advance_app">Advance App</string>
     <string name="set_time_periods">set time periods</string>

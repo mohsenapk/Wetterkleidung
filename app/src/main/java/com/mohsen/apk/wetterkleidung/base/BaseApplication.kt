@@ -51,18 +51,19 @@ class BaseApplication : Application() {
 
     private fun initDagger() {
         initApplicationComponent()
+        initSplashComponent()
+        initMainComponent()
         initWeatherComponent()
         initCityComponent()
-        initMainComponent()
         initSettingComponent()
-        initSplashComponent()
     }
 
-    private fun initSplashComponent() {
-        splashComponent = DaggerSplashComponent.builder()
-            .splashModule(SplashModule())
-            .applicationComponent(applicationComponent)
-            .build()
+    private fun initSplashComponent(){
+        splashComponent =
+            DaggerSplashComponent.builder()
+                .splashModule(SplashModule())
+                .applicationComponent(applicationComponent)
+                .build()
     }
 
     private fun initSettingComponent() {

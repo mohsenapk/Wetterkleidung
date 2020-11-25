@@ -2,10 +2,15 @@ package com.mohsen.apk.wetterkleidung.utility
 
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.model.Forecast5DaysWeatherDetail
+import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import kotlin.math.roundToInt
 
 interface ResourceManager {
-    fun getAvatarResourceIdFromWeather(weather: Forecast5DaysWeatherDetail): Int
+    fun getAvatarResourceIdFromWeather(
+        weather: Forecast5DaysWeatherDetail,
+        unit: WeatherUnit
+    ): Int
+
     fun getTextColorId(index: Int): Int
     fun getBackImageResourceId(index: Int): Int
     fun getStatusColorId(index: Int): Int
@@ -14,7 +19,30 @@ interface ResourceManager {
 
 class ResourceManagerImpl : ResourceManager {
 
-    override fun getAvatarResourceIdFromWeather(weather: Forecast5DaysWeatherDetail): Int {
+    override fun getAvatarResourceIdFromWeather(
+        weather: Forecast5DaysWeatherDetail,
+        unit: WeatherUnit
+    ): Int {
+        return if (unit == WeatherUnit.METRIC)
+            getAvatarWithWeatherMetric(weather)
+        else
+            getAvatarWithWeatherImperial(weather)
+    }
+
+    private fun getAvatarWithWeatherImperial(weather: Forecast5DaysWeatherDetail): Int {
+        return when (weather?.temp?.feels_like?.roundToInt()) {
+            in (-148..41) -> R.drawable.avatar_cold_very
+            in (41..50) -> R.drawable.avatar_cold
+            in (50..59) -> R.drawable.avatar_cold_little
+            in (59..68) -> R.drawable.avatar_normal
+            in (68..77) -> R.drawable.avatar_hot_little
+            in (77..86) -> R.drawable.avatar_hot
+            in (86..212) -> R.drawable.avatar_hot_very
+            else -> 0
+        }
+    }
+
+    private fun getAvatarWithWeatherMetric(weather: Forecast5DaysWeatherDetail): Int {
         return when (weather?.temp?.feels_like?.roundToInt()) {
             in (-100..5) -> R.drawable.avatar_cold_very
             in (5..10) -> R.drawable.avatar_cold

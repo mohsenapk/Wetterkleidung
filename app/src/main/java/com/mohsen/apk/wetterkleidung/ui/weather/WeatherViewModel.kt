@@ -202,7 +202,8 @@ class WeatherViewModel(
     }
 
     private fun changeAvatarWithWeather(weather: Forecast5DaysWeatherDetail) {
-        val avatarImageResourceId = resourceManager.getAvatarResourceIdFromWeather(weather)
+        val avatarImageResourceId =
+            resourceManager.getAvatarResourceIdFromWeather(weather, prefs.getWeatherUnit())
         if (avatarImageResourceId > 0)
             changeAvatarImageWithLoadingAsync(avatarImageResourceId)
         checkForUmbrellaAsync(weather)
