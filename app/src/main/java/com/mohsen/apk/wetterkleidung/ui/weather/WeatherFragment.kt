@@ -13,8 +13,7 @@ import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
-import com.mohsen.apk.wetterkleidung.ui.city.CityFragment
-import com.mohsen.apk.wetterkleidung.ui.setting.SettingFragment
+import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import com.warkiz.tickseekbar.OnSeekChangeListener
@@ -57,9 +56,8 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
     }
 
     private fun initUI() {
-        tvCity.setOnClickListener { gotoFragment(CityFragment::class.java.name) }
-        imgSetting.setOnClickListener { gotoFragment(SettingFragment::class.java.name) }
         seekBarInit()
+        tvCity.setOnClickListener { viewModel.cityNameClicked() }
     }
 
     override fun showSnackBarError(message: String) {
@@ -94,6 +92,7 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun listenToViewModel() {
         liveDataListener(viewModel.cityName) { tvCity.text = it }
+        liveDataListener(viewModel.gotoCityFragment) { gotoCityFragment() }
         liveDataListener(viewModel.dayName) { tvDayName.text = it }
         liveDataListener(viewModel.weatherLowInfoList) { initRvOtherWeather(it) }
         liveDataListener(viewModel.seekBarSelectedText) { tvSeekTime.text = it }
@@ -134,6 +133,10 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
             tvTemp.text = it.toString()
             tvTempDegreeIcon.visibility = View.VISIBLE
         }
+    }
+
+    private fun gotoCityFragment() {
+        (activity as MainActivity).gotoCityFragment()
     }
 
     private fun changeAllTextColors(color: Int) {

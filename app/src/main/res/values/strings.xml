@@ -19,4 +19,7 @@
     <string name="set_fahrenheit">Fahrenheit set</string>
     <string name="accept">Accept</string>
     <string name="cancel">cancel</string>
+
+    <string name="err_city_name_incorrect">City name is incorrect</string>
+    <string name="err_city_already_exist">City is already exist</string>
 </resources>

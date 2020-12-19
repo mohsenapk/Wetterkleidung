@@ -6,11 +6,11 @@ import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import com.mohsen.apk.wetterkleidung.utility.*
-import org.threeten.bp.LocalDateTime
-import kotlin.math.roundToInt
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import org.threeten.bp.LocalDateTime
+import kotlin.math.roundToInt
 
 class WeatherViewModel(
     private val weatherRepository: WeatherRepository,
@@ -51,6 +51,7 @@ class WeatherViewModel(
     private val _progressAvatarImageVisible = MutableLiveData<Boolean>()
     private val _imgAvatarUmbrellaVisible = MutableLiveData<Boolean>()
     private val _seekBarVisibility = MutableLiveData<Boolean>()
+    private val _gotoCityFragment = MutableLiveData<Any>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -76,6 +77,7 @@ class WeatherViewModel(
     val progressAvatarImageVisible: LiveData<Boolean> = _progressAvatarImageVisible
     val imgAvatarUmbrellaVisible: LiveData<Boolean> = _imgAvatarUmbrellaVisible
     val seekBarVisibility: LiveData<Boolean> = _seekBarVisibility
+    val gotoCityFragment: LiveData<Any> = _gotoCityFragment
 
     fun onResume() {
         weatherUnit = prefs.getWeatherUnit()
@@ -249,6 +251,10 @@ class WeatherViewModel(
         _humidity.value = currentWeather.temp?.humidity.toString()
         _clouds.value = currentWeather.clouds?.cloudCount.toString()
         _wind.value = "${currentWeather.wind?.speed} - ${currentWeather.wind?.degree}"
+    }
+
+    fun cityNameClicked() {
+        _gotoCityFragment.value = Any()
     }
 
     fun seekBarProgressChangeOnSeeking(progress: Int) {

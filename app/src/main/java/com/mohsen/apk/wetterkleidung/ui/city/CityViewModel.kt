@@ -1,6 +1,7 @@
 package com.mohsen.apk.wetterkleidung.ui.city
 
 import androidx.lifecycle.*
+import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.internal.LocationPermissionNotGrantedException
@@ -36,24 +37,35 @@ class CityViewModel(
     val showNoneCitySelectedError: LiveData<Boolean> = _showNoneCitySelectedError
     val getLocationPermission: LiveData<Unit> = _getLocationPermission
     val closeVirtualKeyboard: LiveData<Unit> = _closeVirtualKeyboard
-    val showProgress : LiveData<Boolean> = _showProgress
+    val showProgress: LiveData<Boolean> = _showProgress
+
+    fun onResume() {
+        start()
+    }
 
     private fun start() {
         weatherUnit = prefs.getWeatherUnit()
         getAllCities()
     }
 
-    fun onResume() {
-        start()
-        weatherUnit = prefs.getWeatherUnit()
-    }
-
     fun addCityClicked(cityName: String) = viewModelScope.launch {
-        if (cityName.length < 3 || isDuplicatedCity(cityName))
+        val checkCityName = checkNewCityNameCorrectness(cityName)
+        if (checkCityName != null) {
+            _showSnackBarError.value = checkCityName
             return@launch
+        }
         val city = getCity(cityName)
         city?.let { saveCity(city) }
     }
+
+    private fun checkNewCityNameCorrectness(cityName: String) = when {
+        cityName.length < 3 -> getStringResource(R.string.err_city_name_incorrect)
+        isDuplicatedCity(cityName) -> getStringResource(R.string.err_city_already_exist)
+        else -> null
+    }
+
+    private fun getStringResource(resourceId: Int) =
+        application.applicationContext.getString(resourceId)
 
     private fun isDuplicatedCity(cityName: String): Boolean {
         val duplicateCity = cities.filter { it.name.toUpperCase() == cityName.toUpperCase() }
@@ -103,6 +115,7 @@ class CityViewModel(
         _showProgress.value = true
         val cityNames = prefs.getCities()
         if (cityNames.isEmpty()) {
+            _showProgress.value = false
             showHasNotCityError()
             return@launch
         }
@@ -111,7 +124,6 @@ class CityViewModel(
     }
 
     private suspend fun setCitiesFromCityNames(cityNames: List<String>) {
-        if (cityNames.isEmpty()) return
         val cityDefault = prefs.getCityDefault()
         cityNames.forEach { cityName ->
             val city = getCity(cityName)
@@ -214,7 +226,9 @@ class CityViewModel(
         if (city.isDefault && cities.size > 1)
             changeDefaultCityAfterRemove(city)
         cities.remove(city)
-        updateCityPref(cities)
+        if(cities.isNullOrEmpty())
+            showHasNotCityError()
+        updateCityPref()
     }
 
     private fun changeDefaultCityAfterRemove(removedCity: City) {
@@ -225,10 +239,13 @@ class CityViewModel(
             cities[removedItemPosition - 1].isDefault = true
     }
 
-    private fun updateCityPref(list: List<City>) {
-        prefs.removeCities()
-        prefs.setCity(list)
+    fun onDestroy() {
+        updateCityPref()
     }
 
-
+    private fun updateCityPref() {
+        prefs.removeCities()
+        if (cities.isNotEmpty())
+            prefs.setCity(cities)
+    }
 }

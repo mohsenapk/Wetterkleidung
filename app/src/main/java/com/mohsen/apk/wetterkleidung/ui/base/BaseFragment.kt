@@ -36,10 +36,6 @@ abstract class BaseFragment(private val layout: Int) : Fragment() {
         initViewModel()
     }
 
-    fun onBackPressed() {
-        (act as MainActivity).backPressedFromFragment(this::class.java.name)
-    }
-
     fun hideKeyboard(activity: Activity) {
         val imm: InputMethodManager =
             activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -68,10 +64,6 @@ abstract class BaseFragment(private val layout: Int) : Fragment() {
         liveDataFunc.observe(this, Observer {
             func(it)
         })
-    }
-
-    fun gotoFragment(strName: String) {
-        (act as MainActivity).gotoFragment(strName)
     }
 
 }

@@ -10,7 +10,6 @@ import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import org.threeten.bp.LocalDateTime
-import java.lang.Exception
 
 interface SharedPreferenceManager {
     fun setCity(cityName: String)
@@ -47,13 +46,15 @@ class SharedPreferenceManagerImpl(
     private val gson = Gson()
 
     override fun setCity(cityName: String) {
-        getCityList().forEach { if (it == cityName) return }
+        if (getCityList().any { it == cityName }) return
         val list = getCityList().toMutableList()
         list.add(cityName)
         addCityList(list)
     }
 
     override fun setCity(cityList: List<City>) {
+        val defaultCity = cityList.first() { it.isDefault }
+        defaultCity?.let { setCityDefault(it.name) }
         cityList.forEach { setCity(it.name) }
     }
 

@@ -117,4 +117,9 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
         super.onResume()
         viewModel.onResume()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.onDestroy()
+    }
 }
