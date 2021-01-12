@@ -15,6 +15,7 @@ class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel()
     private val _setWeatherUnitRadioButtonToMetric = MutableLiveData<Unit>()
     private val _setWeatherUnitRadioButtonToImperial = MutableLiveData<Unit>()
     private val _setAdvanceApp = MutableLiveData<Boolean>()
+    private val _gotoCityFragment = MutableLiveData<Any>()
 
     val exitApp: LiveData<Unit> = _exitApp
     val showSnackBarText: LiveData<String> = _showSnackBarText
@@ -22,6 +23,7 @@ class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel()
     val setWeatherUnitRadioButtonToMetric: LiveData<Unit> = _setWeatherUnitRadioButtonToMetric
     val setWeatherUnitRadioButtonToImperial: LiveData<Unit> = _setWeatherUnitRadioButtonToImperial
     val setAdvanceApp: LiveData<Boolean> = _setAdvanceApp
+    val gotoCityFragment: LiveData<Any> = _gotoCityFragment
 
     fun onResume() {
         startViewModel()
@@ -67,5 +69,9 @@ class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel()
 
     fun changeTimeSelectedList(it: List<TimeSelect>) {
         prefs.setTimeSelectedList(it)
+    }
+
+    fun cityClClicked() {
+        _gotoCityFragment.value = Any()
     }
 }

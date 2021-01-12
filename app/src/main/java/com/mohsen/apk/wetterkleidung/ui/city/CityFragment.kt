@@ -42,7 +42,6 @@ class CityFragment : BaseFragment(R.layout.fragment_city) {
         listenToViewModel()
     }
 
-
     private fun initUI() {
         etCity.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE)

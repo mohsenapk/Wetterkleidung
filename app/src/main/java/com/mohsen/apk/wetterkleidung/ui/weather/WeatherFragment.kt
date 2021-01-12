@@ -13,7 +13,8 @@ import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.model.WeatherLowInformation
 import com.mohsen.apk.wetterkleidung.ui.adapter.WeatherLowInfoAdapter
 import com.mohsen.apk.wetterkleidung.ui.base.BaseFragment
-import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
+import com.mohsen.apk.wetterkleidung.ui.city.CityFragment
+import com.mohsen.apk.wetterkleidung.ui.setting.SettingFragment
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import com.mohsen.apk.wetterkleidung.utility.ImageHelper
 import com.warkiz.tickseekbar.OnSeekChangeListener
@@ -22,17 +23,27 @@ import com.warkiz.tickseekbar.TickSeekBar
 import kotlinx.android.synthetic.main.fragment_weather.*
 import javax.inject.Inject
 
-
 class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
 
     companion object {
-        fun getInstance(): WeatherFragment = WeatherFragment()
+        fun getInstance() = WeatherFragment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
+    fun goBackFromBackStack() {
+        onResume()
     }
 
     @Inject
     lateinit var viewModelFactory: WeatherViewModelFactory
+
     @Inject
     lateinit var imageHelper: ImageHelper
+
     @Inject
     lateinit var dateHelper: DateHelper
 
@@ -58,15 +69,11 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
     private fun initUI() {
         seekBarInit()
         tvCity.setOnClickListener { viewModel.cityNameClicked() }
+        imgSetting.setOnClickListener { viewModel.settingButtonClicked() }
     }
 
     override fun showSnackBarError(message: String) {
         TODO("Not yet implemented")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume()
     }
 
     private fun seekBarInit() {
@@ -93,6 +100,7 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
     private fun listenToViewModel() {
         liveDataListener(viewModel.cityName) { tvCity.text = it }
         liveDataListener(viewModel.gotoCityFragment) { gotoCityFragment() }
+        liveDataListener(viewModel.gotoSettingFragment) { gotoSettingFragment() }
         liveDataListener(viewModel.dayName) { tvDayName.text = it }
         liveDataListener(viewModel.weatherLowInfoList) { initRvOtherWeather(it) }
         liveDataListener(viewModel.seekBarSelectedText) { tvSeekTime.text = it }
@@ -136,7 +144,11 @@ class WeatherFragment : BaseFragment(R.layout.fragment_weather) {
     }
 
     private fun gotoCityFragment() {
-        (activity as MainActivity).gotoCityFragment()
+        gotoFragment(CityFragment.getInstance(), addToBackStack = true)
+    }
+
+    private fun gotoSettingFragment() {
+        gotoFragment(SettingFragment.getInstance(), addToBackStack = true)
     }
 
     private fun changeAllTextColors(color: Int) {

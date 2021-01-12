@@ -52,6 +52,7 @@ class WeatherViewModel(
     private val _imgAvatarUmbrellaVisible = MutableLiveData<Boolean>()
     private val _seekBarVisibility = MutableLiveData<Boolean>()
     private val _gotoCityFragment = MutableLiveData<Any>()
+    private val _gotoSettingFragment = MutableLiveData<Any>()
 
     val snackBarError: LiveData<String> = _snackBarError
     val cityName: LiveData<String> = _cityName
@@ -78,6 +79,7 @@ class WeatherViewModel(
     val imgAvatarUmbrellaVisible: LiveData<Boolean> = _imgAvatarUmbrellaVisible
     val seekBarVisibility: LiveData<Boolean> = _seekBarVisibility
     val gotoCityFragment: LiveData<Any> = _gotoCityFragment
+    val gotoSettingFragment: LiveData<Any> = _gotoSettingFragment
 
     fun onResume() {
         weatherUnit = prefs.getWeatherUnit()
@@ -295,4 +297,7 @@ class WeatherViewModel(
         }
     }
 
+    fun settingButtonClicked() {
+        _gotoSettingFragment.value = Any()
+    }
 }

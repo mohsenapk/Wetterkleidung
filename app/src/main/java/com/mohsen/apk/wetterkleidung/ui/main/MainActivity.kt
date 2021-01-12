@@ -41,7 +41,7 @@ class MainActivity() : BaseActivity() {
     }
 
     private fun viewModelListener() {
-        liveDataListener(viewModel.gotoCityFragment) { gotoCityFragment() }
+        liveDataListener(viewModel.gotoCityFragment) { replaceFragment(CityFragment.getInstance()) }
         liveDataListener(viewModel.gotoWeatherFragment) { replaceFragment(WeatherFragment.getInstance()) }
     }
 
@@ -49,15 +49,20 @@ class MainActivity() : BaseActivity() {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.mainFrame, fragment)
+            .addToBackStack(fragment::class.java.simpleName)
             .commit()
     }
 
-    fun gotoCityFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.mainFrame, CityFragment.getInstance())
-            .addToBackStack(CityFragment.javaClass.simpleName)
-            .commit()
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 2 &&
+            supportFragmentManager.fragments[0]::class.java.simpleName == WeatherFragment::class.java.simpleName
+        ) {
+            (supportFragmentManager.fragments[0] as WeatherFragment)
+                .goBackFromBackStack()
+        }
+        if (supportFragmentManager.backStackEntryCount == 1)
+            finishAffinity()
+        super.onBackPressed()
     }
 
 }

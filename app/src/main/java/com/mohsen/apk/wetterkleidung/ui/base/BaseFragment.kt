@@ -1,6 +1,5 @@
 package com.mohsen.apk.wetterkleidung.ui.base
 
-import android.R
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
@@ -11,8 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
-import com.mohsen.apk.wetterkleidung.ui.main.MainActivity
 
 
 abstract class BaseFragment(private val layout: Int) : Fragment() {
@@ -66,4 +65,12 @@ abstract class BaseFragment(private val layout: Int) : Fragment() {
         })
     }
 
+    fun gotoFragment(fragment: BaseFragment, addToBackStack: Boolean = false) {
+        fragmentManager?.let {
+            val transaction = it.beginTransaction()
+                .add(R.id.mainFrame, fragment)
+            if (addToBackStack) transaction.addToBackStack(fragment::class.java.simpleName)
+            transaction.commit()
+        }
+    }
 }
