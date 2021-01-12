@@ -1,10 +1,9 @@
 package com.mohsen.apk.wetterkleidung.ui.splash
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
 import com.mohsen.apk.wetterkleidung.ui.base.BaseActivity
@@ -29,6 +28,10 @@ class SplashActivity : BaseActivity() {
     private fun listenToViewModel() {
         liveDataListener(viewModel.setLoadingImageResourceIs) { imgLoading.setImageResource(it) }
         liveDataListener(viewModel.gotoMainActivity) { gotoMainActivity() }
+        liveDataListener(viewModel.showDefaultCityLayout) {
+            clDefaultCity.visibility = View.VISIBLE
+            tvCityName.text = it
+        }
     }
 
     private fun gotoMainActivity() {

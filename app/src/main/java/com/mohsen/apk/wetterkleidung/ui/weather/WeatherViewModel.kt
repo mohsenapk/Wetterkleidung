@@ -2,7 +2,7 @@ package com.mohsen.apk.wetterkleidung.ui.weather
 
 import android.widget.ImageView
 import androidx.lifecycle.*
-import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
+import com.mohsen.apk.wetterkleidung.db.prefrences.InAppSharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.model.*
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import com.mohsen.apk.wetterkleidung.utility.*
@@ -19,7 +19,7 @@ class WeatherViewModel(
     private val seekBarManager: SeekBarManager,
     private val dayNameManager: DayNameManager,
     private val resourceManager: ResourceManager,
-    private val prefs: SharedPreferenceManager
+    private val prefs: InAppSharedPreferenceManager
 ) : ViewModel() {
 
     private lateinit var selectedDayWeatherList: List<Forecast5DaysWeatherDetail>

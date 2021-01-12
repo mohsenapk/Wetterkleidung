@@ -3,11 +3,11 @@ package com.mohsen.apk.wetterkleidung.ui.setting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
+import com.mohsen.apk.wetterkleidung.db.prefrences.InAppSharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.model.TimeSelect
 import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 
-class SettingViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
+class SettingViewModel(private val prefs: InAppSharedPreferenceManager) : ViewModel() {
 
     private val _exitApp = MutableLiveData<Unit>()
     private val _showSnackBarText = MutableLiveData<String>()

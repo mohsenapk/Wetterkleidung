@@ -3,7 +3,7 @@ package com.mohsen.apk.wetterkleidung.ui.city
 import androidx.lifecycle.*
 import com.mohsen.apk.wetterkleidung.R
 import com.mohsen.apk.wetterkleidung.base.BaseApplication
-import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
+import com.mohsen.apk.wetterkleidung.db.prefrences.InAppSharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.internal.LocationPermissionNotGrantedException
 import com.mohsen.apk.wetterkleidung.model.City
 import com.mohsen.apk.wetterkleidung.model.CurrentWeather
@@ -18,7 +18,7 @@ import kotlin.math.roundToInt
 
 class CityViewModel(
     private val application: BaseApplication,
-    private val prefs: SharedPreferenceManager,
+    private val prefs: InAppSharedPreferenceManager,
     private val repository: WeatherRepository,
     private val locationHelper: LocationHelper
 ) : AndroidViewModel(application) {

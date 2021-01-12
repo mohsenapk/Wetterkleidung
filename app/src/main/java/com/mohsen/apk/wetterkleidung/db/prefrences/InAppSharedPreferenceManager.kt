@@ -11,7 +11,7 @@ import com.mohsen.apk.wetterkleidung.model.WeatherUnit
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import org.threeten.bp.LocalDateTime
 
-interface SharedPreferenceManager {
+interface InAppSharedPreferenceManager {
     fun setCity(cityName: String)
     fun setCity(cityList: List<City>)
     fun setCityDefault(cityName: String)
@@ -37,10 +37,10 @@ private const val weatherUnit = "WEATHER_UNIT"
 private const val timeSelected = "TIME_SELECTED"
 private const val advanceApp = "ADVANCE_APP"
 
-class SharedPreferenceManagerImpl(
+class inAppSharedPreferenceManagerImpl(
     context: Context,
     private val dateHelper: DateHelper
-) : SharedPreferenceManager {
+) : InAppSharedPreferenceManager {
     private val prefs: SharedPreferences =
         context.getSharedPreferences(BuildConfig.SHARED_PREFRENCES_NAME, 0)
     private val gson = Gson()

@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.mohsen.apk.wetterkleidung.db.WeatherDB
 import com.mohsen.apk.wetterkleidung.db.localService.WeatherLocalServiceImpl
-import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
-import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManagerImpl
+import com.mohsen.apk.wetterkleidung.db.prefrences.InAppSharedPreferenceManager
+import com.mohsen.apk.wetterkleidung.db.prefrences.inAppSharedPreferenceManagerImpl
 import com.mohsen.apk.wetterkleidung.utility.DateHelper
 import dagger.Module
 import dagger.Provides
@@ -30,7 +30,7 @@ class DBModule(private val context: Context) {
 
     @Provides
     @Singleton
-    fun provideSharedPreference(dateHelper: DateHelper): SharedPreferenceManager =
-        SharedPreferenceManagerImpl(context, dateHelper)
+    fun provideSharedPreference(dateHelper: DateHelper): InAppSharedPreferenceManager =
+        inAppSharedPreferenceManagerImpl(context, dateHelper)
 
 }

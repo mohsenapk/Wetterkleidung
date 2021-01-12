@@ -1,6 +1,6 @@
 package com.mohsen.apk.wetterkleidung.ui.weather.di
 
-import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
+import com.mohsen.apk.wetterkleidung.db.prefrences.InAppSharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.repository.WeatherRepository
 import com.mohsen.apk.wetterkleidung.ui.base.di.ActivityScope
 import com.mohsen.apk.wetterkleidung.ui.weather.WeatherViewModelFactory
@@ -20,7 +20,7 @@ class WeatherModule {
         seekBarManager: SeekBarManager,
         dayNameManager: DayNameManager,
         resourceManager: ResourceManager,
-        prefs: SharedPreferenceManager
+        prefs: InAppSharedPreferenceManager
     ) = WeatherViewModelFactory(
         weatherRepository,
         dateHelper,

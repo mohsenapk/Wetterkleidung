@@ -4,14 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mohsen.apk.wetterkleidung.R
-import com.mohsen.apk.wetterkleidung.db.prefrences.SharedPreferenceManager
+import com.mohsen.apk.wetterkleidung.db.prefrences.InAppSharedPreferenceManager
 import com.mohsen.apk.wetterkleidung.model.SeekBarValue
 import com.mohsen.apk.wetterkleidung.model.TimeSelect
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val prefs: SharedPreferenceManager) : ViewModel() {
+class MainViewModel(private val prefs: InAppSharedPreferenceManager) : ViewModel() {
 
     private val _gotoCityFragment = MutableLiveData<Unit>()
     private val _gotoWeatherFragment = MutableLiveData<Unit>()
